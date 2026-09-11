@@ -4,5 +4,9 @@
       "source": "/(.*)",
       "headers": [{ "key": "Cache-Control", "value": "no-store" }]
     }
+  ],
+  "rewrites": [
+    { "source": "/api/submit", "destination": "/api/inbox" },
+    { "source": "/api/submissions", "destination": "/api/inbox" }
   ]
 }

@@ -1,4 +1,26 @@
-const store = globalThis.__prductSubmissions || (globalThis.__prductSubmissions = []);
+import { readFileSync, writeFileSync } from "node:fs";
+
+const FILE = "/tmp/prduct-submissions.json";
+
+function store() {
+  if (!globalThis.__prductSubmissions) {
+    try {
+      globalThis.__prductSubmissions = JSON.parse(readFileSync(FILE, "utf8"));
+    } catch {
+      globalThis.__prductSubmissions = [];
+    }
+  }
+  return globalThis.__prductSubmissions;
+}
+
+function persist(list) {
+  globalThis.__prductSubmissions = list;
+  try {
+    writeFileSync(FILE, JSON.stringify(list));
+  } catch {
+    /* ignore ephemeral fs errors */
+  }
+}
 
 function json(res, status, body) {
   res.statusCode = status;
@@ -24,6 +46,10 @@ function readBody(req) {
 }
 
 export default async function handler(req, res) {
+  const list = store();
+  if (req.method === "GET") {
+    return json(res, 200, { ok: true, count: list.length, submissions: list });
+  }
   if (req.method !== "POST") {
     return json(res, 405, { ok: false, error: "method not allowed" });
   }
@@ -54,7 +80,8 @@ export default async function handler(req, res) {
     personality: payload.personality || {},
     source: "spin-in-furniture-dpp",
   };
-  store.push(record);
-  if (store.length > 500) store.splice(0, store.length - 500);
+  list.push(record);
+  if (list.length > 500) list.splice(0, list.length - 500);
+  persist(list);
   return json(res, 200, { ok: true, id: record.id });
 }
