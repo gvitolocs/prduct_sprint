@@ -1,0 +1,24 @@
+.progress-track { height: 6px; background: #e2e8f0; border-radius: 999px; overflow: hidden; }
+.progress-track span { display: block; height: 100%; background: #7c3aed; transition: width .25s ease; }
+.choice {
+  width: 100%; text-align: left; cursor: pointer;
+  border: 1px solid #cbd5e1; background: #fff; color: #0f172a;
+  border-radius: 1rem; padding: 1rem 1.1rem; font: inherit;
+}
+.choice:hover { border-color: #7c3aed; background: #f5f3ff; }
+.choice.is-on { border-color: #5b20b6; background: #ede9fe; box-shadow: inset 0 0 0 1px #5b20b6; }
+.choice .k { font-weight: 700; display: block; }
+.choice .s { font-size: .85rem; color: #475569; margin-top: .15rem; display: block; }
+.quiz-card { background: #fff; border-radius: 1rem; padding: 1.5rem; }
+input.pr-input, select.pr-input {
+  width: 100%; border: 1px solid #cbd5e1; border-radius: .75rem;
+  padding: .75rem .9rem; font: inherit; color: #0f172a; background: #fff;
+}
+input.pr-input:focus, select.pr-input:focus { outline: 2px solid #8b5cf6; border-color: #8b5cf6; }
+.meter-bar { height: 8px; background: #e2e8f0; border-radius: 999px; overflow: hidden; }
+.meter-bar i { display: block; height: 100%; background: #7c3aed; }
+.dpp-chip { border-radius: .75rem; padding: .85rem 1rem; font-size: .875rem; }
+.dpp-chip.ok { background: #ccfbf1; }
+.dpp-chip.gap { background: #fce7f3; }
+.err { color: #e11d48; font-size: .875rem; font-weight: 600; min-height: 1.2em; }
+button { font-family: inherit; }

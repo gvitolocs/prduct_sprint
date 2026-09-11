@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Prduct | Assessment responses</title>
+  <link rel="icon" type="image/svg+xml" href="https://prduct.com/wp-content/themes/product-2026/assets/static/favicon.svg" />
+  <link rel="stylesheet" href="https://prduct.com/wp-content/themes/product-2026/style.css?v=b31c204c64" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="font-montserrat bg-slate-50 text-slate-900">
+  <div class="container mx-auto px-4 py-10">
+    <p class="mb-4 text-sm"><a class="text-violet-700 hover:underline" href="/">← Furniture DPP assessment</a></p>
+    <p class="text-xs font-bold uppercase tracking-wide text-violet-600">Captured data</p>
+    <h1 class="mt-2 text-2xl font-bold lg:text-3xl">Readiness responses</h1>
+    <p class="mt-2 mb-8 text-sm text-slate-600" id="meta">Loading…</p>
+    <div class="overflow-auto rounded-2xl bg-white p-4">
+      <table class="w-full text-left text-sm">
+        <thead>
+          <tr class="border-b border-slate-200 text-xs uppercase tracking-wide text-slate-500">
+            <th class="py-2 pr-3">When</th>
+            <th class="py-2 pr-3">Lead</th>
+            <th class="py-2 pr-3">Company</th>
+            <th class="py-2 pr-3">Type</th>
+            <th class="py-2 pr-3">Timeline</th>
+          </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+  </div>
+  <script>
+    function rowsHtml(list) {
+      return list.slice().reverse().map(s => {
+        const lead = s.lead || {};
+        const p = s.personality || {};
+        const sc = s.scores || {};
+        return `<tr class="border-b border-slate-100 align-top">
+          <td class="py-3 pr-3 whitespace-nowrap">${(s.receivedAt || "").replace("T"," ").slice(0,19)}</td>
+          <td class="py-3 pr-3"><strong>${lead.firstName || ""} ${lead.lastName || ""}</strong><br>${lead.email || ""}<br>${lead.role || ""}</td>
+          <td class="py-3 pr-3">${lead.company || ""}</td>
+          <td class="py-3 pr-3">${p.name || "—"}</td>
+          <td class="py-3 pr-3">${(sc.timeline && sc.timeline.display) || "—"}</td>
+        </tr>`;
+      }).join("") || "<tr><td class='py-4' colspan='5'>No submissions yet.</td></tr>";
+    }
+    const local = JSON.parse(localStorage.getItem("prduct-dpp-submissions") || "[]");
+    fetch("/api/submissions").then(r => r.json()).then(d => {
+      const remote = d.submissions || [];
+      const byKey = new Map();
+      [...remote, ...local].forEach(s => byKey.set((s.lead && s.lead.email || "") + (s.receivedAt || s.id || ""), s));
+      const merged = [...byKey.values()];
+      document.getElementById("meta").textContent = merged.length + " responses (name, email, company, role, scored answers).";
+      document.getElementById("rows").innerHTML = rowsHtml(merged);
+    }).catch(() => {
+      document.getElementById("meta").textContent = local.length + " responses in this browser.";
+      document.getElementById("rows").innerHTML = rowsHtml(local);
+    });
+  </script>
+</body>
+</html>
