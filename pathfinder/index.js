@@ -1,6 +1,7 @@
 /**
  * PRDUCT Data Pathfinder — public API
  * Pure JS engine. No quiz UX; no production UI swap.
+ * MODEL_VERSION capability-model-1.1: sector object, motion verbs, dpp plate.
  */
 
 export {
@@ -56,8 +57,21 @@ export {
   toCalculatorAnswers,
   timelineBandFromHints,
   maturityFromCapabilities,
-  dppImplicationsFromState
+  dppImplicationsFromState,
+  buildDppPlate,
+  DPP_PLATE_ROWS
 } from "./calculator-bridge.js";
+
+export {
+  SECTOR_OBJECTS,
+  OBJECT_STATES,
+  MOTION_VERBS,
+  resolveSectorId,
+  resolveSectorObject,
+  deriveMotion,
+  motionHintForScenario,
+  normalizeMotion
+} from "./sector-object.js";
 
 import { createState, getSituation, answer, isComplete, toPayload } from "./model.js";
 import { buildLandscape, finalize } from "./landscape.js";

@@ -39,12 +39,21 @@ import {
 } from "../model.js";
 
 import { buildLandscape, finalize } from "../landscape.js";
-import { walk, runPath } from "../index.js";
+import { walk, runPath, MODEL_VERSION } from "../index.js";
 import {
   toCalculatorAnswers,
   timelineBandFromHints,
-  maturityFromCapabilities
+  maturityFromCapabilities,
+  buildDppPlate,
+  DPP_PLATE_ROWS
 } from "../calculator-bridge.js";
+import {
+  SECTOR_OBJECTS,
+  OBJECT_STATES,
+  MOTION_VERBS,
+  resolveSectorObject,
+  deriveMotion
+} from "../sector-object.js";
 
 describe("evidence mapping", () => {
   it("maps strength 0–4 into the specified score bands", () => {
@@ -334,5 +343,107 @@ describe("runPath helper", () => {
     assert.ok(landscape.foundation);
     assert.ok(landscape.personaInterpretation.headline.includes("service") ||
       landscape.personaInterpretation.suggestedConversation.length > 0);
+  });
+});
+
+describe("sector object hooks", () => {
+  it("defaults to generic sector object on create", () => {
+    const state = createState();
+    assert.equal(state.sectorObject.id, "generic");
+    assert.equal(state.sectorObject.metaphor, "product-assembly");
+    assert.deepEqual([...state.sectorObject.grammar], [...OBJECT_STATES]);
+    assert.ok(SECTOR_OBJECTS.furniture);
+    assert.ok(SECTOR_OBJECTS.machinery);
+  });
+
+  it("resolves furniture sector from createState and from product-context answer", () => {
+    const pre = createState({ persona: "sales", sector: "furniture" });
+    assert.equal(pre.sectorObject.id, "furniture");
+    assert.equal(pre.sectorObject.metaphor, "chair-joinery");
+
+    let state = createState({ persona: "sales" });
+    assert.equal(state.sectorObject.id, "generic");
+    // Walk to reality.product-context
+    for (let i = 0; i < 4 && !isComplete(state); i++) {
+      const sit = getSituation(state);
+      if (sit.id === "reality.product-context") {
+        state = answer(state, "simple-small");
+        assert.equal(state.sector, "furniture");
+        assert.equal(state.sectorObject.id, "furniture");
+        assert.equal(state.sectorObject.metaphor, "chair-joinery");
+        return;
+      }
+      state = answer(state, sit.options[0].id);
+    }
+    assert.fail("never reached reality.product-context");
+  });
+});
+
+describe("motion verb hooks", () => {
+  it("records a locked motion verb on each answer", () => {
+    let state = createState();
+    const sit0 = getSituation(state);
+    assert.ok(sit0.motionHint);
+    assert.equal(sit0.motionHint.sales, "settle");
+    for (const o of sit0.options) {
+      assert.ok(MOTION_VERBS.includes(o.motion), o.motion);
+    }
+    state = answer(state, "sales");
+    assert.equal(state.lastMotion.verb, "settle");
+    assert.equal(state.lastMotion.at, "perspective.select");
+    assert.equal(state.lastMotion.optionId, "sales");
+    assert.equal(state.motions.length, 1);
+
+    const sit1 = getSituation(state);
+    assert.ok(sit1.motionHint);
+    const optionId = sit1.options[0].id;
+    const expected = sit1.motionHint[optionId];
+    assert.ok(MOTION_VERBS.includes(expected));
+    state = answer(state, optionId);
+    assert.equal(state.lastMotion.verb, expected);
+    assert.equal(state.motions.length, 2);
+    assert.ok(state.motions.every((m) => MOTION_VERBS.includes(m.verb)));
+  });
+
+  it("deriveMotion only returns locked verbs", () => {
+    const scenario = getScenario("depth.trace-back");
+    for (const option of scenario.options) {
+      assert.ok(MOTION_VERBS.includes(deriveMotion(scenario, option)));
+    }
+  });
+});
+
+describe("horizon DPP plate", () => {
+  it("finalize includes dppPlate with ready/gaps and no score badge", () => {
+    const { landscape, state } = walk("leadership", (s) => s.options[0].id, 12);
+    const plate = landscape.dppPlate;
+    assert.ok(plate);
+    assert.equal(plate.kind, "passport-plate");
+    assert.equal(plate.title, "Product data passport");
+    assert.equal(plate.strength, "quiet");
+    assert.ok(Array.isArray(plate.rows));
+    assert.equal(plate.rows.length, DPP_PLATE_ROWS.length);
+    for (const row of plate.rows) {
+      assert.ok(DPP_PLATE_ROWS.includes(row.id), row.id);
+      assert.ok(["verified", "hairline", "absent"].includes(row.status), row.status);
+      assert.equal(typeof row.label, "string");
+    }
+    assert.ok(Array.isArray(plate.readyFields));
+    assert.ok(Array.isArray(plate.exposedGaps));
+    assert.ok(Array.isArray(plate.spineEcho));
+    assert.match(plate.caveat, /Prduct/);
+    // No numeric score badge field
+    assert.equal("score" in plate, false);
+    assert.equal("badge" in plate, false);
+    assert.equal("maturityScore" in plate, false);
+    // Helper matches landscape
+    const rebuilt = buildDppPlate(state);
+    assert.equal(rebuilt.kind, plate.kind);
+    assert.equal(rebuilt.strength, "quiet");
+    assert.ok(landscape.sectorObject);
+  });
+
+  it("MODEL_VERSION bumped for capability-model-1.1 hooks", () => {
+    assert.match(MODEL_VERSION, /capability-model-1\.1/);
   });
 });

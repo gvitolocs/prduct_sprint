@@ -7,9 +7,14 @@ import { createCapabilities, applyEvidence, deriveSignals } from "./dimensions.j
 import { SPINE_NODES, getScenario, getOption, PERSONAS } from "./scenarios.js";
 import { nextNodeId, whyNext, resolveCurrent } from "./router.js";
 import { clampStrength } from "./evidence.js";
+import {
+  resolveSectorObject,
+  deriveMotion,
+  motionHintForScenario
+} from "./sector-object.js";
 
 export const ASSESSMENT_VERSION = "pathfinder-0.1";
-export const MODEL_VERSION = "capability-model-1";
+export const MODEL_VERSION = "capability-model-1.1"; // sector object, motion verbs, dpp plate
 
 function spineNode(state = "latent") {
   return { state, evidence: [] };
@@ -28,10 +33,16 @@ function createSpine() {
  */
 export function createState(opts = {}) {
   const persona = opts.persona ?? null;
+  const sector = opts.sector ?? null;
+  const calculatorHints = {
+    ...(opts.calculatorHints || {}),
+    ...(sector ? { sector } : {})
+  };
   const state = {
     assessmentVersion: ASSESSMENT_VERSION,
     modelVersion: MODEL_VERSION,
     persona,
+    sector: sector || null,
     stage: "perspective",
     currentNode: "perspective.select",
     history: [],
@@ -40,11 +51,15 @@ export function createState(opts = {}) {
     openQuestions: [],
     skippedQuestions: [],
     confidence: 0,
-    calculatorHints: {},
+    calculatorHints,
     flags: [],
     whyThisNext: null,
-    result: null
+    result: null,
+    lastMotion: null,
+    motions: [],
+    sectorObject: null
   };
+  state.sectorObject = resolveSectorObject(state);
   if (persona) {
     // Skip perspective if persona pre-selected
     state.currentNode = nextNodeId({
@@ -69,6 +84,13 @@ export function createState(opts = {}) {
         at: 0
       }
     ];
+    // Pre-selected persona settles perspective without a UI answer call
+    state.lastMotion = {
+      verb: "settle",
+      at: "perspective.select",
+      optionId: persona
+    };
+    state.motions = [state.lastMotion];
     state.stage = getScenario(state.currentNode).stage;
   }
   return state;
@@ -80,6 +102,7 @@ export function createState(opts = {}) {
  */
 export function getSituation(state) {
   const scenario = resolveCurrent(state);
+  const motionHint = motionHintForScenario(scenario);
   return {
     id: scenario.id,
     stage: scenario.stage,
@@ -89,8 +112,11 @@ export function getSituation(state) {
     options: (scenario.options || []).map((o) => ({
       id: o.id,
       label: o.label,
-      soft: !!o.soft
+      soft: !!o.soft,
+      motion: motionHint[o.id]
     })),
+    motionHint,
+    sectorObject: state.sectorObject,
     whyThisNext: state.whyThisNext,
     persona: state.persona,
     progressHint: null // intentionally no Question N of M
@@ -133,12 +159,43 @@ export function answer(state, optionId) {
     next.persona = option.setsPersona;
   }
 
+  // Sector selection (furniture / machinery / generic)
+  if (option.setsSector || option.sector) {
+    next.sector = option.setsSector || option.sector;
+    next.calculatorHints = {
+      ...state.calculatorHints,
+      sector: next.sector
+    };
+  }
+
   // Calculator-compatible hints
   if (option.calculator) {
     next.calculatorHints = {
-      ...state.calculatorHints,
+      ...next.calculatorHints,
       ...option.calculator
     };
+  }
+
+  // One motion verb per answer (join | separate | connect | settle)
+  const verb = deriveMotion(scenario, option);
+  const motionEntry = {
+    verb,
+    at: scenario.id,
+    optionId: option.id
+  };
+  next.lastMotion = motionEntry;
+  next.motions = [...(state.motions || []), motionEntry];
+
+  // Freeze sector object snapshot for the run
+  next.sectorObject = resolveSectorObject(next);
+
+  // Also record setsSector on history for replay/resolve
+  if (option.setsSector || option.sector) {
+    next.history = next.history.map((h, i) =>
+      i === next.history.length - 1
+        ? { ...h, setsSector: option.setsSector || option.sector }
+        : h
+    );
   }
 
   // Write evidence to captured dimensions
@@ -307,9 +364,13 @@ export function toPayload(state, result = null, lead = {}) {
     assessmentVersion: state.assessmentVersion,
     modelVersion: state.modelVersion,
     persona: state.persona,
+    sector: state.sector,
+    sectorObject: state.sectorObject,
     history: state.history,
     capabilities: state.capabilities,
     spine: state.spine,
+    motions: state.motions,
+    lastMotion: state.lastMotion,
     result: result || state.result,
     lead,
     calculatorHints: state.calculatorHints

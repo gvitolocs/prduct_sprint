@@ -10,7 +10,8 @@ import {
   toCalculatorAnswers,
   timelineBandFromHints,
   maturityFromCapabilities,
-  dppImplicationsFromState
+  dppImplicationsFromState,
+  buildDppPlate
 } from "./calculator-bridge.js";
 
 /**
@@ -45,6 +46,7 @@ export function buildLandscape(state) {
   const opportunities = buildOpportunities(state, signals, capabilities);
   const personaInterpretation = interpretPersona(state, foundationDims, gapDims, nextCapability);
   const dppImplications = dppImplicationsFromState(state);
+  const dppPlate = buildDppPlate(state);
   const answers = toCalculatorAnswers(state);
   const timeline = timelineBandFromHints(state.calculatorHints, answers);
   const maturityScore = maturityFromCapabilities(capabilities);
@@ -68,6 +70,8 @@ export function buildLandscape(state) {
     nextCapability,
     opportunities,
     dppImplications,
+    dppPlate,
+    sectorObject: state.sectorObject || null,
     personaInterpretation,
     internal: {
       timelineBand: timeline.display,

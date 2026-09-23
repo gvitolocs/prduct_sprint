@@ -237,3 +237,112 @@ export function dppImplicationsFromState(state) {
       "A readiness signal is not legal advice or certification. Prduct uses it to prioritize the next reliable layer."
   };
 }
+
+/** Locked DPP plate row ids (UIMaster contract). */
+export const DPP_PLATE_ROWS = Object.freeze([
+  "composition",
+  "origin",
+  "hazards",
+  "durability",
+  "carbon",
+  "endOfLife"
+]);
+
+const DPP_ROW_META = Object.freeze({
+  composition: { label: "Composition", caps: ["dataStructure"] },
+  origin: { label: "Origin", caps: ["verificationTrust", "traceabilityDepth"] },
+  hazards: { label: "Hazards", caps: ["regulatoryReadiness"] },
+  durability: { label: "Durability", caps: ["lifecycleCapability", "dataStructure"] },
+  carbon: { label: "Carbon", caps: ["supplierDataQuality", "traceabilityDepth"] },
+  endOfLife: { label: "End of life", caps: ["lifecycleCapability", "commercialUse"] }
+});
+
+/**
+ * Map capability evidence → plate row status.
+ * verified | hairline | absent — never a numeric score badge.
+ * @param {object} state
+ * @param {string} rowId
+ * @returns {"verified"|"hairline"|"absent"}
+ */
+function rowStatusFromEvidence(state, rowId) {
+  const caps = state.capabilities || {};
+  const meta = DPP_ROW_META[rowId];
+  if (!meta) return "absent";
+
+  // Reuse readiness logic aligned with dppImplicationsFromState field ids
+  const legacyReady = legacyReadyMap(state);
+  const ready = !!legacyReady[rowId];
+
+  const related = meta.caps.map((id) => caps[id]).filter(Boolean);
+  const evidenced = related.filter((c) => (c.evidence?.length || 0) > 0);
+  if (!evidenced.length && !ready) return "absent";
+
+  const avg =
+    evidenced.length === 0
+      ? 0
+      : evidenced.reduce((a, c) => a + (c.score || 0), 0) / evidenced.length;
+  const highConf = evidenced.some((c) => c.confidence === "high");
+
+  if (ready && (avg >= 55 || highConf)) return "verified";
+  if (ready || avg >= 35 || evidenced.length > 0) return "hairline";
+  return "absent";
+}
+
+/**
+ * Bridge old field ids → locked plate row ids.
+ * @param {object} state
+ */
+function legacyReadyMap(state) {
+  const dpp = dppImplicationsFromState(state);
+  const byLegacy = Object.fromEntries(
+    (dpp.fields || []).map((f) => [f.id, !!f.ready])
+  );
+  return {
+    composition: byLegacy.composition,
+    origin: byLegacy.wood,
+    hazards: byLegacy.hazard,
+    durability: byLegacy.durability,
+    carbon: byLegacy.carbon,
+    endOfLife: byLegacy.eol
+  };
+}
+
+/**
+ * Horizon DPP plate — quiet passport/plate grown from landscape evidence.
+ * strength is always "quiet"; never expose a score badge field.
+ * @param {object} state
+ */
+export function buildDppPlate(state) {
+  const rows = DPP_PLATE_ROWS.map((id) => {
+    const status = rowStatusFromEvidence(state, id);
+    return {
+      id,
+      label: DPP_ROW_META[id].label,
+      status
+    };
+  });
+
+  const readyFields = rows
+    .filter((r) => r.status === "verified")
+    .map((r) => ({ id: r.id, label: r.label, status: r.status }));
+  const exposedGaps = rows
+    .filter((r) => r.status === "absent" || r.status === "hairline")
+    .map((r) => ({ id: r.id, label: r.label, status: r.status }));
+
+  const spine = state.spine || {};
+  const spineEcho = ["product", "material", "supplier", "nextLife"].filter(
+    (id) => spine[id] && spine[id].state !== "latent"
+  );
+
+  return {
+    kind: "passport-plate",
+    title: "Product data passport",
+    rows,
+    readyFields,
+    exposedGaps,
+    spineEcho,
+    caveat:
+      "A readiness signal is not legal advice or certification. Prduct uses it to prioritize the next reliable layer.",
+    strength: "quiet"
+  };
+}

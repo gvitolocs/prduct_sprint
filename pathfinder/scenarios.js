@@ -130,7 +130,7 @@ export const SCENARIOS = {
     interaction: "select-persona",
     captures: [],
     options: Object.values(PERSONAS).map((p) =>
-      opt(p.id, p.label, 2, { setsPersona: p.id })
+      opt(p.id, p.label, 2, { setsPersona: p.id, motion: "settle" })
     )
   },
 
@@ -146,16 +146,23 @@ export const SCENARIOS = {
     calculatorKeys: ["productComplexity", "portfolio"],
     options: [
       opt("simple-small", "Few materials, small catalogue", 3, {
-        calculator: { productComplexity: 6, portfolio: 6 }
+        calculator: { productComplexity: 6, portfolio: 6 },
+        setsSector: "furniture",
+        motion: "separate"
       }),
       opt("moderate", "Moderate BOM, mid-size catalogue", 2, {
-        calculator: { productComplexity: 12, portfolio: 12 }
+        calculator: { productComplexity: 12, portfolio: 12 },
+        motion: "separate"
       }),
       opt("complex-large", "Complex BOM, large catalogue", 1, {
-        calculator: { productComplexity: 18, portfolio: 18 }
+        calculator: { productComplexity: 18, portfolio: 18 },
+        setsSector: "machinery",
+        motion: "separate"
       }),
       opt("enterprise", "100+ components, 500+ products", 0, {
-        calculator: { productComplexity: 24, portfolio: 24 }
+        calculator: { productComplexity: 24, portfolio: 24 },
+        setsSector: "machinery",
+        motion: "separate"
       })
     ]
   },
@@ -173,20 +180,25 @@ export const SCENARIOS = {
     options: [
       opt("human", "Mostly in someone’s head or inboxes", 0, {
         calculator: { dataAvailability: 24 },
-        dependencies: ["human-knowledge"]
+        dependencies: ["human-knowledge"],
+        motion: "separate"
       }),
       opt("pdf-email", "Supplier PDFs and email chains", 1, {
         calculator: { dataAvailability: 18 },
-        dependencies: ["supplier-pdf"]
+        dependencies: ["supplier-pdf"],
+        motion: "connect"
       }),
       opt("spreadsheet", "Spreadsheets we maintain ourselves", 2, {
-        calculator: { dataAvailability: 12 }
+        calculator: { dataAvailability: 12 },
+        motion: "join"
       }),
       opt("partial-erp", "Some of it in ERP / PLM", 3, {
-        calculator: { dataAvailability: 12 }
+        calculator: { dataAvailability: 12 },
+        motion: "join"
       }),
       opt("full-erp", "All product data in ERP / PLM", 4, {
-        calculator: { dataAvailability: 6 }
+        calculator: { dataAvailability: 6 },
+        motion: "settle"
       })
     ]
   },
@@ -205,17 +217,26 @@ export const SCENARIOS = {
     ],
     spineTouch: ["product", "customer"],
     options: [
-      opt("immediate", "I can pull a verified answer immediately", 4),
+      opt("immediate", "I can pull a verified answer immediately", 4, {
+        motion: "settle"
+      }),
       opt("search", "I search across systems and people", 2, {
-        flags: ["needs-clarification"]
+        flags: ["needs-clarification"],
+        motion: "connect"
       }),
       opt("ask-supplier", "I ask a supplier or partner", 1, {
-        flags: ["supplier-dependency"]
+        flags: ["supplier-dependency"],
+        motion: "connect"
       }),
       opt("cannot", "I cannot provide a reliable answer", 0, {
-        flags: ["source-of-friction"]
+        flags: ["source-of-friction"],
+        motion: "separate"
       }),
-      opt("not-sure", "Not sure", 1, { flags: ["not-sure"], soft: true })
+      opt("not-sure", "Not sure", 1, {
+        flags: ["not-sure"],
+        soft: true,
+        motion: "settle"
+      })
     ]
   },
 
@@ -311,19 +332,23 @@ export const SCENARIOS = {
     options: [
       opt("verified-source", "Verified, attributable, current source", 4, {
         calculator: { certification: 6, hazardous: 8 },
-        flags: ["proof-claimed"]
+        flags: ["proof-claimed"],
+        motion: "settle"
       }),
       opt("internal-record", "Internal record we maintain", 3, {
         calculator: { certification: 10, hazardous: 14 },
-        flags: ["proof-claimed"]
+        flags: ["proof-claimed"],
+        motion: "join"
       }),
       opt("supplier-assertion", "Supplier assertion or certificate on file", 2, {
         calculator: { certification: 14, hazardous: 14 },
-        flags: ["needs-clarification", "proof-claimed"]
+        flags: ["needs-clarification", "proof-claimed"],
+        motion: "connect"
       }),
       opt("cannot-prove", "We cannot prove it reliably", 0, {
         calculator: { certification: 22, hazardous: 22 },
-        flags: ["source-of-friction"]
+        flags: ["source-of-friction"],
+        motion: "separate"
       })
     ]
   },
@@ -386,21 +411,25 @@ export const SCENARIOS = {
     options: [
       opt("tier3", "Named suppliers three or more tiers back", 4, {
         calculator: { tiers: 8 },
-        boundary: "supplier-of-supplier"
+        boundary: "supplier-of-supplier",
+        motion: "connect"
       }),
       opt("tier2", "Tier 1 and some tier 2", 3, {
         calculator: { tiers: 14 },
-        boundary: "tier-2"
+        boundary: "tier-2",
+        motion: "separate"
       }),
       opt("tier1", "Direct suppliers only (tier 1)", 1, {
         calculator: { tiers: 20 },
         boundary: "tier-1",
-        flags: ["supplier-dependency"]
+        flags: ["supplier-dependency"],
+        motion: "separate"
       }),
       opt("warehouse", "Visibility stops at our warehouse door", 0, {
         calculator: { tiers: 20 },
         boundary: "warehouse",
-        flags: ["source-of-friction", "supplier-dependency"]
+        flags: ["source-of-friction", "supplier-dependency"],
+        motion: "separate"
       })
     ]
   },
@@ -570,23 +599,28 @@ export const SCENARIOS = {
     options: [
       opt("supplier-gap", "Supplier and material evidence gaps", 1, {
         opportunity: "supplier-change-control",
-        priorityDim: "supplierDataQuality"
+        priorityDim: "supplierDataQuality",
+        motion: "separate"
       }),
       opt("retrieval-gap", "Finding and assembling answers fast enough", 1, {
         opportunity: "faster-buyer-proof",
-        priorityDim: "informationRetrieval"
+        priorityDim: "informationRetrieval",
+        motion: "join"
       }),
       opt("governance-gap", "Ownership and cross-team maintenance", 1, {
         opportunity: "governance",
-        priorityDim: "ownership"
+        priorityDim: "ownership",
+        motion: "connect"
       }),
       opt("lifecycle-gap", "Repair, identity, and end-of-life continuity", 1, {
         opportunity: "repair-lifecycle",
-        priorityDim: "lifecycleCapability"
+        priorityDim: "lifecycleCapability",
+        motion: "separate"
       }),
       opt("field-gaps", "Missing passport fields themselves", 2, {
         opportunity: "dpp-foundation",
-        priorityDim: "dppAvailability"
+        priorityDim: "dppAvailability",
+        motion: "settle"
       })
     ]
   },
