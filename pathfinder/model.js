@@ -10,7 +10,8 @@ import { clampStrength } from "./evidence.js";
 import {
   resolveSectorObject,
   deriveMotion,
-  motionHintForScenario
+  motionHintForScenario,
+  advanceObjectState
 } from "./sector-object.js";
 
 export const ASSESSMENT_VERSION = "pathfinder-0.1";
@@ -57,7 +58,8 @@ export function createState(opts = {}) {
     result: null,
     lastMotion: null,
     motions: [],
-    sectorObject: null
+    sectorObject: null,
+    objectState: "assembled"
   };
   state.sectorObject = resolveSectorObject(state);
   if (persona) {
@@ -91,6 +93,7 @@ export function createState(opts = {}) {
       optionId: persona
     };
     state.motions = [state.lastMotion];
+    state.objectState = advanceObjectState(state.objectState, "settle");
     state.stage = getScenario(state.currentNode).stage;
   }
   return state;
@@ -117,6 +120,7 @@ export function getSituation(state) {
     })),
     motionHint,
     sectorObject: state.sectorObject,
+    objectState: state.objectState,
     whyThisNext: state.whyThisNext,
     persona: state.persona,
     progressHint: null // intentionally no Question N of M
@@ -185,6 +189,7 @@ export function answer(state, optionId) {
   };
   next.lastMotion = motionEntry;
   next.motions = [...(state.motions || []), motionEntry];
+  next.objectState = advanceObjectState(state.objectState, verb);
 
   // Freeze sector object snapshot for the run
   next.sectorObject = resolveSectorObject(next);
@@ -371,6 +376,7 @@ export function toPayload(state, result = null, lead = {}) {
     spine: state.spine,
     motions: state.motions,
     lastMotion: state.lastMotion,
+    objectState: state.objectState,
     result: result || state.result,
     lead,
     calculatorHints: state.calculatorHints

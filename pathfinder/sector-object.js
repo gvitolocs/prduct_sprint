@@ -187,3 +187,33 @@ export function motionHintForScenario(scenario) {
   }
   return hint;
 }
+
+/**
+ * Advance locked object-state grammar from a motion verb.
+ * Sequence: assembled → exploded → boundary → reunited.
+ * @param {ObjectState|null|undefined} current
+ * @param {MotionVerb} verb
+ * @returns {ObjectState}
+ */
+export function advanceObjectState(current, verb) {
+  const cur =
+    current === "assembled" ||
+    current === "exploded" ||
+    current === "boundary" ||
+    current === "reunited"
+      ? current
+      : "assembled";
+
+  switch (verb) {
+    case "separate":
+      return cur === "assembled" ? "exploded" : cur === "reunited" ? "exploded" : cur;
+    case "connect":
+      return cur === "exploded" || cur === "assembled" ? "boundary" : cur;
+    case "join":
+      return cur === "boundary" || cur === "exploded" ? "reunited" : cur === "assembled" ? "assembled" : "reunited";
+    case "settle":
+    default:
+      return cur;
+  }
+}
+

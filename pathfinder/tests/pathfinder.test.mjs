@@ -447,3 +447,20 @@ describe("horizon DPP plate", () => {
     assert.match(MODEL_VERSION, /capability-model-1\.1/);
   });
 });
+
+describe("object state grammar", () => {
+  it("starts assembled and advances on separate", () => {
+    let state = createState();
+    assert.equal(state.objectState, "assembled");
+    state = answer(state, "leadership");
+    assert.equal(state.objectState, "assembled"); // settle
+    const sit = getSituation(state);
+    const separateOpt = (sit.options || []).find(
+      (o) => (sit.motionHint || {})[o.id] === "separate"
+    );
+    assert.ok(separateOpt, "expected a separate-motion option after persona");
+    state = answer(state, separateOpt.id);
+    assert.equal(state.objectState, "exploded");
+  });
+});
+

@@ -66,6 +66,7 @@ export {
   SECTOR_OBJECTS,
   OBJECT_STATES,
   MOTION_VERBS,
+  advanceObjectState,
   resolveSectorId,
   resolveSectorObject,
   deriveMotion,
