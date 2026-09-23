@@ -443,6 +443,35 @@ describe("horizon DPP plate", () => {
     assert.ok(landscape.sectorObject);
   });
 
+  it("hairline is claimed-not-proven and never counts as verified", () => {
+    // Synthesize a plate-shaped result: hairline rows must sit in exposedGaps only
+    const plate = buildDppPlate(createState({ persona: "leadership" }));
+    for (const row of plate.rows) {
+      if (row.status === "hairline") {
+        assert.ok(
+          plate.exposedGaps.some((g) => g.id === row.id),
+          `hairline ${row.id} must be an exposed gap`
+        );
+        assert.equal(
+          plate.readyFields.some((g) => g.id === row.id),
+          false,
+          `hairline ${row.id} must not be ready/verified`
+        );
+      }
+      if (row.status === "verified") {
+        assert.ok(plate.readyFields.some((g) => g.id === row.id));
+        assert.equal(plate.exposedGaps.some((g) => g.id === row.id), false);
+      }
+    }
+    // Invariant: readyFields only verified
+    for (const r of plate.readyFields) {
+      assert.equal(r.status, "verified");
+    }
+    for (const g of plate.exposedGaps) {
+      assert.ok(g.status === "hairline" || g.status === "absent", g.status);
+    }
+  });
+
   it("MODEL_VERSION bumped for capability-model-1.1 hooks", () => {
     assert.match(MODEL_VERSION, /capability-model-1\.1/);
   });

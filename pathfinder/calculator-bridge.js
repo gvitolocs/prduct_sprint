@@ -260,6 +260,8 @@ const DPP_ROW_META = Object.freeze({
 /**
  * Map capability evidence → plate row status.
  * verified | hairline | absent — never a numeric score badge.
+ * hairline = claimed-not-proven (UIMaster): never treat as verified in
+ * readyFields or landscape implications; it belongs with exposedGaps.
  * @param {object} state
  * @param {string} rowId
  * @returns {"verified"|"hairline"|"absent"}
