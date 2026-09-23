@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Prduct · Data Pathfinder</title>
+  <link rel="preload" href="https://prduct.com/wp-content/themes/product-2026/assets/fonts/montserrat-regular.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="https://prduct.com/wp-content/themes/product-2026/assets/fonts/montserrat-600.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="https://prduct.com/wp-content/themes/product-2026/assets/fonts/montserrat-700.woff2" as="font" type="font/woff2" crossorigin />
+  <style>
+    :root {
+      --paper: #f7f4ef;
+      --graphite: #2c2a26;
+      --ash: #8a8580;
+      --oak: #c4a882;
+      --moss: #5c6b4a;
+      --oxidized: #6e7a72;
+      --ink: #1e3a5f;
+      --line: #d9d3c9;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0; min-height: 100%;
+      background: var(--paper); color: var(--graphite);
+      font-family: Montserrat, system-ui, sans-serif;
+      font-weight: 400; line-height: 1.5;
+    }
+    body { padding: 2.5rem 1.5rem 4rem; }
+    .wrap { max-width: 40rem; margin: 0 auto; }
+    .brand {
+      font-size: .7rem; letter-spacing: .14em; text-transform: uppercase;
+      color: var(--ash); font-weight: 600; margin-bottom: 2.5rem;
+    }
+    h1 {
+      font-size: clamp(1.35rem, 3vw, 1.75rem); font-weight: 700;
+      letter-spacing: -0.02em; margin: 0 0 .75rem; max-width: 22ch;
+    }
+    .context { color: var(--ash); font-size: .95rem; margin: 0 0 2rem; max-width: 46ch; }
+    .spine {
+      list-style: none; padding: 0; margin: 0 0 2.75rem;
+      display: flex; flex-wrap: wrap; gap: .35rem .5rem; align-items: center;
+      border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+      padding: .85rem 0;
+    }
+    .spine li {
+      font-size: .65rem; letter-spacing: .08em; text-transform: uppercase;
+      color: var(--ash); font-weight: 600; display: flex; align-items: center; gap: .5rem;
+    }
+    .spine li::after {
+      content: ""; width: 1.25rem; height: 1px; background: var(--line);
+      display: inline-block;
+    }
+    .spine li:last-child::after { display: none; }
+    .spine li[data-state="latent"] { opacity: .35; }
+    .spine li[data-state="visited"],
+    .spine li[data-state="evidenced"] { color: var(--graphite); opacity: 1; }
+    .spine li[data-state="connected"],
+    .spine li[data-state="verified"] { color: var(--moss); }
+    .spine li[data-state="uncertain"],
+    .spine li[data-state="fractured"] { color: var(--oxidized); }
+    .dot {
+      width: .45rem; height: .45rem; border-radius: 50%;
+      border: 1px solid currentColor; background: transparent;
+    }
+    .spine li[data-state="evidenced"] .dot,
+    .spine li[data-state="connected"] .dot,
+    .spine li[data-state="verified"] .dot { background: currentColor; }
+    .stage {
+      font-size: .65rem; letter-spacing: .12em; text-transform: uppercase;
+      color: var(--oak); font-weight: 700; margin-bottom: .5rem;
+    }
+    .prompt { font-size: 1.25rem; font-weight: 600; margin: 0 0 .5rem; }
+    .detail { color: var(--ash); margin: 0 0 1.5rem; font-size: .95rem; }
+    .opts { display: grid; gap: .6rem; }
+    button.opt {
+      text-align: left; width: 100%; cursor: pointer;
+      background: transparent; border: 1px solid var(--line);
+      color: var(--graphite); border-radius: .15rem;
+      padding: .9rem 1rem; font: inherit; font-weight: 500;
+      transition: border-color .15s, background .15s;
+    }
+    button.opt:hover, button.opt:focus-visible {
+      border-color: var(--graphite); outline: none; background: #fff;
+    }
+    .landscape {
+      border-top: 1px solid var(--line); padding-top: 1.75rem; margin-top: 1rem;
+    }
+    .landscape h2 {
+      font-size: .7rem; letter-spacing: .12em; text-transform: uppercase;
+      color: var(--ink); margin: 0 0 1.25rem;
+    }
+    .block { margin-bottom: 1.35rem; }
+    .block h3 {
+      font-size: .75rem; letter-spacing: .08em; text-transform: uppercase;
+      color: var(--ash); margin: 0 0 .35rem; font-weight: 700;
+    }
+    .block p { margin: 0; font-size: .98rem; }
+    .note { margin-top: 2.5rem; font-size: .75rem; color: var(--ash); }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <p class="brand">Prduct · Data Pathfinder</p>
+    <ol class="spine" id="spine" aria-label="Product data spine"></ol>
+    <div id="view"></div>
+    <p class="note">Staging surface. Live assessment remains at the site root.</p>
+  </main>
+  <script type="module">
+    import {
+      createState,
+      getSituation,
+      answer,
+      isComplete,
+      finalize,
+      SPINE_NODES
+    } from "./pathfinder/index.js";
+
+    const LABELS = {
+      supplier: "Supplier",
+      material: "Material",
+      component: "Component",
+      product: "Product",
+      customer: "Customer",
+      nextLife: "Next Life"
+    };
+
+    let state = createState();
+    const spineEl = document.getElementById("spine");
+    const view = document.getElementById("view");
+
+    function renderSpine() {
+      spineEl.innerHTML = "";
+      for (const id of SPINE_NODES) {
+        const node = state.spine?.[id] || { state: "latent" };
+        const li = document.createElement("li");
+        li.dataset.state = node.state || "latent";
+        li.innerHTML = `<span class="dot" aria-hidden="true"></span><span>${LABELS[id] || id}</span>`;
+        spineEl.appendChild(li);
+      }
+    }
+
+    function renderLandscape(result) {
+      const r = result || {};
+      view.innerHTML = `
+        <div class="landscape">
+          <h2>Your product data landscape</h2>
+          <div class="block"><h3>Foundation</h3><p>${escapeHtml(r.foundation || r.strongestFoundation || "—")}</p></div>
+          <div class="block"><h3>Fracture</h3><p>${escapeHtml(r.fracture || r.primaryFracture || "—")}</p></div>
+          <div class="block"><h3>Next move</h3><p>${escapeHtml(r.nextMove || r.capabilityNext || "—")}</p></div>
+          <div class="block"><h3>Opportunity</h3><p>${escapeHtml(r.opportunity || r.commercialOpportunity || "—")}</p></div>
+        </div>`;
+    }
+
+    function escapeHtml(s) {
+      return String(s)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function pickLandscape(result) {
+      if (!result) return {};
+      if (typeof result === "string") return { foundation: result };
+      const foundation = result.foundation?.explanation || result.foundation?.summary || result.foundation;
+      const fracture = result.fragmentation?.explanation || result.fracture?.explanation || result.fracture;
+      const nextMove = result.nextCapability
+        ? [result.nextCapability.why, result.nextCapability.firstMove].filter(Boolean).join(" ")
+        : (result.nextMove?.summary || result.nextMove || "");
+      const opp = Array.isArray(result.opportunities) && result.opportunities[0]
+        ? (result.opportunities[0].label || result.opportunities[0].id)
+        : (result.opportunity?.summary || result.opportunity || "");
+      return { foundation, fracture, nextMove, opportunity: opp };
+    }
+
+    function render() {
+      renderSpine();
+      if (isComplete(state)) {
+        if (!state.result) state = finalize(state);
+        renderLandscape(pickLandscape(state.result));
+        return;
+      }
+      const sit = getSituation(state);
+      const opts = (sit.options || [])
+        .map(
+          (o) =>
+            `<button type="button" class="opt" data-id="${escapeHtml(o.id)}">${escapeHtml(o.label)}</button>`
+        )
+        .join("");
+      view.innerHTML = `
+        <p class="stage">${escapeHtml(sit.stage || "")}</p>
+        <h1 class="prompt">${escapeHtml(sit.prompt || "")}</h1>
+        <p class="detail">${escapeHtml(sit.detail || "")}</p>
+        <div class="opts" role="group" aria-label="Choose">${opts}</div>`;
+      view.querySelectorAll("button.opt").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          state = answer(state, btn.dataset.id);
+          render();
+        });
+      });
+    }
+
+    render();
+  </script>
+</body>
+</html>
