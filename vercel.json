@@ -6,6 +6,8 @@
     }
   ],
   "rewrites": [
+    { "source": "/pathfinder", "destination": "/pathfinder.html" },
+    { "source": "/pathfinder/", "destination": "/pathfinder.html" },
     { "source": "/api/submit", "destination": "/api/inbox" },
     { "source": "/api/submissions", "destination": "/api/inbox" }
   ]
