@@ -179,6 +179,12 @@ export function answer(state, optionId) {
       ...option.calculator
     };
   }
+  if (option.calculatorHints) {
+    next.calculatorHints = {
+      ...next.calculatorHints,
+      ...option.calculatorHints
+    };
+  }
 
   // One motion verb per answer (join | separate | connect | settle)
   const verb = deriveMotion(scenario, option);

@@ -377,6 +377,43 @@ describe("sector object hooks", () => {
     }
     assert.fail("never reached reality.product-context");
   });
+
+  it("keeps furniture carbon unverified without carbon evidence", () => {
+    const state = createState({ persona: "sales", sector: "furniture" });
+    state.capabilities.supplierDataQuality = {
+      ...state.capabilities.supplierDataQuality,
+      score: 90,
+      confidence: "high",
+      evidence: [{ scenarioId: "friction.supplier", value: "Verified supplier", strength: 4 }]
+    };
+    state.capabilities.traceabilityDepth = {
+      ...state.capabilities.traceabilityDepth,
+      score: 90,
+      confidence: "high",
+      evidence: [{ scenarioId: "depth.trace-back", value: "Tier 3", strength: 4 }]
+    };
+    const carbon = buildDppPlate(state).rows.find((row) => row.id === "carbon");
+    assert.notEqual(carbon.status, "verified");
+  });
+
+  it("made-to-order answer sets furniture and surfaces fragmentation caveat", () => {
+    let state = createState({ persona: "sales" });
+    for (let i = 0; i < 4 && !isComplete(state); i++) {
+      const sit = getSituation(state);
+      if (sit.id === "reality.product-context") {
+        state = answer(state, "made-to-order");
+        assert.equal(state.sector, "furniture");
+        assert.equal(state.calculatorHints.madeToOrder, true);
+        assert.ok(state.flags.includes("made-to-order"));
+        const landscape = buildLandscape(state);
+        assert.match(landscape.fragmentation.explanation, /model, batch, and item identity/i);
+        assert.match(landscape.fragmentation.explanation, /not a missing-field bug/i);
+        return;
+      }
+      state = answer(state, sit.options[0].id);
+    }
+    assert.fail("never reached reality.product-context");
+  });
 });
 
 describe("motion verb hooks", () => {

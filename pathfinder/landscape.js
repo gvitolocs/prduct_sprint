@@ -50,6 +50,10 @@ export function buildLandscape(state) {
   const answers = toCalculatorAnswers(state);
   const timeline = timelineBandFromHints(state.calculatorHints, answers);
   const maturityScore = maturityFromCapabilities(capabilities);
+  const madeToOrderCaveat =
+    state.calculatorHints?.madeToOrder || state.flags?.includes("made-to-order")
+      ? "Model, batch, and item identity do not fit cleanly here; that natural hairline is a fragmentation signal, not a missing-field bug."
+      : null;
 
   const foundationEvidence = foundationDims.flatMap(
     (id) => capabilities[id]?.evidence || []
@@ -64,7 +68,8 @@ export function buildLandscape(state) {
     fragmentation: {
       dimensions: gapDims,
       boundary,
-      explanation: fractureExplanation(gapDims, boundary),
+      explanation: fractureExplanation(gapDims, boundary, madeToOrderCaveat),
+      caveat: madeToOrderCaveat,
       dependencies: collectDependencies(capabilities, gapDims)
     },
     nextCapability,
@@ -92,10 +97,10 @@ function foundationExplanation(dims) {
   return `Your strongest foundation sits in ${labels.join(" and ")}. These are the areas where evidence is most connected today.`;
 }
 
-function fractureExplanation(dims, boundary) {
+function fractureExplanation(dims, boundary, caveat = null) {
   const labels = dims.map((id) => DIMENSION_META[id]?.label || id);
   const edge = boundary ? ` The first clear break is at ${boundary}.` : "";
-  return `Information tends to get lost around ${labels.join(" and ")}.${edge}`;
+  return `Information tends to get lost around ${labels.join(" and ")}.${edge}${caveat ? ` ${caveat}` : ""}`;
 }
 
 function inferBoundary(state, gapDims, signals) {

@@ -150,6 +150,13 @@ export const SCENARIOS = {
         setsSector: "furniture",
         motion: "separate"
       }),
+      opt("made-to-order", "Made-to-order / workshop pieces", 3, {
+        calculator: { productComplexity: 6, portfolio: 6 },
+        calculatorHints: { madeToOrder: true },
+        setsSector: "furniture",
+        flags: ["made-to-order"],
+        motion: "separate"
+      }),
       opt("moderate", "Moderate BOM, mid-size catalogue", 2, {
         calculator: { productComplexity: 12, portfolio: 12 },
         motion: "separate"

@@ -1,3 +1,5 @@
+import { resolveSectorId } from "./sector-object.js";
+
 /**
  * Map Pathfinder evidence → calculator-compatible inputs for timeline comparison.
  * Preserves diagnostic signals from the linear quiz calculator without quiz UX.
@@ -279,15 +281,42 @@ function rowStatusFromEvidence(state, rowId) {
   const evidenced = related.filter((c) => (c.evidence?.length || 0) > 0);
   if (!evidenced.length && !ready) return "absent";
 
+  // Furniture can have strong supplier/traceability signals without a
+  // product carbon claim. Keep that distinction visible until carbon is
+  // explicitly mentioned in the scenario or evidence.
+  const furnitureCarbonWithoutExplicitEvidence =
+    rowId === "carbon" &&
+    resolveSectorId(state) === "furniture" &&
+    !hasExplicitCarbonEvidence(state);
+  if (furnitureCarbonWithoutExplicitEvidence && !evidenced.length) {
+    return "absent";
+  }
+
   const avg =
     evidenced.length === 0
       ? 0
       : evidenced.reduce((a, c) => a + (c.score || 0), 0) / evidenced.length;
   const highConf = evidenced.some((c) => c.confidence === "high");
 
-  if (ready && (avg >= 55 || highConf)) return "verified";
+  if (ready && (avg >= 55 || highConf)) {
+    return furnitureCarbonWithoutExplicitEvidence ? "hairline" : "verified";
+  }
   if (ready || avg >= 35 || evidenced.length > 0) return "hairline";
   return "absent";
+}
+
+function hasExplicitCarbonEvidence(state) {
+  const carbonPattern = /carbon|footprint|co2|ghg/i;
+  const historyText = (state.history || []).flatMap((entry) => [
+    entry.scenarioId,
+    entry.value
+  ]);
+  const capabilityText = Object.values(state.capabilities || {}).flatMap((capability) =>
+    (capability.evidence || []).flatMap((entry) => [entry.scenarioId, entry.value])
+  );
+  return [...historyText, ...capabilityText].some(
+    (value) => typeof value === "string" && carbonPattern.test(value)
+  );
 }
 
 /**
