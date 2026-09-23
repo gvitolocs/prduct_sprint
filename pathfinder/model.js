@@ -281,6 +281,22 @@ function recordSkips(state) {
 }
 
 /**
+ * Safe back: drop the last history entry and rebuild state by replaying
+ * remaining answers. Does not mutate evidence in place.
+ * @param {object} state
+ */
+export function undo(state) {
+  if (!state?.history?.length) return state;
+  const remaining = state.history.slice(0, -1);
+  let next = createState();
+  for (const entry of remaining) {
+    if (isComplete(next)) break;
+    next = answer(next, entry.optionId);
+  }
+  return next;
+}
+
+/**
  * Versioned payload for persistence / submission.
  * @param {object} state
  * @param {object|null} result

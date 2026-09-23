@@ -33,6 +33,7 @@ import {
   createState,
   getSituation,
   answer,
+  undo,
   isComplete,
   getSignals
 } from "../model.js";
@@ -238,6 +239,34 @@ describe("router and model walk", () => {
       state = answer(state, sit.options[0].id);
     }
     assert.fail("never reached friction.retrieval");
+  });
+  it("undo pops history and rebuilds evidence without corruption", () => {
+    let state = createState();
+    const first = getSituation(state);
+    state = answer(state, first.options[0].id);
+    assert.equal(state.history.length, 1);
+    const mid = getSituation(state);
+    state = answer(state, mid.options[0].id);
+    assert.equal(state.history.length, 2);
+    const afterTwo = {
+      historyLen: state.history.length,
+      node: state.currentNode,
+      irEvidence: state.capabilities.informationRetrieval.evidence.length
+    };
+    state = undo(state);
+    assert.equal(state.history.length, 1);
+    assert.equal(state.history[0].optionId, first.options[0].id);
+    assert.equal(state.result, null);
+    // Replay one more step should match prior second-step shape for node after first answer
+    const sit = getSituation(state);
+    assert.equal(sit.id, mid.id);
+    state = undo(state);
+    assert.equal(state.history.length, 0);
+    assert.equal(getSituation(state).id, "perspective.select");
+    // empty undo is no-op
+    const frozen = undo(state);
+    assert.equal(frozen.history.length, 0);
+    assert.equal(afterTwo.historyLen, 2);
   });
 });
 

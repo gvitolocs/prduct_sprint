@@ -44,6 +44,7 @@ export {
   createState,
   getSituation,
   answer,
+  undo,
   getSignals,
   isComplete,
   toPayload
