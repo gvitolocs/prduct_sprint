@@ -290,6 +290,8 @@
 
     function currentSpineIds(st) {
       const ids = new Set();
+      // First paint / persona select: keep every node latent until an answer.
+      if (!st.history?.length) return ids;
       if (st.currentNode && st.currentNode !== "reveal.landscape") {
         try {
           const sc = getScenario(st.currentNode);
@@ -302,7 +304,6 @@
           if (s && s !== "latent") ids.add(id);
         }
       }
-      if (!ids.size) ids.add("product");
       return ids;
     }
 
