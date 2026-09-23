@@ -197,7 +197,19 @@
       transition-duration: .5s;
     }
     @media (prefers-reduced-motion: reduce) {
-      .sector-object .layer { transition: none; }
+      /* Quiet presence stays; verbs only shift opacity/border — no layer travel */
+      .sector-object .layer {
+        transition: opacity .2s ease, stroke .2s ease, fill .2s ease, stroke-width .2s ease;
+        transform: none !important;
+      }
+      .sector-object[data-state="exploded"] .layer,
+      .sector-object[data-state="boundary"] .layer,
+      .sector-object[data-state="reunited"] .layer {
+        transform: none !important;
+      }
+      .sector-object[data-state="exploded"] .layer { opacity: .55; stroke: var(--graphite); }
+      .sector-object[data-state="boundary"] .layer { opacity: .7; stroke: var(--oxidized); stroke-dasharray: 3 3; }
+      .sector-object[data-state="reunited"] .layer { opacity: .9; stroke: var(--moss); }
     }
     .sector-object .so-caption {
       margin: .55rem 0 0;
