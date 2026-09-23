@@ -5,6 +5,7 @@
 
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 
 import {
   strengthToScore,
@@ -555,5 +556,55 @@ describe("reveal spine", () => {
     assert.notEqual(nl, "latent");
     assert.ok(nl === "evidenced" || nl === "connected" || nl === "verified" || nl === "visited", nl);
   });
+});
+
+describe("pathfinder shell contracts", () => {
+  const shells = ["pathfinder.html", "pathfinder/index.html"];
+
+  for (const rel of shells) {
+    it(`${rel}: short labels beat span rule at ≤520`, () => {
+      const html = readFileSync(new URL(`../../${rel}`, import.meta.url), "utf8");
+      assert.match(
+        html,
+        /@media \(max-width:\s*520px\)[\s\S]*?\.spine \.node > span\.label-full \{\s*display:\s*none !important;/
+      );
+      assert.match(
+        html,
+        /@media \(max-width:\s*520px\)[\s\S]*?\.spine \.node > span\.label-short \{\s*display:\s*block !important;/
+      );
+      assert.match(html, /SHORT_LABELS\s*=\s*\{[\s\S]*?supplier:\s*"Sup"/);
+      assert.match(html, /component:\s*"Comp"/);
+      assert.match(html, /customer:\s*"Cust"/);
+      assert.match(html, /nextLife:\s*"Next"/);
+      assert.match(html, /li\.setAttribute\("aria-label",\s*full\)/);
+      assert.match(html, /class="label-short"/);
+    });
+
+    it(`${rel}: landscape finalize runs before spine paint`, () => {
+      const html = readFileSync(new URL(`../../${rel}`, import.meta.url), "utf8");
+      const m = html.match(/function render\(\)\s*\{([\s\S]*?)\n    \}\n\n    render\(\);/);
+      assert.ok(m, "render() body not found");
+      const body = m[1];
+      const complete = body.match(
+        /if \(isComplete\(state\)\) \{([\s\S]*?)return;\s*\}/
+      );
+      assert.ok(complete, "isComplete branch missing");
+      const branch = complete[1];
+      const fin = branch.indexOf("finalize(state)");
+      const spine = branch.indexOf("renderSpine()");
+      assert.ok(fin >= 0, "finalize missing in complete branch");
+      assert.ok(spine >= 0, "renderSpine missing in complete branch");
+      assert.ok(
+        fin < spine,
+        "finalize must run before renderSpine so NEXT LIFE promote paints"
+      );
+      const beforeComplete = body.slice(0, body.indexOf("if (isComplete(state))"));
+      assert.equal(
+        /renderSpine\(\)/.test(beforeComplete),
+        false,
+        "renderSpine must not run before the isComplete gate"
+      );
+    });
+  }
 });
 
