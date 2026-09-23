@@ -206,12 +206,17 @@ export function advanceObjectState(current, verb) {
 
   switch (verb) {
     case "separate":
-      return cur === "assembled" ? "exploded" : cur === "reunited" ? "exploded" : cur;
+      // assembled → exploded; reunited can open again
+      return cur === "assembled" || cur === "reunited" ? "exploded" : cur;
     case "connect":
+      // assembled/exploded → boundary
       return cur === "exploded" || cur === "assembled" ? "boundary" : cur;
     case "join":
-      return cur === "boundary" || cur === "exploded" ? "reunited" : cur === "assembled" ? "assembled" : "reunited";
+      // exploded/boundary → reunited; assembled stays quiet
+      return cur === "boundary" || cur === "exploded" ? "reunited" : cur;
     case "settle":
+      // UIMaster: reunited on settle/join after open states; first-paint settle stays assembled
+      return cur === "boundary" || cur === "exploded" ? "reunited" : cur;
     default:
       return cur;
   }
