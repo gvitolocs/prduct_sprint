@@ -67,11 +67,12 @@
       overflow-wrap: normal; word-break: keep-all; hyphens: none;
       white-space: normal;
     }
-    .spine .node .label-full { display: block; }
-    .spine .node .label-short { display: none; }
+    .spine .node > span.label-full { display: block; }
+    .spine .node > span.label-short { display: none; }
     @media (max-width: 520px) {
-      .spine .node .label-full { display: none; }
-      .spine .node .label-short { display: block; letter-spacing: .04em; }
+      /* Must beat `.spine .node > span:not(.dot) { display:block }` */
+      .spine .node > span.label-full { display: none !important; }
+      .spine .node > span.label-short { display: block !important; letter-spacing: .04em; }
     }
     .spine .node[data-current="true"] { color: var(--graphite); }
     .spine .node[data-state="latent"] { opacity: .55; color: var(--ash); }
@@ -607,13 +608,15 @@
     }
 
     function render() {
-      renderSpine();
-      renderSectorObject();
       if (isComplete(state)) {
         if (!state.result) state = finalize(state);
+        renderSpine();
+        renderSectorObject();
         renderLandscape(pickLandscape(state.result));
         return;
       }
+      renderSpine();
+      renderSectorObject();
       const sit = getSituation(state);
       const opts = (sit.options || [])
         .map(
