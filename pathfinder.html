@@ -449,7 +449,10 @@
         li.dataset.state = node.state || "latent";
         li.dataset.node = id;
         if (current.has(id)) li.dataset.current = "true";
-        li.innerHTML = `<span class="dot" aria-hidden="true"></span><span class="label-full">${LABELS[id] || id}</span><span class="label-short" aria-hidden="true">${SHORT_LABELS[id] || LABELS[id] || id}</span>`;
+        const full = LABELS[id] || id;
+        li.setAttribute("aria-label", full);
+        li.title = full;
+        li.innerHTML = `<span class="dot" aria-hidden="true"></span><span class="label-full">${full}</span><span class="label-short" aria-hidden="true">${SHORT_LABELS[id] || full}</span>`;
         spineEl.appendChild(li);
 
         if (i < SPINE_NODES.length - 1) {
