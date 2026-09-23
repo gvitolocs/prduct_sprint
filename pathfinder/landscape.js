@@ -309,12 +309,43 @@ function collectDependencies(capabilities, gapDims) {
  * Attach landscape onto state (immutable).
  * @param {object} state
  */
+/**
+ * When landscape mounts after Horizon, NEXT LIFE must not stay latent/hollow.
+ * Horizon spineTouch can leave strength-1 as uncertain (empty seat); promote
+ * to evidenced so the seat is clearly non-latent at reveal.
+ * @param {object} state
+ */
+function ensureRevealSpine(state) {
+  const touchedHorizon = (state.history || []).some(
+    (h) => typeof h?.scenarioId === "string" && h.scenarioId.startsWith("horizon.")
+  );
+  if (!touchedHorizon || !state.spine) return state.spine;
+  const spine = {};
+  for (const [id, node] of Object.entries(state.spine)) {
+    spine[id] = {
+      state: node.state,
+      evidence: [...(node.evidence || [])]
+    };
+  }
+  const nl = spine.nextLife || { state: "latent", evidence: [] };
+  if (nl.state === "latent" || nl.state === "uncertain") {
+    spine.nextLife = {
+      state: "evidenced",
+      evidence: nl.evidence.includes("reveal.landscape")
+        ? nl.evidence
+        : [...nl.evidence, "reveal.landscape"]
+    };
+  }
+  return spine;
+}
+
 export function finalize(state) {
   const result = buildLandscape(state);
   return {
     ...state,
     stage: "reveal",
     currentNode: "reveal.landscape",
+    spine: ensureRevealSpine(state),
     result
   };
 }

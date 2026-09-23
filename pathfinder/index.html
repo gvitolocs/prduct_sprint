@@ -64,11 +64,17 @@
     }
     .spine .node > span:not(.dot) {
       display: block; width: 100%;
-      overflow-wrap: anywhere; word-break: normal; hyphens: manual;
+      overflow-wrap: normal; word-break: keep-all; hyphens: none;
       white-space: normal;
     }
+    .spine .node .label-full { display: block; }
+    .spine .node .label-short { display: none; }
+    @media (max-width: 520px) {
+      .spine .node .label-full { display: none; }
+      .spine .node .label-short { display: block; letter-spacing: .04em; }
+    }
     .spine .node[data-current="true"] { color: var(--graphite); }
-    .spine .node[data-state="latent"] { opacity: .35; }
+    .spine .node[data-state="latent"] { opacity: .55; color: var(--ash); }
     .spine .node[data-state="visited"],
     .spine .node[data-state="evidenced"] { color: var(--graphite); opacity: 1; }
     .spine .node[data-state="connected"],
@@ -79,6 +85,8 @@
       width: .45rem; height: .45rem; border-radius: 50%;
       border: 1px solid currentColor; background: transparent; flex: 0 0 auto;
     }
+    .spine .node[data-state="visited"] .dot,
+    .spine .node[data-state="uncertain"] .dot,
     .spine .node[data-state="evidenced"] .dot,
     .spine .node[data-state="connected"] .dot,
     .spine .node[data-state="verified"] .dot { background: currentColor; }
@@ -88,7 +96,7 @@
       margin: .55rem 0 0; align-self: flex-start;
       border: 0; border-top: 1px solid var(--line);
     }
-    .spine .edge[data-edge="latent"] { opacity: .35; border-top-style: solid; }
+    .spine .edge[data-edge="latent"] { opacity: .55; border-top-style: solid; }
     .spine .edge[data-edge="hairline"] { opacity: .7; border-top-style: solid; }
     .spine .edge[data-edge="solid"] {
       opacity: 1; border-top-color: var(--moss); border-top-style: solid;
@@ -362,6 +370,14 @@
       customer: "Customer",
       nextLife: "Next Life"
     };
+    const SHORT_LABELS = {
+      supplier: "Sup",
+      material: "Mat",
+      component: "Comp",
+      product: "Prod",
+      customer: "Cust",
+      nextLife: "Next"
+    };
 
     let state = createState();
     const spineEl = document.getElementById("spine");
@@ -433,7 +449,7 @@
         li.dataset.state = node.state || "latent";
         li.dataset.node = id;
         if (current.has(id)) li.dataset.current = "true";
-        li.innerHTML = `<span class="dot" aria-hidden="true"></span><span>${LABELS[id] || id}</span>`;
+        li.innerHTML = `<span class="dot" aria-hidden="true"></span><span class="label-full">${LABELS[id] || id}</span><span class="label-short" aria-hidden="true">${SHORT_LABELS[id] || LABELS[id] || id}</span>`;
         spineEl.appendChild(li);
 
         if (i < SPINE_NODES.length - 1) {

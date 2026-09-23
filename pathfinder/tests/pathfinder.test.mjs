@@ -530,3 +530,30 @@ describe("object state grammar", () => {
   });
 });
 
+describe("reveal spine", () => {
+  it("NEXT LIFE non-latent after Horizon finalize", () => {
+    let state = createState({ persona: "leadership" });
+    // Drive to horizon with first available options, then answer horizon
+    let guard = 0;
+    while (state.currentNode !== "horizon.dpp" && !isComplete(state) && guard++ < 30) {
+      const sit = getSituation(state);
+      const opt = sit.options?.[0];
+      assert.ok(opt, `stuck at ${state.currentNode}`);
+      state = answer(state, opt.id);
+    }
+    assert.equal(state.currentNode, "horizon.dpp");
+    state = answer(state, "supplier-gap");
+    if (!state.result) state = finalize(state);
+    assert.equal(state.currentNode, "reveal.landscape");
+    const nl = state.spine.nextLife.state;
+    assert.notEqual(nl, "latent");
+    assert.ok(
+      ["visited", "evidenced", "connected", "verified", "uncertain", "fractured"].includes(nl),
+      nl
+    );
+    // Punch: not hollow-latent — at least evidenced after ensureRevealSpine
+    assert.notEqual(nl, "latent");
+    assert.ok(nl === "evidenced" || nl === "connected" || nl === "verified" || nl === "visited", nl);
+  });
+});
+
