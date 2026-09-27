@@ -23,7 +23,9 @@
 @font-face { font-family: Montserrat; font-style: italic; font-weight: 600; font-display: swap; src: url(fonts/montserrat-latin-var.woff2) format("woff2"); }
 @font-face { font-family: Montserrat; font-style: italic; font-weight: 700; font-display: swap; src: url(fonts/montserrat-latin-var.woff2) format("woff2"); }
 @font-face { font-family: Montserrat; font-style: italic; font-weight: 800; font-display: swap; src: url(fonts/montserrat-latin-var.woff2) format("woff2"); }
-.font-montserrat, body { font-family: "Prduct Montserrat", Montserrat, system-ui, sans-serif; }
+/* No "Montserrat" fallback: glyphs outside the Latin subset (arrows) would fall through to the
+   theme's cross-origin face and log a CORS error; they go straight to the system font instead. */
+.font-montserrat, body { font-family: "Prduct Montserrat", system-ui, sans-serif; }
 #quiz {
   scroll-margin-top: 12px;
   min-height: 100vh;
