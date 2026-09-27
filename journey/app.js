@@ -100,6 +100,13 @@ function anchorOf(i) {
   return branchMeta().anchors[stageId(i)];
 }
 
+/** Framing for stop i. Desktop keeps one branch-wide focus so stills and video never shift between stops;
+ * compact (portrait) screens follow each stop's own subject. */
+function focusOf(i) {
+  if (compact()) return anchorOf(i)?.focus;
+  return branchMeta().desktopFocus || anchorOf(0)?.focus;
+}
+
 function setPanelSide(i) {
   root.dataset.panel = anchorOf(i)?.panel || "right";
 }
@@ -169,7 +176,7 @@ async function goToStage(i, { fade = true } = {}) {
   overlays.hide();
   const url = await anchorUrl(anchorOf(i));
   setPanelSide(i);
-  stage.setFocus(anchorOf(i)?.focus);
+  stage.setFocus(focusOf(i));
   await Promise.all([stage.showStill(url, { fade }), rail.animateTo(i)]);
   stageIdx = i;
   rail.update(stageIdx, reached, evidence());
@@ -326,11 +333,11 @@ async function selectBranch(branch, card) {
     if (first) stage.preload(transitionUrl(first)); // the chosen world's first move only
     const s0 = await anchorUrl(b.anchors.company);
     anchorUrl(b.anchors.product).then(warmImage);
-    stage.setFocus(b.anchors.company.focus);
+    stage.setFocus(focusOf(0));
     setPanelSide(0);
     rail.setPosition(0);
     rail.update(0, 0, {});
-    await growIntoViewport(card, s0, b.anchors.company.focus);
+    await growIntoViewport(card, s0, focusOf(0));
     await travelTo(1);
   } finally {
     release();
@@ -451,7 +458,7 @@ async function resume(saved) {
     root.querySelector(".jr-resume")?.setAttribute("hidden", "");
     const url = await anchorUrl(anchorOf(stageIdx));
     setPanelSide(stageIdx);
-    stage.setFocus(anchorOf(stageIdx)?.focus);
+    stage.setFocus(focusOf(stageIdx));
     await stage.showStill(url);
     root.dataset.mode = "travel";
     rail.setPosition(stageIdx);

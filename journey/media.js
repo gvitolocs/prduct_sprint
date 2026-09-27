@@ -25,30 +25,43 @@ export function detectAvif() {
   return avif;
 }
 
-/** Target still width for the current viewport (never ship 1920 to a phone). */
-export function stillWidth() {
-  const px = Math.max(window.innerWidth, window.innerHeight * (16 / 9)) * Math.min(window.devicePixelRatio || 1, 2);
-  return px > 1100 ? 1920 : 960;
+/** Device pixels the stage covers (it is always 16:9 cover-cropped). */
+function stagePixels() {
+  return Math.max(window.innerWidth, window.innerHeight * (16 / 9)) * Math.min(window.devicePixelRatio || 1, 2);
 }
 
-/** Video variant: AV1 where the browser decodes it, H.264 otherwise; 540p on small or data-saving screens. */
+/** Target still width for the current viewport (never ship 1920 to a phone, 2560 to large or dense screens). */
+export function stillWidth() {
+  const px = stagePixels();
+  return px > 2100 ? 2560 : px > 1100 ? 1920 : 960;
+}
+
+/** Video variant: AV1 where the browser decodes it, H.264 otherwise; 540p on small or data-saving screens,
+ * 1440p where the stage covers more than ~2100 device pixels (retina laptops, 1440p/4K monitors). */
 export function videoVariant() {
   const probe = document.createElement("video");
   const av1 = probe.canPlayType('video/mp4; codecs="av01.0.08M.08"') === "probably";
   const saveData = navigator.connection && navigator.connection.saveData;
   const small = Math.min(window.innerWidth, 1400) * Math.min(window.devicePixelRatio || 1, 2) < 1100;
-  return { codec: av1 ? "av1" : "h264", size: saveData || small ? "540" : "1080" };
+  const size = saveData || small ? "540" : stagePixels() > 2100 ? "1440" : "1080";
+  return { codec: av1 ? "av1" : "h264", size };
+}
+
+/** The best available size at or below the wanted one (lists are largest first), else the smallest. */
+function pick(list, want) {
+  const sorted = [...list].sort((a, b) => Number(b) - Number(a));
+  return sorted.find((v) => Number(v) <= Number(want)) ?? sorted[sorted.length - 1];
 }
 
 export async function anchorUrl(anchor, width = stillWidth()) {
   if (!anchor) return null; // not generated yet: callers keep the current frame
   const ext = (await detectAvif()) ? "avif" : "webp";
-  const w = anchor.widths.includes(width) ? width : anchor.widths[anchor.widths.length - 1];
+  const w = pick(anchor.widths, width);
   return new URL(`${anchor.base}-${w}.${ext}${anchor.rev ? `?v=${anchor.rev}` : ""}`, BASE).href;
 }
 
 export function transitionUrl(transition, variant = videoVariant()) {
-  const size = transition.sizes.includes(variant.size) ? variant.size : transition.sizes[0];
+  const size = pick(transition.sizes, variant.size);
   const codec = transition.codecs.includes(variant.codec) ? variant.codec : "h264";
   return new URL(`${transition.base}-${size}-${codec}.mp4${transition.rev ? `?v=${transition.rev}` : ""}`, BASE).href;
 }

@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-27T11:24:54",
+  "generated": "2026-09-27T23:25:50",
   "hardware": "AMD Radeon RX 7900 XTX (24 GB, ROCm 7.2) via ComfyUI 0.37.0, guarded by tools/comfy_up.sh (cgroup memory cap, host-RAM watchdog, GPU yield to the host LLM)",
   "models": {
     "z_image_turbo_bf16": {
@@ -344,46 +344,583 @@
       }
     }
   },
-  "anchors": {
-    "furniture/company": {
-      "method": "Qwen-Image-Edit-2511 with reference images",
-      "picked_candidate": "work/anchors/furniture/company_q31.png",
-      "generation": {
-        "kind": "anchor",
-        "key": "furniture/company",
-        "model": "qwen_image_edit_2511_fp8mixed+lightning8",
-        "seed": 31,
+  "furniture_v4": {
+    "storyboard": "Furniture journey v4: storyboard, prompts and asset plan (single source of truth).\n\nStoryline (user brief, 2026-09-27): chair in the lounge -> zoom into the oak -> the chair comes\napart -> one piece, the oak leg frame, is picked -> it travels back to the factory where these leg\nframes are made -> zoom into the oak, the QR is laser-etched -> pull out onto the chair in the lounge,\na phone scans the QR -> the chair floats to the repair workshop.\n\nThe ten question stops stay (the assessment scores all ten); the story maps onto them:\n\n 1 company   Lounge, wide: the chair by the tall windows (selector card, no question)\n 2 product   The chair, closer, left of frame\n 3 material  Oak grain macro: the outer face of the side rail of the chair's near leg frame\n 4 component The chair taken apart: its real parts float in the lounge (exploded view)\n 5 supplier  The oak leg frame (front leg, rear leg, armrest, side rail) floats forward, alone\n 6 logistics The leg frame arrives in the component factory's dispatch hall (pallets of frames)\n 7 factory   It lands on the bed of the laser engraver in the same hall\n 8 data      Oak grain macro again: the same rail, the prduct.com QR freshly laser-etched\n 9 passport  The chair in the lounge: a hand holds a phone to the QR on the side rail\n10 nextLife  The chair has floated to the repair workshop bench\n\nPrinciples:\n- Same object, same pixels: the chair, its parts and the leg frame are cut out once and re-used in\n  every still they appear in (the leg frame is planar, so a homography places it in any pose).\n- Real motion: every move is a 2.5D layer animation (tools/rig.py) of those objects and plates -\n  parts float apart, the frame glides, turns, travels, lands; the chair lifts and flies - which\n  LTX-2.5 re-renders at denoise 0.975 into generated footage, guided by BOTH end stills.\n- The same texture both ways: stops 3 and 8 are one hi-res oak macro; the push in and the pull out\n  meet on exactly that image.\n- Definition: stills and clips pass through SeedVR2 7B at 2560x1440.\n",
+    "assets": [
+      {
+        "kind": "v4_outpaint",
+        "prompt": "The right-hand part of a bright, calm Scandinavian living room, photographed straight on: a tall floor-to-ceiling window with a thin matte black steel frame, soft blurred green and pale yellow autumn trees outside under an overcast sky, a smooth white plaster wall, pale oak floorboards running toward the camera, the plain edge of a pale grey wool rug at the lower left. Soft even daylight, calm and minimal, nothing else in the room. Interior photograph, 50mm lens. Premium Nordic product cinematography, photorealistic, ARRI Alexa 35 look, subtle Cooke lens character, soft northern European daylight, natural contrast, realistic PBR materials, real optical depth of field, restrained luxury, no text, no letters, no logos, no brand marks, no watermark.",
+        "seed": 13,
+        "model": "z_image_turbo_bf16 + Fun ControlNet Union 2.1 (inpaint)",
         "size": [
-          1664,
-          928
+          1120,
+          1088
         ],
-        "steps": 8,
-        "refs": [
-          "work/masters/furniture_f0_s11.png"
-        ],
-        "prompt": "Only the camera moves: it pulls back about two metres and slightly to the right, showing a wider view of the same bright Scandinavian living room. Everything in the room stays exactly as in the reference image: the same oak lounge armchair with cream basket-weave cushions in the same place, now filling about a third of the frame height, left of centre; the same low oak side table on the left with its single grey ceramic vase; the same tall steel-framed windows with softly blurred birch trees behind. Newly visible: the whole grey wool rug, more pale oak floorboards in the foreground, white plaster wall on the right. Same soft overcast daylight, natural soft foliage. Photorealistic interior photograph, 28mm lens.",
-        "output": "journey-media/work/anchors/furniture/company_q31.png",
-        "seconds": 74.9,
-        "at": "2026-09-26T12:42:00"
+        "image": "work/v4/lounge/right_src.png",
+        "mask": "0,0,320,0",
+        "output": "journey-media/work/v4/lounge/right_s13.raw.png",
+        "seconds": 81.8,
+        "at": "2026-09-27T12:23:03"
       },
-      "prompt": "Only the camera moves: it pulls back about two metres and slightly to the right, showing a wider view of the same bright Scandinavian living room. Everything in the room stays exactly as in the reference image: the same oak lounge armchair with cream basket-weave cushions in the same place, now filling about a third of the frame height, left of centre; the same low oak side table on the left with its single grey ceramic vase; the same tall steel-framed windows with softly blurred birch trees behind. Newly visible: the whole grey wool rug, more pale oak floorboards in the foreground, white plaster wall on the right. Same soft overcast daylight, natural soft foliage. Photorealistic interior photograph, 28mm lens.",
-      "refs": [
-        "furniture/product"
-      ],
-      "refine": {
-        "kind": "refine",
-        "key": "furniture/company",
+      {
+        "kind": "v4_outpaint",
+        "prompt": "The right-hand part of a bright, calm Scandinavian living room, photographed straight on: a tall floor-to-ceiling window with a thin matte black steel frame, soft blurred green and pale yellow autumn trees outside under an overcast sky, a smooth white plaster wall, pale oak floorboards running toward the camera, the plain edge of a pale grey wool rug at the lower left. Soft even daylight, calm and minimal, nothing else in the room. Interior photograph, 50mm lens. Premium Nordic product cinematography, photorealistic, ARRI Alexa 35 look, subtle Cooke lens character, soft northern European daylight, natural contrast, realistic PBR materials, real optical depth of field, restrained luxury, no text, no letters, no logos, no brand marks, no watermark.",
+        "seed": 14,
+        "model": "z_image_turbo_bf16 + Fun ControlNet Union 2.1 (inpaint)",
+        "size": [
+          1120,
+          1088
+        ],
+        "image": "work/v4/lounge/right_src.png",
+        "mask": "0,0,320,0",
+        "output": "journey-media/work/v4/lounge/right_s14.raw.png",
+        "seconds": 41.6,
+        "at": "2026-09-27T12:23:45"
+      },
+      {
+        "kind": "v4_outpaint",
+        "prompt": "The right-hand part of a bright, calm Scandinavian living room, photographed straight on: a tall floor-to-ceiling window with a thin matte black steel frame, soft blurred green and pale yellow autumn trees outside under an overcast sky, a smooth white plaster wall, pale oak floorboards running toward the camera, the plain edge of a pale grey wool rug at the lower left. Soft even daylight, calm and minimal, nothing else in the room. Interior photograph, 50mm lens. Premium Nordic product cinematography, photorealistic, ARRI Alexa 35 look, subtle Cooke lens character, soft northern European daylight, natural contrast, realistic PBR materials, real optical depth of field, restrained luxury, no text, no letters, no logos, no brand marks, no watermark.",
+        "seed": 15,
+        "model": "z_image_turbo_bf16 + Fun ControlNet Union 2.1 (inpaint)",
+        "size": [
+          1120,
+          1088
+        ],
+        "image": "work/v4/lounge/right_src.png",
+        "mask": "0,0,320,0",
+        "output": "journey-media/work/v4/lounge/right_s15.raw.png",
+        "seconds": 43.1,
+        "at": "2026-09-27T12:24:29"
+      },
+      {
+        "kind": "v4_t2i",
+        "prompt": "Extreme macro photograph of the flat, planed outer face of a solid European white oak chair rail with a natural matt oil finish, filling the entire frame edge to edge: straight fine grain lines running exactly horizontally from left to right, a few long silvery medullary ray flecks, tiny open pores, warm pale honey colour, soft daylight from the left grazing along the grain so the fine texture reads; evenly sharp across the whole frame, flat surface parallel to the lens. Macro photography, 100mm macro lens. Premium Nordic product cinematography, photorealistic, ARRI Alexa 35 look, subtle Cooke lens character, soft northern European daylight, natural contrast, realistic PBR materials, real optical depth of field, restrained luxury, no text, no letters, no logos, no brand marks, no watermark.",
+        "seed": 21,
         "model": "z_image_turbo_bf16",
-        "denoise": 0.2,
         "size": [
           1920,
           1088
         ],
-        "source": "work/anchors/furniture/company_q31.png",
-        "prompt": "Photorealistic high-end commercial photograph, crisp natural detail, realistic materials, soft natural light, natural contrast, true optical depth of field, no text, no logos.",
-        "output": "journey-media/work/refined/furniture/company.png",
-        "seconds": 30.4,
-        "at": "2026-09-26T13:07:53"
+        "output": "journey-media/work/v4/tex/oak_s21.png",
+        "seconds": 39.1,
+        "at": "2026-09-27T12:25:08"
+      },
+      {
+        "kind": "v4_inpaint",
+        "prompt": "Pale oak floorboards running toward the camera in a bright, calm Scandinavian living room, the plain straight edge of a pale grey wool rug, soft even daylight, clean and minimal, nothing on the floor. Interior photograph, 50mm lens. Premium Nordic product cinematography, photorealistic, ARRI Alexa 35 look, subtle Cooke lens character, soft northern European daylight, natural contrast, realistic PBR materials, real optical depth of field, restrained luxury, no text, no letters, no logos, no brand marks, no watermark.",
+        "seed": 16,
+        "model": "z_image_turbo_bf16 + Fun ControlNet Union 2.1 (inpaint)",
+        "size": [
+          1120,
+          1088
+        ],
+        "image": "work/v4/lounge/fix_src_flip.png",
+        "mask": "work/v4/lounge/fix_mask_flip.png",
+        "output": "journey-media/work/v4/lounge/fix_flip.raw.png",
+        "seconds": 39.1,
+        "at": "2026-09-27T12:25:44"
+      },
+      {
+        "kind": "v4_t2i",
+        "prompt": "Extreme macro photograph of the flat, planed outer face of a solid European white oak chair rail with a natural matt oil finish, filling the entire frame edge to edge: straight fine grain lines running exactly horizontally from left to right, a few long silvery medullary ray flecks, tiny open pores, warm pale honey colour, soft daylight from the left grazing along the grain so the fine texture reads; evenly sharp across the whole frame, flat surface parallel to the lens. Macro photography, 100mm macro lens. Premium Nordic product cinematography, photorealistic, ARRI Alexa 35 look, subtle Cooke lens character, soft northern European daylight, natural contrast, realistic PBR materials, real optical depth of field, restrained luxury, no text, no letters, no logos, no brand marks, no watermark.",
+        "seed": 22,
+        "model": "z_image_turbo_bf16",
+        "size": [
+          1920,
+          1088
+        ],
+        "output": "journey-media/work/v4/tex/oak_s22.png",
+        "seconds": 65.5,
+        "at": "2026-09-27T12:26:14"
+      },
+      {
+        "kind": "v4_inpaint",
+        "prompt": "Close view of bare pale natural oak floorboards with a matt oiled finish, long straight planks running toward the camera, fine grain, soft even daylight, clean and minimal. Interior photograph, 50mm lens. Photorealistic.",
+        "seed": 17,
+        "model": "z_image_turbo_bf16 + Fun ControlNet Union 2.1 (inpaint)",
+        "size": [
+          1120,
+          1088
+        ],
+        "image": "work/v4/lounge/right_s14.png",
+        "mask": "work/v4/lounge/fix_mask2.png",
+        "output": "journey-media/work/v4/lounge/fix2_s17.raw.png",
+        "seconds": 39.3,
+        "at": "2026-09-27T12:26:48"
+      },
+      {
+        "kind": "v4_t2i",
+        "prompt": "Extreme macro photograph of the flat, planed outer face of a solid European white oak chair rail with a natural matt oil finish, filling the entire frame edge to edge: straight fine grain lines running exactly horizontally from left to right, a few long silvery medullary ray flecks, tiny open pores, warm pale honey colour, soft daylight from the left grazing along the grain so the fine texture reads; evenly sharp across the whole frame, flat surface parallel to the lens. Macro photography, 100mm macro lens. Premium Nordic product cinematography, photorealistic, ARRI Alexa 35 look, subtle Cooke lens character, soft northern European daylight, natural contrast, realistic PBR materials, real optical depth of field, restrained luxury, no text, no letters, no logos, no brand marks, no watermark.",
+        "seed": 23,
+        "model": "z_image_turbo_bf16",
+        "size": [
+          1920,
+          1088
+        ],
+        "output": "journey-media/work/v4/tex/oak_s23.png",
+        "seconds": 65.1,
+        "at": "2026-09-27T12:27:19"
+      },
+      {
+        "kind": "v4_inpaint",
+        "prompt": "Close view of bare pale natural oak floorboards with a matt oiled finish, long straight planks running toward the camera, fine grain, soft even daylight, clean and minimal. Interior photograph, 50mm lens. Photorealistic.",
+        "seed": 18,
+        "model": "z_image_turbo_bf16 + Fun ControlNet Union 2.1 (inpaint)",
+        "size": [
+          1120,
+          1088
+        ],
+        "image": "work/v4/lounge/right_s14.png",
+        "mask": "work/v4/lounge/fix_mask2.png",
+        "output": "journey-media/work/v4/lounge/fix2_s18.raw.png",
+        "seconds": 63.8,
+        "at": "2026-09-27T12:27:53"
+      },
+      {
+        "kind": "v4_t2i",
+        "prompt": "Extreme macro photograph of the flat, planed outer face of a solid European white oak chair rail with a natural matt oil finish, filling the entire frame edge to edge: straight fine grain lines running exactly horizontally from left to right, a few long silvery medullary ray flecks, tiny open pores, warm pale honey colour, soft daylight from the left grazing along the grain so the fine texture reads; evenly sharp across the whole frame, flat surface parallel to the lens. Macro photography, 100mm macro lens. Premium Nordic product cinematography, photorealistic, ARRI Alexa 35 look, subtle Cooke lens character, soft northern European daylight, natural contrast, realistic PBR materials, real optical depth of field, restrained luxury, no text, no letters, no logos, no brand marks, no watermark.",
+        "seed": 24,
+        "model": "z_image_turbo_bf16",
+        "size": [
+          1920,
+          1088
+        ],
+        "output": "journey-media/work/v4/tex/oak_s24.png",
+        "seconds": 65.5,
+        "at": "2026-09-27T12:28:25"
+      },
+      {
+        "kind": "v4_inpaint",
+        "prompt": "Close view of bare pale natural oak floorboards with a matt oiled finish, long straight planks running toward the camera, fine grain, soft even daylight, clean and minimal. Interior photograph, 50mm lens. Photorealistic.",
+        "seed": 17,
+        "model": "z_image_turbo_bf16 + Fun ControlNet Union 2.1 (inpaint)",
+        "size": [
+          1120,
+          1088
+        ],
+        "image": "work/v4/lounge/right_s14.png",
+        "mask": "work/v4/lounge/fix_mask2.png",
+        "output": "journey-media/work/v4/lounge/fix3_s17.raw.png",
+        "seconds": 39.1,
+        "at": "2026-09-27T12:28:53"
+      },
+      {
+        "kind": "v4_t2i",
+        "prompt": "Inside the bright hall of a small Danish furniture component factory that makes solid oak chair frames. On the left, the dispatch area: wooden pallets stacked with identical flat oak chair side frames (each a front leg, a rear leg and an armrest joined in one frame), wrapped in clear film, a grey hand pallet truck. On the right, a large industrial flatbed laser engraving machine in graphite grey with its wide glass lid open and its flat honeycomb work bed empty and clean, a small laser head on a gantry above the bed. Behind: a five-axis CNC machining centre, a rack of machined oak parts, tall steel-framed windows with soft northern daylight, pale concrete floor, no people. Calm, orderly, precise. Industrial interior photograph, 35mm lens, eye level. Premium Nordic product cinematography, photorealistic, ARRI Alexa 35 look, subtle Cooke lens character, soft northern European daylight, natural contrast, realistic PBR materials, real optical depth of field, restrained luxury, no text, no letters, no logos, no brand marks, no watermark.",
+        "seed": 31,
+        "model": "z_image_turbo_bf16",
+        "size": [
+          2560,
+          1088
+        ],
+        "output": "journey-media/work/v4/factory/hall_s31.png",
+        "seconds": 63.4,
+        "at": "2026-09-27T12:29:29"
+      },
+      {
+        "kind": "v4_inpaint",
+        "prompt": "The corner of a bright, calm Scandinavian living room: pale natural oak floorboards with a matt oiled finish, long straight planks running toward the camera, the plain edge of a pale grey wool rug on the left, a tall window with a black steel frame. Soft even daylight. Interior photograph, 50mm lens. Photorealistic.",
+        "seed": 17,
+        "model": "z_image_turbo_bf16 + Fun ControlNet Union 2.1 (inpaint)",
+        "size": [
+          1120,
+          1088
+        ],
+        "image": "work/v4/lounge/right_s14.png",
+        "mask": "work/v4/lounge/fix_mask2.png",
+        "output": "journey-media/work/v4/lounge/fix4_st0.5.raw.png",
+        "seconds": 39.1,
+        "at": "2026-09-27T12:30:01"
+      },
+      {
+        "kind": "v4_t2i",
+        "prompt": "Inside the bright hall of a small Danish furniture component factory that makes solid oak chair frames. On the left, the dispatch area: wooden pallets stacked with identical flat oak chair side frames (each a front leg, a rear leg and an armrest joined in one frame), wrapped in clear film, a grey hand pallet truck. On the right, a large industrial flatbed laser engraving machine in graphite grey with its wide glass lid open and its flat honeycomb work bed empty and clean, a small laser head on a gantry above the bed. Behind: a five-axis CNC machining centre, a rack of machined oak parts, tall steel-framed windows with soft northern daylight, pale concrete floor, no people. Calm, orderly, precise. Industrial interior photograph, 35mm lens, eye level. Premium Nordic product cinematography, photorealistic, ARRI Alexa 35 look, subtle Cooke lens character, soft northern European daylight, natural contrast, realistic PBR materials, real optical depth of field, restrained luxury, no text, no letters, no logos, no brand marks, no watermark.",
+        "seed": 32,
+        "model": "z_image_turbo_bf16",
+        "size": [
+          2560,
+          1088
+        ],
+        "output": "journey-media/work/v4/factory/hall_s32.png",
+        "seconds": 67.7,
+        "at": "2026-09-27T12:30:36"
+      },
+      {
+        "kind": "v4_inpaint",
+        "prompt": "The corner of a bright, calm Scandinavian living room: pale natural oak floorboards with a matt oiled finish, long straight planks running toward the camera, the plain edge of a pale grey wool rug on the left, a tall window with a black steel frame. Soft even daylight. Interior photograph, 50mm lens. Photorealistic.",
+        "seed": 17,
+        "model": "z_image_turbo_bf16 + Fun ControlNet Union 2.1 (inpaint)",
+        "size": [
+          1120,
+          1088
+        ],
+        "image": "work/v4/lounge/right_s14.png",
+        "mask": "work/v4/lounge/fix_mask2.png",
+        "output": "journey-media/work/v4/lounge/fix4_st0.3.raw.png",
+        "seconds": 67.1,
+        "at": "2026-09-27T12:31:09"
+      },
+      {
+        "kind": "v4_t2i",
+        "prompt": "Inside the bright hall of a small Danish furniture component factory that makes solid oak chair frames. On the left, the dispatch area: wooden pallets stacked with identical flat oak chair side frames (each a front leg, a rear leg and an armrest joined in one frame), wrapped in clear film, a grey hand pallet truck. On the right, a large industrial flatbed laser engraving machine in graphite grey with its wide glass lid open and its flat honeycomb work bed empty and clean, a small laser head on a gantry above the bed. Behind: a five-axis CNC machining centre, a rack of machined oak parts, tall steel-framed windows with soft northern daylight, pale concrete floor, no people. Calm, orderly, precise. Industrial interior photograph, 35mm lens, eye level. Premium Nordic product cinematography, photorealistic, ARRI Alexa 35 look, subtle Cooke lens character, soft northern European daylight, natural contrast, realistic PBR materials, real optical depth of field, restrained luxury, no text, no letters, no logos, no brand marks, no watermark.",
+        "seed": 33,
+        "model": "z_image_turbo_bf16",
+        "size": [
+          2560,
+          1088
+        ],
+        "output": "journey-media/work/v4/factory/hall_s33.png",
+        "seconds": 67.1,
+        "at": "2026-09-27T12:31:44"
+      },
+      {
+        "kind": "v4_inpaint",
+        "prompt": "The corner of a bright, calm Scandinavian living room: pale natural oak floorboards with a matt oiled finish, long narrow planks running straight away from the camera toward the window in one-point perspective, the plain edge of a pale grey wool rug on the left, a tall window with a black steel frame. Soft even daylight. Interior photograph, 50mm lens. Photorealistic.",
+        "seed": 18,
+        "model": "z_image_turbo_bf16 + Fun ControlNet Union 2.1 (inpaint)",
+        "size": [
+          1120,
+          1088
+        ],
+        "image": "work/v4/lounge/right_s14.png",
+        "mask": "work/v4/lounge/fix_mask2.png",
+        "output": "journey-media/work/v4/lounge/fix5_s18.raw.png",
+        "seconds": 49.1,
+        "at": "2026-09-27T12:32:14"
+      },
+      {
+        "kind": "v4_t2i",
+        "prompt": "A calm, bright furniture repair and upholstery workshop: a long sturdy oak workbench in the foreground with an empty clear area in the middle of its top, hand tools neatly on a pegboard wall, rolls of cream upholstery fabric and a roll of black elastic webbing on a shelf, a small wooden tray of graphite bolts on the bench, tall workshop windows with warm soft daylight from the left, a craftsperson in a canvas apron standing at the far right end of the bench, calmly holding a folded cream cushion cover. Interior photograph, 35mm lens. Premium Nordic product cinematography, photorealistic, ARRI Alexa 35 look, subtle Cooke lens character, soft northern European daylight, natural contrast, realistic PBR materials, real optical depth of field, restrained luxury, no text, no letters, no logos, no brand marks, no watermark.",
+        "seed": 41,
+        "model": "z_image_turbo_bf16",
+        "size": [
+          1920,
+          1088
+        ],
+        "output": "journey-media/work/v4/workshop/bench_s41.png",
+        "seconds": 59.2,
+        "at": "2026-09-27T12:32:43"
+      },
+      {
+        "kind": "v4_inpaint",
+        "prompt": "The corner of a bright, calm Scandinavian living room: pale natural oak floorboards with a matt oiled finish, long narrow planks running straight away from the camera toward the window in one-point perspective, the plain edge of a pale grey wool rug on the left, a tall window with a black steel frame. Soft even daylight. Interior photograph, 50mm lens. Photorealistic.",
+        "seed": 19,
+        "model": "z_image_turbo_bf16 + Fun ControlNet Union 2.1 (inpaint)",
+        "size": [
+          1120,
+          1088
+        ],
+        "image": "work/v4/lounge/right_s14.png",
+        "mask": "work/v4/lounge/fix_mask2.png",
+        "output": "journey-media/work/v4/lounge/fix5_s19.raw.png",
+        "seconds": 59.5,
+        "at": "2026-09-27T12:33:14"
+      },
+      {
+        "kind": "v4_t2i",
+        "prompt": "A calm, bright furniture repair and upholstery workshop: a long sturdy oak workbench in the foreground with an empty clear area in the middle of its top, hand tools neatly on a pegboard wall, rolls of cream upholstery fabric and a roll of black elastic webbing on a shelf, a small wooden tray of graphite bolts on the bench, tall workshop windows with warm soft daylight from the left, a craftsperson in a canvas apron standing at the far right end of the bench, calmly holding a folded cream cushion cover. Interior photograph, 35mm lens. Premium Nordic product cinematography, photorealistic, ARRI Alexa 35 look, subtle Cooke lens character, soft northern European daylight, natural contrast, realistic PBR materials, real optical depth of field, restrained luxury, no text, no letters, no logos, no brand marks, no watermark.",
+        "seed": 42,
+        "model": "z_image_turbo_bf16",
+        "size": [
+          1920,
+          1088
+        ],
+        "output": "journey-media/work/v4/workshop/bench_s42.png",
+        "seconds": 61.1,
+        "at": "2026-09-27T12:33:44"
+      },
+      {
+        "kind": "v4_qedit",
+        "prompt": "The lower right corner of this photograph is corrupted by a black and white noise pattern. Repaint only that corner so that the pale natural oak floorboards continue naturally and seamlessly from the rest of the floor, with the same plank direction, colour, knots and soft daylight, and the plain edge of the grey wool rug continues straight. Keep everything else in the photograph exactly the same.",
+        "seed": 51,
+        "model": "qwen_image_edit_2511_fp8mixed+lightning8",
+        "size": [
+          1120,
+          1088
+        ],
+        "refs": "work/v4/lounge/right_s14.png",
+        "init": "work/v4/lounge/right_s14.png",
+        "denoise": 1.0,
+        "output": "journey-media/work/v4/lounge/qfix_s51.png",
+        "seconds": 69.6,
+        "at": "2026-09-27T12:34:50"
+      },
+      {
+        "kind": "v4_t2i",
+        "prompt": "A calm, bright furniture repair and upholstery workshop: a long sturdy oak workbench in the foreground with an empty clear area in the middle of its top, hand tools neatly on a pegboard wall, rolls of cream upholstery fabric and a roll of black elastic webbing on a shelf, a small wooden tray of graphite bolts on the bench, tall workshop windows with warm soft daylight from the left, a craftsperson in a canvas apron standing at the far right end of the bench, calmly holding a folded cream cushion cover. Interior photograph, 35mm lens. Premium Nordic product cinematography, photorealistic, ARRI Alexa 35 look, subtle Cooke lens character, soft northern European daylight, natural contrast, realistic PBR materials, real optical depth of field, restrained luxury, no text, no letters, no logos, no brand marks, no watermark.",
+        "seed": 43,
+        "model": "z_image_turbo_bf16",
+        "size": [
+          1920,
+          1088
+        ],
+        "output": "journey-media/work/v4/workshop/bench_s43.png",
+        "seconds": 238.4,
+        "at": "2026-09-27T12:37:43"
+      },
+      {
+        "kind": "v4_qedit",
+        "prompt": "Exploded view of this exact armchair in the same bright living room, same camera position and light: the chair has been taken apart and all of its real parts float calmly in mid-air above the grey rug, each moved a short distance straight out from where it belongs, like a technical exploded view photographed for real. The left oak side frame - the front leg, the angled rear leg, the flat armrest with its dark rounded end and the side rail below the seat, joined as one flat frame - floats to the left and slightly toward the camera. The right oak side frame floats to the right. The oak front seat rail and back seat rail float in the middle at seat height. The thick cream basket-weave seat cushion floats above the rails. The back cushion floats higher and further back. Eight small graphite-black hex bolts float in line in the gaps between the side frames and the rails. Every part is complete, nothing is added, nothing is broken. Soft shadows of the floating parts on the rug. The whole exploded chair is seen from a little further back than in the reference image and sits in the left two thirds of the frame; the right third shows the calm white wall and the tall window with the autumn trees. Photorealistic interior photograph, 50mm lens. Premium Nordic product cinematography, photorealistic, ARRI Alexa 35 look, subtle Cooke lens character, soft northern European daylight, natural contrast, realistic PBR materials, real optical depth of field, restrained luxury, no text, no letters, no logos, no brand marks, no watermark.",
+        "seed": 61,
+        "model": "qwen_image_edit_2511_fp8mixed+lightning8",
+        "size": [
+          1664,
+          928
+        ],
+        "refs": "work/v4/lounge/S2.png",
+        "init": null,
+        "denoise": 1.0,
+        "output": "journey-media/work/v4/exploded/ex_s61.png",
+        "seconds": 79.7,
+        "at": "2026-09-27T12:41:30"
+      },
+      {
+        "kind": "v4_qedit",
+        "prompt": "Exploded view of this exact armchair in the same bright living room, same camera position and light: the chair has been taken apart and all of its real parts float calmly in mid-air above the grey rug, each moved a short distance straight out from where it belongs, like a technical exploded view photographed for real. The left oak side frame - the front leg, the angled rear leg, the flat armrest with its dark rounded end and the side rail below the seat, joined as one flat frame - floats to the left and slightly toward the camera. The right oak side frame floats to the right. The oak front seat rail and back seat rail float in the middle at seat height. The thick cream basket-weave seat cushion floats above the rails. The back cushion floats higher and further back. Eight small graphite-black hex bolts float in line in the gaps between the side frames and the rails. Every part is complete, nothing is added, nothing is broken. Soft shadows of the floating parts on the rug. The whole exploded chair is seen from a little further back than in the reference image and sits in the left two thirds of the frame; the right third shows the calm white wall and the tall window with the autumn trees. Photorealistic interior photograph, 50mm lens. Premium Nordic product cinematography, photorealistic, ARRI Alexa 35 look, subtle Cooke lens character, soft northern European daylight, natural contrast, realistic PBR materials, real optical depth of field, restrained luxury, no text, no letters, no logos, no brand marks, no watermark.",
+        "seed": 62,
+        "model": "qwen_image_edit_2511_fp8mixed+lightning8",
+        "size": [
+          1664,
+          928
+        ],
+        "refs": "work/v4/lounge/S2.png",
+        "init": null,
+        "denoise": 1.0,
+        "output": "journey-media/work/v4/exploded/ex_s62.png",
+        "seconds": 89.9,
+        "at": "2026-09-27T12:43:00"
+      },
+      {
+        "kind": "v4_qedit",
+        "prompt": "Exploded view of this exact armchair in the same bright living room, same camera position and light: the chair has been taken apart and all of its real parts float calmly in mid-air above the grey rug, each moved a short distance straight out from where it belongs, like a technical exploded view photographed for real. The left oak side frame - the front leg, the angled rear leg, the flat armrest with its dark rounded end and the side rail below the seat, joined as one flat frame - floats to the left and slightly toward the camera. The right oak side frame floats to the right. The oak front seat rail and back seat rail float in the middle at seat height. The thick cream basket-weave seat cushion floats above the rails. The back cushion floats higher and further back. Eight small graphite-black hex bolts float in line in the gaps between the side frames and the rails. Every part is complete, nothing is added, nothing is broken. Soft shadows of the floating parts on the rug. The whole exploded chair is seen from a little further back than in the reference image and sits in the left two thirds of the frame; the right third shows the calm white wall and the tall window with the autumn trees. Photorealistic interior photograph, 50mm lens. Premium Nordic product cinematography, photorealistic, ARRI Alexa 35 look, subtle Cooke lens character, soft northern European daylight, natural contrast, realistic PBR materials, real optical depth of field, restrained luxury, no text, no letters, no logos, no brand marks, no watermark.",
+        "seed": 63,
+        "model": "qwen_image_edit_2511_fp8mixed+lightning8",
+        "size": [
+          1664,
+          928
+        ],
+        "refs": "work/v4/lounge/S2.png",
+        "init": null,
+        "denoise": 1.0,
+        "output": "journey-media/work/v4/exploded/ex_s63.png",
+        "seconds": 91.5,
+        "at": "2026-09-27T12:44:32"
+      },
+      {
+        "kind": "v4_qedit",
+        "prompt": "Exploded view of this exact armchair in the same bright living room, same camera position and light: the chair has been taken apart and all of its real parts float calmly in mid-air above the grey rug, each moved a short distance straight out from where it belongs, like a technical exploded view photographed for real. The left oak side frame - the front leg, the angled rear leg, the flat armrest with its dark rounded end and the side rail below the seat, joined as one flat frame - floats to the left and slightly toward the camera. The right oak side frame floats to the right. The oak front seat rail and back seat rail float in the middle at seat height. The thick cream basket-weave seat cushion floats above the rails. The back cushion floats higher and further back. Eight small graphite-black hex bolts float in line in the gaps between the side frames and the rails. Every part is complete, nothing is added, nothing is broken. Soft shadows of the floating parts on the rug. The whole exploded chair is seen from a little further back than in the reference image and sits in the left two thirds of the frame; the right third shows the calm white wall and the tall window with the autumn trees. Photorealistic interior photograph, 50mm lens. Premium Nordic product cinematography, photorealistic, ARRI Alexa 35 look, subtle Cooke lens character, soft northern European daylight, natural contrast, realistic PBR materials, real optical depth of field, restrained luxury, no text, no letters, no logos, no brand marks, no watermark.",
+        "seed": 64,
+        "model": "qwen_image_edit_2511_fp8mixed+lightning8",
+        "size": [
+          1664,
+          928
+        ],
+        "refs": "work/v4/lounge/S2.png",
+        "init": null,
+        "denoise": 1.0,
+        "output": "journey-media/work/v4/exploded/ex_s64.png",
+        "seconds": 89.8,
+        "at": "2026-09-27T12:46:02"
+      },
+      {
+        "kind": "v4_qedit",
+        "prompt": "Exploded view of this exact armchair in the same bright living room, same camera position and light: the chair has been taken apart and all of its real parts float calmly in mid-air above the grey rug, each moved a short distance straight out from where it belongs, like a technical exploded view photographed for real. The left oak side frame - the front leg, the angled rear leg, the flat armrest with its dark rounded end and the side rail below the seat, joined as one flat frame - floats to the left and slightly toward the camera. The right oak side frame floats to the right. The oak front seat rail and back seat rail float in the middle at seat height. The thick cream basket-weave seat cushion floats above the rails. The back cushion floats higher and further back. Eight small graphite-black hex bolts float in line in the gaps between the side frames and the rails. Every part is complete, nothing is added, nothing is broken. Soft shadows of the floating parts on the rug. The whole exploded chair is seen from a little further back than in the reference image and sits in the left two thirds of the frame; the right third shows the calm white wall and the tall window with the autumn trees. Photorealistic interior photograph, 50mm lens. Premium Nordic product cinematography, photorealistic, ARRI Alexa 35 look, subtle Cooke lens character, soft northern European daylight, natural contrast, realistic PBR materials, real optical depth of field, restrained luxury, no text, no letters, no logos, no brand marks, no watermark.",
+        "seed": 65,
+        "model": "qwen_image_edit_2511_fp8mixed+lightning8",
+        "size": [
+          1664,
+          928
+        ],
+        "refs": "work/v4/lounge/S2.png",
+        "init": null,
+        "denoise": 1.0,
+        "output": "journey-media/work/v4/exploded/ex_s65.png",
+        "seconds": 89.6,
+        "at": "2026-09-27T12:47:32"
+      },
+      {
+        "kind": "v4_qedit",
+        "prompt": "Exploded view of this exact armchair in the same bright living room, same camera position and light: the chair has been taken apart and all of its real parts float calmly in mid-air above the grey rug, each moved a short distance straight out from where it belongs, like a technical exploded view photographed for real. The left oak side frame - the front leg, the angled rear leg, the flat armrest with its dark rounded end and the side rail below the seat, joined as one flat frame - floats to the left and slightly toward the camera. The right oak side frame floats to the right. The oak front seat rail and back seat rail float in the middle at seat height. The thick cream basket-weave seat cushion floats above the rails. The back cushion floats higher and further back. Eight small graphite-black hex bolts float in line in the gaps between the side frames and the rails. Every part is complete, nothing is added, nothing is broken. Soft shadows of the floating parts on the rug. The whole exploded chair is seen from a little further back than in the reference image and sits in the left two thirds of the frame; the right third shows the calm white wall and the tall window with the autumn trees. Photorealistic interior photograph, 50mm lens. Premium Nordic product cinematography, photorealistic, ARRI Alexa 35 look, subtle Cooke lens character, soft northern European daylight, natural contrast, realistic PBR materials, real optical depth of field, restrained luxury, no text, no letters, no logos, no brand marks, no watermark.",
+        "seed": 66,
+        "model": "qwen_image_edit_2511_fp8mixed+lightning8",
+        "size": [
+          1664,
+          928
+        ],
+        "refs": "work/v4/lounge/S2.png",
+        "init": null,
+        "denoise": 1.0,
+        "output": "journey-media/work/v4/exploded/ex_s66.png",
+        "seconds": 89.6,
+        "at": "2026-09-27T12:49:02"
+      },
+      {
+        "kind": "v4_qedit",
+        "prompt": "Remove the armchair completely, including its shadow on the rug. Show the empty room behind where it stood: the pale grey wool rug continues evenly, the pale oak floorboards, the white plaster wall and the tall window with the white birch trunks and the green lawn behind it. Keep everything else exactly the same: the same room, the same light, the same framing.",
+        "seed": 71,
+        "model": "qwen_image_edit_2511_fp8mixed+lightning8",
+        "size": [
+          1600,
+          1088
+        ],
+        "refs": "work/v4/lounge/remove_src.png",
+        "init": null,
+        "denoise": 1.0,
+        "output": "journey-media/work/v4/lounge/removed_s71.png",
+        "seconds": 75.5,
+        "at": "2026-09-27T17:09:21"
+      },
+      {
+        "kind": "v4_qedit",
+        "prompt": "Remove the armchair completely, including its shadow on the rug. Show the empty room behind where it stood: the pale grey wool rug continues evenly, the pale oak floorboards, the white plaster wall and the tall window with the white birch trunks and the green lawn behind it. Keep everything else exactly the same: the same room, the same light, the same framing.",
+        "seed": 72,
+        "model": "qwen_image_edit_2511_fp8mixed+lightning8",
+        "size": [
+          1600,
+          1088
+        ],
+        "refs": "work/v4/lounge/remove_src.png",
+        "init": null,
+        "denoise": 1.0,
+        "output": "journey-media/work/v4/lounge/removed_s72.png",
+        "seconds": 78.6,
+        "at": "2026-09-27T17:10:40"
+      },
+      {
+        "kind": "v4_t2i",
+        "prompt": "A compact industrial fibre laser marking station in a bright, calm Danish furniture component factory, photographed from above at about forty degrees: a graphite-grey machine with a vertical steel column and a small marking head pointing straight down over a wide, clean, pale beech work table; the table top fills the lower half of the frame and is completely empty and clear. Behind it, softly out of focus, the factory hall: wooden pallets stacked with identical oak chair side frames wrapped in clear film, a five-axis CNC machining centre, tall steel-framed windows with soft northern daylight, pale concrete floor. No people, no screens, no text. Industrial interior photograph, 50mm lens. Premium Nordic product cinematography, photorealistic, ARRI Alexa 35 look, subtle Cooke lens character, soft northern European daylight, natural contrast, realistic PBR materials, real optical depth of field, restrained luxury, no text, no letters, no logos, no brand marks, no watermark.",
+        "seed": 81,
+        "model": "z_image_turbo_bf16",
+        "size": [
+          1920,
+          1088
+        ],
+        "output": "journey-media/work/v4/station/station_s81.png",
+        "seconds": 39.1,
+        "at": "2026-09-27T17:11:19"
+      },
+      {
+        "kind": "v4_t2i",
+        "prompt": "A compact industrial fibre laser marking station in a bright, calm Danish furniture component factory, photographed from above at about forty degrees: a graphite-grey machine with a vertical steel column and a small marking head pointing straight down over a wide, clean, pale beech work table; the table top fills the lower half of the frame and is completely empty and clear. Behind it, softly out of focus, the factory hall: wooden pallets stacked with identical oak chair side frames wrapped in clear film, a five-axis CNC machining centre, tall steel-framed windows with soft northern daylight, pale concrete floor. No people, no screens, no text. Industrial interior photograph, 50mm lens. Premium Nordic product cinematography, photorealistic, ARRI Alexa 35 look, subtle Cooke lens character, soft northern European daylight, natural contrast, realistic PBR materials, real optical depth of field, restrained luxury, no text, no letters, no logos, no brand marks, no watermark.",
+        "seed": 82,
+        "model": "z_image_turbo_bf16",
+        "size": [
+          1920,
+          1088
+        ],
+        "output": "journey-media/work/v4/station/station_s82.png",
+        "seconds": 33.1,
+        "at": "2026-09-27T17:11:52"
+      },
+      {
+        "kind": "v4_t2i",
+        "prompt": "A compact industrial fibre laser marking station in a bright, calm Danish furniture component factory, photographed from above at about forty degrees: a graphite-grey machine with a vertical steel column and a small marking head pointing straight down over a wide, clean, pale beech work table; the table top fills the lower half of the frame and is completely empty and clear. Behind it, softly out of focus, the factory hall: wooden pallets stacked with identical oak chair side frames wrapped in clear film, a five-axis CNC machining centre, tall steel-framed windows with soft northern daylight, pale concrete floor. No people, no screens, no text. Industrial interior photograph, 50mm lens. Premium Nordic product cinematography, photorealistic, ARRI Alexa 35 look, subtle Cooke lens character, soft northern European daylight, natural contrast, realistic PBR materials, real optical depth of field, restrained luxury, no text, no letters, no logos, no brand marks, no watermark.",
+        "seed": 83,
+        "model": "z_image_turbo_bf16",
+        "size": [
+          1920,
+          1088
+        ],
+        "output": "journey-media/work/v4/station/station_s83.png",
+        "seconds": 35.1,
+        "at": "2026-09-27T17:12:27"
+      },
+      {
+        "kind": "v4_t2i",
+        "prompt": "A compact industrial fibre laser marking station in a bright, calm Danish furniture component factory, photographed from above at about forty degrees: a graphite-grey machine with a vertical steel column and a small marking head pointing straight down over a wide, clean, pale beech work table; the table top fills the lower half of the frame and is completely empty and clear. Behind it, softly out of focus, the factory hall: wooden pallets stacked with identical oak chair side frames wrapped in clear film, a five-axis CNC machining centre, tall steel-framed windows with soft northern daylight, pale concrete floor. No people, no screens, no text. Industrial interior photograph, 50mm lens. Premium Nordic product cinematography, photorealistic, ARRI Alexa 35 look, subtle Cooke lens character, soft northern European daylight, natural contrast, realistic PBR materials, real optical depth of field, restrained luxury, no text, no letters, no logos, no brand marks, no watermark.",
+        "seed": 84,
+        "model": "z_image_turbo_bf16",
+        "size": [
+          1920,
+          1088
+        ],
+        "output": "journey-media/work/v4/station/station_s84.png",
+        "seconds": 35.5,
+        "at": "2026-09-27T17:13:03"
+      },
+      {
+        "kind": "v4_qedit",
+        "prompt": "Add a person's hand holding a dark graphite smartphone that points its camera at the small square code laser-etched on the outer face of the chair's near oak side rail, below the seat, the hand entering from the right edge of the frame at seat height, the phone about thirty centimetres from the rail, its screen facing away from the camera. Keep everything else exactly the same: the same chair, the same room, the same light and the same framing. ",
+        "seed": 91,
+        "model": "qwen_image_edit_2511_fp8mixed+lightning8",
+        "size": [
+          1664,
+          928
+        ],
+        "refs": "work/v4/passport/S9_nohand.png",
+        "init": null,
+        "denoise": 1.0,
+        "output": "journey-media/work/v4/passport/hand_s91.png",
+        "seconds": 77.4,
+        "at": "2026-09-27T17:21:40"
+      },
+      {
+        "kind": "v4_qedit",
+        "prompt": "Add a person's hand holding a dark graphite smartphone that points its camera at the small square code laser-etched on the outer face of the chair's near oak side rail, below the seat, the hand entering from the right edge of the frame at seat height, the phone about thirty centimetres from the rail, its screen facing away from the camera. Keep everything else exactly the same: the same chair, the same room, the same light and the same framing. ",
+        "seed": 92,
+        "model": "qwen_image_edit_2511_fp8mixed+lightning8",
+        "size": [
+          1664,
+          928
+        ],
+        "refs": "work/v4/passport/S9_nohand.png",
+        "init": null,
+        "denoise": 1.0,
+        "output": "journey-media/work/v4/passport/hand_s92.png",
+        "seconds": 78.6,
+        "at": "2026-09-27T17:22:59"
+      },
+      {
+        "kind": "v4_qedit",
+        "prompt": "Add a person's hand holding a dark graphite smartphone that points its camera at the small square code laser-etched on the outer face of the chair's near oak side rail, below the seat, the hand entering from the right edge of the frame at seat height, the phone about thirty centimetres from the rail, its screen facing away from the camera. Keep everything else exactly the same: the same chair, the same room, the same light and the same framing. ",
+        "seed": 93,
+        "model": "qwen_image_edit_2511_fp8mixed+lightning8",
+        "size": [
+          1664,
+          928
+        ],
+        "refs": "work/v4/passport/S9_nohand.png",
+        "init": null,
+        "denoise": 1.0,
+        "output": "journey-media/work/v4/passport/hand_s93.png",
+        "seconds": 75.1,
+        "at": "2026-09-27T17:24:15"
+      },
+      {
+        "kind": "v4_t2i",
+        "prompt": "Studio product photograph of one single long graphite-black steel furniture connector bolt lying horizontally across the frame: a flat hex socket head on the left, a long smooth shank with a fine machine thread over its right half, soft top light with a thin specular highlight along the shank, isolated on a plain pure white background, sharp focus, no shadow, nothing else in the frame.",
+        "seed": 111,
+        "model": "z_image_turbo_bf16",
+        "size": [
+          1536,
+          640
+        ],
+        "output": "journey-media/work/v4/parts/bolt_s111.png",
+        "seconds": 29.1,
+        "at": "2026-09-27T22:27:36"
+      },
+      {
+        "kind": "v4_t2i",
+        "prompt": "Studio product photograph of one single long graphite-black steel furniture connector bolt lying horizontally across the frame: a flat hex socket head on the left, a long smooth shank with a fine machine thread over its right half, soft top light with a thin specular highlight along the shank, isolated on a plain pure white background, sharp focus, no shadow, nothing else in the frame.",
+        "seed": 112,
+        "model": "z_image_turbo_bf16",
+        "size": [
+          1536,
+          640
+        ],
+        "output": "journey-media/work/v4/parts/bolt_s112.png",
+        "seconds": 23.1,
+        "at": "2026-09-27T22:27:59"
+      }
+    ]
+  },
+  "anchors": {
+    "furniture/company": {
+      "method": "v4: the still is the motion base's own end frame (tools/rig.py), composited from the same layers the clip moves - lounge master photo, the chair's real parts cut from it (SAM 2.1 + BiRefNet), plates made with Z-Image-Turbo / Qwen-Image-Edit, the oak macro and the prduct.com QR burn",
+      "source": "work/v4/bases/T1_first.png",
+      "stop": {
+        "panel": "right",
+        "alt": "A Danish oak lounge chair in a bright Nordic living room"
       },
       "final": "journey-media/final/furniture/company.png",
       "web": {
@@ -392,63 +929,19 @@
           1920,
           960
         ],
-        "rev": "92952f6c94",
-        "focus": "30% 60%",
+        "rev": "960faefa99",
+        "focus": "45% 60%",
         "panel": "right",
-        "alt": "A Danish oak lounge chair in a bright Nordic living room"
+        "alt": "A Danish oak lounge chair by tall windows in a bright Nordic living room"
       }
     },
     "furniture/product": {
-      "method": "derived: last frame of the generated camera move furniture/company>product",
-      "move": "furniture/company>product",
-      "picked_source": "work/v2/furniture__company-to-product.clip_last.png",
-      "post": [
-        {
-          "kind": "refine",
-          "key": "furniture/product",
-          "model": "z_image_turbo_bf16",
-          "denoise": 0.2,
-          "size": [
-            1920,
-            1088
-          ],
-          "source": "work/anchors/furniture/product_dolly_q7.png",
-          "prompt": "Photorealistic high-end commercial photograph, crisp natural detail, realistic materials, soft natural light, natural contrast, true optical depth of field, no text, no logos.",
-          "output": "journey-media/work/refined/furniture/product.png",
-          "seconds": 32.0,
-          "at": "2026-09-26T13:08:25"
-        },
-        {
-          "kind": "refine",
-          "key": "furniture/product",
-          "model": "z_image_turbo_bf16",
-          "denoise": 0.2,
-          "size": [
-            1920,
-            1088
-          ],
-          "source": "work/v2/furniture__company-to-product.end.png",
-          "prompt": "Photorealistic high-end commercial photograph, crisp natural detail, realistic materials, soft natural light, natural contrast, true optical depth of field, no text, no logos.",
-          "output": "journey-media/work/v2/furniture__company-to-product.end.refined.png",
-          "seconds": 37.0,
-          "at": "2026-09-26T17:55:26"
-        },
-        {
-          "kind": "refine",
-          "key": "furniture/product",
-          "model": "z_image_turbo_bf16",
-          "denoise": 0.15,
-          "size": [
-            1920,
-            1088
-          ],
-          "source": "work/v2/furniture__company-to-product.clip_last.png",
-          "prompt": "Photorealistic high-end commercial photograph, crisp natural detail, realistic materials, soft natural light, natural contrast, true optical depth of field, no text, no logos.",
-          "output": "journey-media/work/v2/furniture__company-to-product.clip_last.refined.png",
-          "seconds": 64.6,
-          "at": "2026-09-26T20:10:55"
-        }
-      ],
+      "method": "v4: the still is the motion base's own end frame (tools/rig.py), composited from the same layers the clip moves - lounge master photo, the chair's real parts cut from it (SAM 2.1 + BiRefNet), plates made with Z-Image-Turbo / Qwen-Image-Edit, the oak macro and the prduct.com QR burn",
+      "source": "work/v4/bases/T2_first.png",
+      "stop": {
+        "panel": "right",
+        "alt": "The lounge chair by the tall windows"
+      },
       "final": "journey-media/final/furniture/product.png",
       "web": {
         "base": "media/furniture/product",
@@ -456,89 +949,19 @@
           1920,
           960
         ],
-        "rev": "7d27a23582",
-        "focus": "33% 60%",
+        "rev": "4103bf7d4b",
+        "focus": "30% 60%",
         "panel": "right",
-        "alt": "The lounge chair by the tall windows, closer"
+        "alt": "The oak lounge chair with cream basket-weave cushions"
       }
     },
     "furniture/material": {
-      "method": "derived: last frame of the generated camera move furniture/product>material",
-      "move": "furniture/product>material",
-      "picked_source": "work/v2/furniture_material.weave075.png",
-      "post": [
-        {
-          "kind": "refine",
-          "key": "furniture/material",
-          "model": "z_image_turbo_bf16",
-          "denoise": 0.2,
-          "size": [
-            1920,
-            1088
-          ],
-          "source": "work/anchors/furniture/material_q7.png",
-          "prompt": "Photorealistic high-end commercial photograph, crisp natural detail, realistic materials, soft natural light, natural contrast, true optical depth of field, no text, no logos.",
-          "output": "journey-media/work/refined/furniture/material.png",
-          "seconds": 30.1,
-          "at": "2026-09-26T13:10:00"
-        },
-        {
-          "kind": "refine",
-          "key": "furniture/material",
-          "model": "z_image_turbo_bf16",
-          "denoise": 0.15,
-          "size": [
-            1920,
-            1088
-          ],
-          "source": "work/v2/furniture__product-to-material.clip_last.png",
-          "prompt": "Photorealistic high-end commercial photograph, crisp natural detail, realistic materials, soft natural light, natural contrast, true optical depth of field, no text, no logos.",
-          "output": "journey-media/work/v2/furniture__product-to-material.clip_last.refined.png",
-          "seconds": 39.1,
-          "at": "2026-09-26T20:20:18"
-        },
-        {
-          "kind": "texture_fix",
-          "anchor": "final/furniture/material.png",
-          "ref": "work/refs/furniture_material_weave.png",
-          "model": "qwen_image_edit_2511_fp8mixed+lightning8",
-          "denoise": 0.45,
-          "seed": 7,
-          "prompt": "Keep this exact photograph: same oak lounge armchair, same framing, camera angle, light and colours. Make the seat and back cushion upholstery crisp, clean cream off-white basket-weave wool exactly like the fabric in the second image: regular interlaced yarns, no stray fibres, no lint, no stains. Photorealistic, sharp, no text.",
-          "output": "journey-media/work/v2/furniture_material.texfix.png",
-          "seconds": 99.2,
-          "at": "2026-09-26T21:35:53"
-        },
-        {
-          "kind": "refine",
-          "anchor": "final/furniture/material.png",
-          "model": "z_image_turbo_bf16",
-          "denoise": 0.15,
-          "size": [
-            1920,
-            1088
-          ],
-          "prompt": "Photorealistic high-end commercial photograph, crisp natural detail, realistic materials, soft natural light, natural contrast, true optical depth of field, no text, no logos.",
-          "output": "journey-media/work/v2/furniture_material.texfix.refined.png",
-          "seconds": 52.1,
-          "at": "2026-09-26T21:36:45"
-        },
-        {
-          "kind": "refine",
-          "key": "furniture/material",
-          "model": "z_image_turbo_bf16",
-          "denoise": 0.15,
-          "size": [
-            1920,
-            1088
-          ],
-          "source": "work/v2/furniture_material.weave075.png",
-          "prompt": "Photorealistic high-end commercial photograph, crisp natural detail, realistic materials, soft natural light, natural contrast, true optical depth of field, no text, no logos.",
-          "output": "journey-media/work/v2/furniture_material.weave075.refined.png",
-          "seconds": 52.2,
-          "at": "2026-09-26T21:51:13"
-        }
-      ],
+      "method": "v4: the still is the motion base's own end frame (tools/rig.py), composited from the same layers the clip moves - lounge master photo, the chair's real parts cut from it (SAM 2.1 + BiRefNet), plates made with Z-Image-Turbo / Qwen-Image-Edit, the oak macro and the prduct.com QR burn",
+      "source": "work/v4/bases/T3_first.png",
+      "stop": {
+        "panel": "right",
+        "alt": "The oak of the chair's side rail, close up"
+      },
       "final": "journey-media/final/furniture/material.png",
       "web": {
         "base": "media/furniture/material",
@@ -546,53 +969,18 @@
           1920,
           960
         ],
-        "rev": "62f87fbf9f",
-        "focus": "45% 55%",
+        "rev": "e648527b66",
+        "focus": "50% 50%",
         "panel": "right",
-        "alt": "The seat cushion close up: cream basket-weave wool on an oak frame"
+        "alt": "The oak of the chair's side rail, close up: straight grain and silver ray flecks"
       }
     },
     "furniture/component": {
-      "method": "Qwen-Image-Edit-2511 with reference images",
-      "picked_candidate": "work/anchors/furniture/component_q7.png",
-      "generation": {
-        "kind": "anchor",
-        "key": "furniture/component",
-        "model": "qwen_image_edit_2511_fp8mixed+lightning8",
-        "seed": 7,
-        "size": [
-          1664,
-          928
-        ],
-        "steps": 8,
-        "refs": [
-          "work/masters/furniture_f0_s11.png",
-          "work/anchors/furniture/material_q7.png"
-        ],
-        "prompt": "Low close-up under the front edge of the seat of this same armchair, the camera about thirty centimetres away, just below seat height, looking slightly upward into the construction. The underside edge of the cream basket-weave seat cushion rests on flat black elastic webbing straps that are stretched between the oak front rail and the rear rail; one strap is clipped into a slot in the oak rail; a graphite-black hex bolt joins the front rail to the tapered oak leg, the oak end grain visible at the joint. It is clear how upholstery, cushion, timber frame and fastening work together. Soft daylight, shallow depth of field, the room softly blurred. Photorealistic product detail photograph, 50mm lens.",
-        "output": "journey-media/work/anchors/furniture/component_q7.png",
-        "seconds": 80.1,
-        "at": "2026-09-26T12:47:01"
-      },
-      "prompt": "Low close-up under the front edge of the seat of this same armchair, the camera about thirty centimetres away, just below seat height, looking slightly upward into the construction. The underside edge of the cream basket-weave seat cushion rests on flat black elastic webbing straps that are stretched between the oak front rail and the rear rail; one strap is clipped into a slot in the oak rail; a graphite-black hex bolt joins the front rail to the tapered oak leg, the oak end grain visible at the joint. It is clear how upholstery, cushion, timber frame and fastening work together. Soft daylight, shallow depth of field, the room softly blurred. Photorealistic product detail photograph, 50mm lens.",
-      "refs": [
-        "furniture/master",
-        "furniture/material"
-      ],
-      "refine": {
-        "kind": "refine",
-        "key": "furniture/component",
-        "model": "z_image_turbo_bf16",
-        "denoise": 0.2,
-        "size": [
-          1920,
-          1088
-        ],
-        "source": "work/anchors/furniture/component_q7.png",
-        "prompt": "Photorealistic high-end commercial photograph, crisp natural detail, realistic materials, soft natural light, natural contrast, true optical depth of field, no text, no logos.",
-        "output": "journey-media/work/refined/furniture/component.png",
-        "seconds": 32.0,
-        "at": "2026-09-26T13:10:33"
+      "method": "v4: the still is the motion base's own end frame (tools/rig.py), composited from the same layers the clip moves - lounge master photo, the chair's real parts cut from it (SAM 2.1 + BiRefNet), plates made with Z-Image-Turbo / Qwen-Image-Edit, the oak macro and the prduct.com QR burn",
+      "source": "work/v4/bases/T4_first.png",
+      "stop": {
+        "panel": "right",
+        "alt": "The chair taken apart: side frames, rails, cushions and bolts float apart"
       },
       "final": "journey-media/final/furniture/component.png",
       "web": {
@@ -601,33 +989,19 @@
           1920,
           960
         ],
-        "rev": "667b954a22",
-        "focus": "40% 55%",
+        "rev": "60f26fd696",
+        "focus": "35% 55%",
         "panel": "right",
-        "alt": "Under the seat: webbing, oak rails and a graphite bolt"
+        "alt": "The chair taken apart: its oak leg frames, rails, bolts and cushions float apart"
       }
     },
     "furniture/supplier": {
-      "method": "Z-Image-Turbo text-to-image",
-      "picked_candidate": "work/anchors/furniture/supplier_z7.png",
-      "generation": {
-        "kind": "anchor",
-        "key": "furniture/supplier",
-        "model": "z_image_turbo_bf16",
-        "seed": 7,
-        "size": [
-          1920,
-          1088
-        ],
-        "steps": 8,
-        "prompt": "Inside a quiet Danish hardwood supplier's timber hall: neat stacks of kiln-dried, planed European white oak boards (Quercus robur), knot-free, straight-grained, pale golden-brown with fine silvery ray flecks, separated by thin stickers. The end of the nearest stack is close to the camera on the left, its board faces showing the oak figure; each stack carries a small blank paper batch tag. Tall windows with soft northern daylight, pale concrete floor, a graphite-grey forklift parked softly out of focus in the distance. Calm, orderly, premium material, traceable source. Camera at chest height, 35mm lens. Premium Nordic product cinematography, photorealistic, ARRI Alexa 35 look, subtle Cooke lens character, soft northern European daylight, natural contrast, realistic PBR materials, real optical depth of field, restrained luxury, no text, no letters, no logos, no brand marks, no watermark.",
-        "output": "journey-media/work/anchors/furniture/supplier_z7.png",
-        "seconds": 30.1,
-        "at": "2026-09-26T12:42:30"
+      "method": "v4: the still is the motion base's own end frame (tools/rig.py), composited from the same layers the clip moves - lounge master photo, the chair's real parts cut from it (SAM 2.1 + BiRefNet), plates made with Z-Image-Turbo / Qwen-Image-Edit, the oak macro and the prduct.com QR burn",
+      "source": "work/v4/bases/T5_first.png",
+      "stop": {
+        "panel": "right",
+        "alt": "One oak leg frame from the chair, floating on its own"
       },
-      "prompt": "Inside a quiet Danish hardwood supplier's timber hall: neat stacks of kiln-dried, planed European white oak boards (Quercus robur), knot-free, straight-grained, pale golden-brown with fine silvery ray flecks, separated by thin stickers. The end of the nearest stack is close to the camera on the left, its board faces showing the oak figure; each stack carries a small blank paper batch tag. Tall windows with soft northern daylight, pale concrete floor, a graphite-grey forklift parked softly out of focus in the distance. Calm, orderly, premium material, traceable source. Camera at chest height, 35mm lens. Premium Nordic product cinematography, photorealistic, ARRI Alexa 35 look, subtle Cooke lens character, soft northern European daylight, natural contrast, realistic PBR materials, real optical depth of field, restrained luxury, no text, no letters, no logos, no brand marks, no watermark.",
-      "refs": null,
-      "refine": null,
       "final": "journey-media/final/furniture/supplier.png",
       "web": {
         "base": "media/furniture/supplier",
@@ -635,51 +1009,18 @@
           1920,
           960
         ],
-        "rev": "d077fe2638",
-        "focus": "32% 55%",
+        "rev": "85993768cc",
+        "focus": "30% 55%",
         "panel": "right",
-        "alt": "Stacks of planed oak boards at a timber supplier"
+        "alt": "One oak leg frame from the chair, on its own: legs, back stile, armrest and side rail"
       }
     },
     "furniture/logistics": {
-      "method": "Qwen-Image-Edit-2511 with reference images",
-      "picked_candidate": "work/anchors/furniture/logistics_q7.png",
-      "generation": {
-        "kind": "anchor",
-        "key": "furniture/logistics",
-        "model": "qwen_image_edit_2511_fp8mixed+lightning8",
-        "seed": 7,
-        "size": [
-          1664,
-          928
-        ],
-        "steps": 8,
-        "refs": [
-          "work/anchors/furniture/supplier_z7.png"
-        ],
-        "prompt": "In the same timber warehouse, the camera has moved about four metres to the right towards the open loading bay. A graphite-grey forklift carries a strapped bundle of the same planed oak boards, wrapped in clear protective film on a wooden pallet, towards a waiting truck trailer at the bay door; soft daylight comes through the open door. The end grain of the bundle faces the camera. Same light, same materials. Photorealistic industrial photograph, 35mm lens.",
-        "output": "journey-media/work/anchors/furniture/logistics_q7.png",
-        "seconds": 62.2,
-        "at": "2026-09-26T12:44:38"
-      },
-      "prompt": "In the same timber warehouse, the camera has moved about four metres to the right towards the open loading bay. A graphite-grey forklift carries a strapped bundle of the same planed oak boards, wrapped in clear protective film on a wooden pallet, towards a waiting truck trailer at the bay door; soft daylight comes through the open door. The end grain of the bundle faces the camera. Same light, same materials. Photorealistic industrial photograph, 35mm lens.",
-      "refs": [
-        "furniture/supplier"
-      ],
-      "refine": {
-        "kind": "refine",
-        "key": "furniture/logistics",
-        "model": "z_image_turbo_bf16",
-        "denoise": 0.2,
-        "size": [
-          1920,
-          1088
-        ],
-        "source": "work/anchors/furniture/logistics_q7.png",
-        "prompt": "Photorealistic high-end commercial photograph, crisp natural detail, realistic materials, soft natural light, natural contrast, true optical depth of field, no text, no logos.",
-        "output": "journey-media/work/refined/furniture/logistics.png",
-        "seconds": 32.0,
-        "at": "2026-09-26T13:11:06"
+      "method": "v4: the still is the motion base's own end frame (tools/rig.py), composited from the same layers the clip moves - lounge master photo, the chair's real parts cut from it (SAM 2.1 + BiRefNet), plates made with Z-Image-Turbo / Qwen-Image-Edit, the oak macro and the prduct.com QR burn",
+      "source": "work/v4/bases/T6_first.png",
+      "stop": {
+        "panel": "right",
+        "alt": "The leg frame arrives in the dispatch hall of the factory that makes it"
       },
       "final": "journey-media/final/furniture/logistics.png",
       "web": {
@@ -688,33 +1029,19 @@
           1920,
           960
         ],
-        "rev": "a7a85345ba",
-        "focus": "38% 55%",
+        "rev": "7a61f0cab1",
+        "focus": "35% 55%",
         "panel": "right",
-        "alt": "A forklift carries a wrapped bundle of oak boards to a truck"
+        "alt": "The leg frame arrives in the factory that makes it"
       }
     },
     "furniture/factory": {
-      "method": "Z-Image-Turbo text-to-image",
-      "picked_candidate": "work/anchors/furniture/factory_z7.png",
-      "generation": {
-        "kind": "anchor",
-        "key": "furniture/factory",
-        "model": "z_image_turbo_bf16",
-        "seed": 7,
-        "size": [
-          1920,
-          1088
-        ],
-        "steps": 8,
-        "prompt": "Inside a modern Danish furniture factory: in the foreground a large enclosed industrial five-axis CNC machining centre in graphite grey with its glass door open, the spindle lowered over a curved solid oak armrest clamped on a vacuum table, fine pale oak shavings; beside it a steel trolley holding rows of identical machined oak armrests and tapered legs; beyond, a clean assembly area with rolls of cream upholstery fabric, tall windows and soft northern daylight. Orderly, precise, premium European manufacturing, no people in focus, no screens, no signage. Camera at chest height, 35mm lens. Premium Nordic product cinematography, photorealistic, ARRI Alexa 35 look, subtle Cooke lens character, soft northern European daylight, natural contrast, realistic PBR materials, real optical depth of field, restrained luxury, no text, no letters, no logos, no brand marks, no watermark.",
-        "output": "journey-media/work/anchors/furniture/factory_z7.png",
-        "seconds": 30.7,
-        "at": "2026-09-26T12:43:35"
+      "method": "v4: the still is the motion base's own end frame (tools/rig.py), composited from the same layers the clip moves - lounge master photo, the chair's real parts cut from it (SAM 2.1 + BiRefNet), plates made with Z-Image-Turbo / Qwen-Image-Edit, the oak macro and the prduct.com QR burn",
+      "source": "work/v4/bases/T7_first.png",
+      "stop": {
+        "panel": "left",
+        "alt": "The leg frame on the bed of a laser engraver in the component factory"
       },
-      "prompt": "Inside a modern Danish furniture factory: in the foreground a large enclosed industrial five-axis CNC machining centre in graphite grey with its glass door open, the spindle lowered over a curved solid oak armrest clamped on a vacuum table, fine pale oak shavings; beside it a steel trolley holding rows of identical machined oak armrests and tapered legs; beyond, a clean assembly area with rolls of cream upholstery fabric, tall windows and soft northern daylight. Orderly, precise, premium European manufacturing, no people in focus, no screens, no signage. Camera at chest height, 35mm lens. Premium Nordic product cinematography, photorealistic, ARRI Alexa 35 look, subtle Cooke lens character, soft northern European daylight, natural contrast, realistic PBR materials, real optical depth of field, restrained luxury, no text, no letters, no logos, no brand marks, no watermark.",
-      "refs": null,
-      "refine": null,
       "final": "journey-media/final/furniture/factory.png",
       "web": {
         "base": "media/furniture/factory",
@@ -722,51 +1049,18 @@
           1920,
           960
         ],
-        "rev": "5063f53577",
-        "focus": "62% 55%",
+        "rev": "7f1564e6f4",
+        "focus": "60% 55%",
         "panel": "left",
-        "alt": "A CNC machine shaping an oak armrest in a furniture factory"
+        "alt": "The leg frame on the table of a laser marking station"
       }
     },
     "furniture/data": {
-      "method": "Qwen-Image-Edit-2511 with reference images",
-      "picked_candidate": "work/anchors/furniture/data_q7.png",
-      "generation": {
-        "kind": "anchor",
-        "key": "furniture/data",
-        "model": "qwen_image_edit_2511_fp8mixed+lightning8",
-        "seed": 7,
-        "size": [
-          1664,
-          928
-        ],
-        "steps": 8,
-        "refs": [
-          "work/anchors/furniture/factory_z7.png"
-        ],
-        "prompt": "In the same furniture factory, the camera has moved to a pale oak quality-control bench beside the CNC machine: on the bench lies one finished machined oak armrest part, and a worker's hand holds a graphite handheld scanner over a small laser-etched square code on the oak surface. No screens, monitors or readable text anywhere in the frame. Same soft daylight, shallow depth of field, focus on the etched code and the scanner. Photorealistic industrial photograph, 50mm lens.",
-        "output": "journey-media/work/anchors/furniture/data_q7.png",
-        "seconds": 62.3,
-        "at": "2026-09-26T12:45:40"
-      },
-      "prompt": "In the same furniture factory, the camera has moved to a pale oak quality-control bench beside the CNC machine: on the bench lies one finished machined oak armrest part, and a worker's hand holds a graphite handheld scanner over a small laser-etched square code on the oak surface. No screens, monitors or readable text anywhere in the frame. Same soft daylight, shallow depth of field, focus on the etched code and the scanner. Photorealistic industrial photograph, 50mm lens.",
-      "refs": [
-        "furniture/factory"
-      ],
-      "refine": {
-        "kind": "refine",
-        "key": "furniture/data",
-        "model": "z_image_turbo_bf16",
-        "denoise": 0.2,
-        "size": [
-          1920,
-          1088
-        ],
-        "source": "work/anchors/furniture/data_q7.png",
-        "prompt": "Photorealistic high-end commercial photograph, crisp natural detail, realistic materials, soft natural light, natural contrast, true optical depth of field, no text, no logos.",
-        "output": "journey-media/work/refined/furniture/data.png",
-        "seconds": 32.0,
-        "at": "2026-09-26T13:11:40"
+      "method": "v4: the still is the motion base's own end frame (tools/rig.py), composited from the same layers the clip moves - lounge master photo, the chair's real parts cut from it (SAM 2.1 + BiRefNet), plates made with Z-Image-Turbo / Qwen-Image-Edit, the oak macro and the prduct.com QR burn",
+      "source": "work/v4/bases/T8_first.png",
+      "stop": {
+        "panel": "left",
+        "alt": "The prduct.com QR code laser-etched into the oak"
       },
       "final": "journey-media/final/furniture/data.png",
       "web": {
@@ -775,57 +1069,22 @@
           1920,
           960
         ],
-        "rev": "5275e137cd",
-        "focus": "62% 55%",
+        "rev": "692e8903f9",
+        "focus": "60% 50%",
         "panel": "left",
-        "alt": "A scanner reads an etched code on an oak part",
+        "alt": "The prduct.com QR code laser-etched into the oak",
         "hotspot": [
-          64,
-          60
+          59.9,
+          50.0
         ]
       }
     },
     "furniture/passport": {
-      "method": "Qwen-Image-Edit-2511 with reference images",
-      "picked_candidate": "work/anchors/furniture/passport_q19.png",
-      "generation": {
-        "kind": "anchor",
-        "key": "furniture/passport",
-        "model": "qwen_image_edit_2511_fp8mixed+lightning8",
-        "seed": 19,
-        "size": [
-          1664,
-          928
-        ],
-        "steps": 8,
-        "refs": [
-          "work/masters/furniture_f0_s11.png",
-          "work/anchors/furniture/component_q7.png"
-        ],
-        "prompt": "The same armchair as in the reference images, identical design \u2014 flat oak armrests with dark rounded ends, straight tapered legs, oak side rails with graphite bolt heads, thick cream basket-weave cushions \u2014 in the same bright living room, seen closer from the front right at seat height, about seventy centimetres away. A person's hand holding a dark smartphone approaches a small laser-etched square code on the outer face of the oak side rail below the armrest; the phone screen is dark and faces the chair. Window light behind, shallow depth of field, focus on the rail and the phone. Photorealistic lifestyle product photograph, 50mm lens.",
-        "output": "journey-media/work/anchors/furniture/passport_q19.png",
-        "seconds": 80.9,
-        "at": "2026-09-26T12:48:22"
-      },
-      "prompt": "The same armchair as in the reference images, identical design \u2014 flat oak armrests with dark rounded ends, straight tapered legs, oak side rails with graphite bolt heads, thick cream basket-weave cushions \u2014 in the same bright living room, seen closer from the front right at seat height, about seventy centimetres away. A person's hand holding a dark smartphone approaches a small laser-etched square code on the outer face of the oak side rail below the armrest; the phone screen is dark and faces the chair. Window light behind, shallow depth of field, focus on the rail and the phone. Photorealistic lifestyle product photograph, 50mm lens.",
-      "refs": [
-        "furniture/master",
-        "furniture/component"
-      ],
-      "refine": {
-        "kind": "refine",
-        "key": "furniture/passport",
-        "model": "z_image_turbo_bf16",
-        "denoise": 0.2,
-        "size": [
-          1920,
-          1088
-        ],
-        "source": "work/anchors/furniture/passport_q19.png",
-        "prompt": "Photorealistic high-end commercial photograph, crisp natural detail, realistic materials, soft natural light, natural contrast, true optical depth of field, no text, no logos.",
-        "output": "journey-media/work/refined/furniture/passport.png",
-        "seconds": 32.0,
-        "at": "2026-09-26T13:12:14"
+      "method": "v4: the still is the motion base's own end frame (tools/rig.py), composited from the same layers the clip moves - lounge master photo, the chair's real parts cut from it (SAM 2.1 + BiRefNet), plates made with Z-Image-Turbo / Qwen-Image-Edit, the oak macro and the prduct.com QR burn",
+      "source": "work/v4/bases/T9_first.png",
+      "stop": {
+        "panel": "right",
+        "alt": "A phone scans the QR code on the chair's oak side rail"
       },
       "final": "journey-media/final/furniture/passport.png",
       "web": {
@@ -834,55 +1093,22 @@
           1920,
           960
         ],
-        "rev": "8535bbba7f",
-        "focus": "62% 50%",
-        "panel": "left",
-        "alt": "A phone approaches the code on the chair's oak rail",
+        "rev": "3e407a3c80",
+        "focus": "30% 60%",
+        "panel": "right",
+        "alt": "A phone scans the QR code on the chair's oak side rail",
         "hotspot": [
-          53.5,
-          60.5
+          16.4,
+          69.1
         ]
       }
     },
     "furniture/nextLife": {
-      "method": "Qwen-Image-Edit-2511 with reference images",
-      "picked_candidate": "work/anchors/furniture/nextLife_q19.png",
-      "generation": {
-        "kind": "anchor",
-        "key": "furniture/nextLife",
-        "model": "qwen_image_edit_2511_fp8mixed+lightning8",
-        "seed": 19,
-        "size": [
-          1664,
-          928
-        ],
-        "steps": 8,
-        "refs": [
-          "work/masters/furniture_f0_s11.png"
-        ],
-        "prompt": "The same armchair years later in a specialist furniture repair workshop. It stands on a sturdy wooden workbench, carefully partly taken apart: the seat and back cushions are off and lie beside it, one cream basket-weave cover unzipped and folded back to show the foam inside; the bare oak frame and the black elastic webbing are visible; graphite bolts and fittings are organised in a small wooden tray; a craftsperson's hands in a canvas apron fit a new webbing strap. Hand tools on a pegboard, warm daylight from tall workshop windows. Clean, calm air with no floating dust or particles, a smooth well-kept oak workbench top. Repair and longevity, precise and unhurried. Photorealistic editorial photograph, 35mm lens.",
-        "output": "journey-media/work/anchors/furniture/nextLife_q19.png",
-        "seconds": 61.2,
-        "at": "2026-09-26T13:01:09"
-      },
-      "prompt": "The same armchair years later in a specialist furniture repair workshop. It stands on a sturdy wooden workbench, carefully partly taken apart: the seat and back cushions are off and lie beside it, one cream basket-weave cover unzipped and folded back to show the foam inside; the bare oak frame and the black elastic webbing are visible; graphite bolts and fittings are organised in a small wooden tray; a craftsperson's hands in a canvas apron fit a new webbing strap. Hand tools on a pegboard, warm daylight from tall workshop windows. Clean, calm air with no floating dust or particles, a smooth well-kept oak workbench top. Repair and longevity, precise and unhurried. Photorealistic editorial photograph, 35mm lens.",
-      "refs": [
-        "furniture/master"
-      ],
-      "refine": {
-        "kind": "refine",
-        "key": "furniture/nextLife",
-        "model": "z_image_turbo_bf16",
-        "denoise": 0.2,
-        "size": [
-          1920,
-          1088
-        ],
-        "source": "work/anchors/furniture/nextLife_q19.png",
-        "prompt": "Photorealistic high-end commercial photograph, crisp natural detail, realistic materials, soft natural light, natural contrast, true optical depth of field, no text, no logos.",
-        "output": "journey-media/work/refined/furniture/nextLife.png",
-        "seconds": 32.0,
-        "at": "2026-09-26T13:13:19"
+      "method": "v4: the still is the motion base's own end frame (tools/rig.py), composited from the same layers the clip moves - lounge master photo, the chair's real parts cut from it (SAM 2.1 + BiRefNet), plates made with Z-Image-Turbo / Qwen-Image-Edit, the oak macro and the prduct.com QR burn",
+      "source": "work/v4/bases/T9_last.png",
+      "stop": {
+        "panel": "left",
+        "alt": "The chair on the bench of a repair and upholstery workshop"
       },
       "final": "journey-media/final/furniture/nextLife.png",
       "web": {
@@ -891,10 +1117,10 @@
           1920,
           960
         ],
-        "rev": "6bde3dbcb4",
-        "focus": "55% 55%",
+        "rev": "f5e2915052",
+        "focus": "45% 55%",
         "panel": "left",
-        "alt": "The chair partly taken apart for repair in a workshop"
+        "alt": "The chair on the bench of a repair and upholstery workshop"
       }
     },
     "battery/company": {
@@ -2965,8 +3191,32 @@
   },
   "transitions": {
     "furniture/company>product": {
-      "type": "single continuous camera move",
-      "move": "furniture/company>product",
+      "type": "v4: 2.5D layer animation (real object and camera motion: parts float apart, the leg frame glides, turns, travels and lands, the chair flies; laser raster reveal) rendered by LTX-2.5 video-to-video at denoise 0.975 with BOTH end stills as guides (frame 0 and the last frame)",
+      "move": "T1",
+      "scene": "work/v4/scenes/T1_company-product.json",
+      "layers": [
+        "lounge"
+      ],
+      "prompt": "A slow, smooth camera pan to the right across a bright, calm Scandinavian living room: a low oak lounge armchair with cream basket-weave wool cushions on a pale grey rug by tall black-framed windows; outside, white birch trunks and autumn leaves sway gently in a light breeze; soft overcast daylight. Photorealistic, premium Nordic product cinematography, real optical depth of field, natural motion blur, steady and smooth, one continuous shot, no cuts, no text.",
+      "seed": 101,
+      "take": "work/v4/clips/T1.mp4",
+      "render": {
+        "kind": "v4_move",
+        "key": "T1",
+        "tag": "",
+        "model": "ltx-2.5-22b-distilled-int8 (video-to-video, 1920x1088)",
+        "base": "work/v4/bases/T1.mp4",
+        "scene": "work/v4/scenes/T1_company-product.json",
+        "denoise": 0.975,
+        "frames": 97,
+        "fps": 24,
+        "seed": 101,
+        "guides": "frame 0 = start still, last frame = end still",
+        "prompt": "A slow, smooth camera pan to the right across a bright, calm Scandinavian living room: a low oak lounge armchair with cream basket-weave wool cushions on a pale grey rug by tall black-framed windows; outside, white birch trunks and autumn leaves sway gently in a light breeze; soft overcast daylight. Photorealistic, premium Nordic product cinematography, real optical depth of field, natural motion blur, steady and smooth, one continuous shot, no cuts, no text.",
+        "output": "journey-media/work/v4/clips/T1.mp4",
+        "seconds": 2767.4,
+        "at": "2026-09-27T17:08:02"
+      },
       "final": "journey-media/final/furniture/company-product.mp4",
       "web": {
         "base": "media/furniture/company-product",
@@ -2974,7 +3224,7 @@
           "1080",
           "540"
         ],
-        "rev": "cf2e0f4140",
+        "rev": "6ab8cad4d6",
         "codecs": [
           "av1",
           "h264"
@@ -2985,11 +3235,36 @@
         "cue": 0.8,
         "poster": "media/furniture/company"
       },
-      "post": "endpoints pinned to the exact anchor stills with a 6-frame smoothstep blend; AV1 (SVT-AV1 crf 30/32) + H.264 (x264 crf 19/21) at 1080p and 540p, no audio"
+      "post": "endpoints pinned to the exact anchor stills with a 6-frame smoothstep blend"
     },
     "furniture/product>material": {
-      "type": "single continuous camera move",
-      "move": "furniture/product>material",
+      "type": "v4: 2.5D layer animation (real object and camera motion: parts float apart, the leg frame glides, turns, travels and lands, the chair flies; laser raster reveal) rendered by LTX-2.5 video-to-video at denoise 0.975 with BOTH end stills as guides (frame 0 and the last frame)",
+      "move": "T2",
+      "scene": "work/v4/scenes/T2_product-material.json",
+      "layers": [
+        "lounge",
+        "oak"
+      ],
+      "prompt": "The camera glides smoothly toward the oak lounge armchair and pushes in close to the flat oak side rail below its seat, until the fine straight grain of the oak fills the whole frame: grain lines, silvery ray flecks and pores coming into sharp focus. One continuous, steady camera move, macro lens at the end. Photorealistic, premium Nordic product cinematography, real optical depth of field, natural motion blur, steady and smooth, one continuous shot, no cuts, no text.",
+      "seed": 202,
+      "take": "work/v4/clips/T2.mp4",
+      "render": {
+        "kind": "v4_move",
+        "key": "T2",
+        "tag": "",
+        "model": "ltx-2.5-22b-distilled-int8 (video-to-video, 1920x1088)",
+        "base": "work/v4/bases/T2.mp4",
+        "scene": "work/v4/scenes/T2_product-material.json",
+        "denoise": 0.975,
+        "frames": 97,
+        "fps": 24,
+        "seed": 202,
+        "guides": "frame 0 = start still, last frame = end still",
+        "prompt": "The camera glides smoothly toward the oak lounge armchair and pushes in close to the flat oak side rail below its seat, until the fine straight grain of the oak fills the whole frame: grain lines, silvery ray flecks and pores coming into sharp focus. One continuous, steady camera move, macro lens at the end. Photorealistic, premium Nordic product cinematography, real optical depth of field, natural motion blur, steady and smooth, one continuous shot, no cuts, no text.",
+        "output": "journey-media/work/v4/clips/T2.mp4",
+        "seconds": 401.1,
+        "at": "2026-09-27T17:20:17"
+      },
       "final": "journey-media/final/furniture/product-material.mp4",
       "web": {
         "base": "media/furniture/product-material",
@@ -2997,7 +3272,7 @@
           "1080",
           "540"
         ],
-        "rev": "fb699c52ae",
+        "rev": "0683152ce0",
         "codecs": [
           "av1",
           "h264"
@@ -3008,13 +3283,49 @@
         "cue": 0.8,
         "poster": "media/furniture/product"
       },
-      "post": "endpoints pinned to the exact anchor stills with a 6-frame smoothstep blend; AV1 (SVT-AV1 crf 30/32) + H.264 (x264 crf 19/21) at 1080p and 540p, no audio"
+      "post": "endpoints pinned to the exact anchor stills with a 6-frame smoothstep blend"
     },
     "furniture/material>component": {
-      "type": "match cut through material on motion: push into A's material, cut at the macro, B's push played in reverse lands on the next anchor",
-      "a_push": "furniture/material@weave",
-      "b_push_reversed": "furniture/component@weave",
-      "frames": "48 + 49 = 97",
+      "type": "v4: 2.5D layer animation (real object and camera motion: parts float apart, the leg frame glides, turns, travels and lands, the chair flies; laser raster reveal) rendered by LTX-2.5 video-to-video at denoise 0.975 with BOTH end stills as guides (frame 0 and the last frame)",
+      "move": "T3",
+      "scene": "work/v4/scenes/T3_material-component.json",
+      "layers": [
+        "plate",
+        "far_frame",
+        "back_rail",
+        "bolt_far0",
+        "bolt_far1",
+        "bolt_far2",
+        "bolt_far3",
+        "cushions",
+        "front_rail",
+        "bolt_near0",
+        "bolt_near1",
+        "bolt_near2",
+        "bolt_near3",
+        "near_frame",
+        "oak"
+      ],
+      "prompt": "Starting on an extreme macro of oak grain, the camera pulls smoothly back to reveal the oak lounge armchair in a bright living room; then the chair gently comes apart in mid-air: the two oak side frames drift outward, the cushions lift up together, the front and back rails drop a little, and graphite bolts slide out of their holes, until every part floats weightlessly, spaced apart like a real exploded view. Photorealistic, premium Nordic product cinematography, real optical depth of field, natural motion blur, steady and smooth, one continuous shot, no cuts, no text.",
+      "seed": 303,
+      "take": "work/v4/clips/T3_b.mp4",
+      "render": {
+        "kind": "v4_move",
+        "key": "T3",
+        "tag": "_b",
+        "model": "ltx-2.5-22b-distilled-int8 (video-to-video, 1920x1088)",
+        "base": "work/v4/bases/T3.mp4",
+        "scene": "work/v4/scenes/T3_material-component.json",
+        "denoise": 0.975,
+        "frames": 97,
+        "fps": 24,
+        "seed": 303,
+        "guides": "frame 0 = start still, last frame = end still",
+        "prompt": "Starting on an extreme macro of oak grain, the camera pulls smoothly back to reveal the oak lounge armchair in a bright living room; then the chair gently comes apart in mid-air: the two oak side frames drift outward, the cushions lift up together, the front and back rails drop a little, and graphite bolts slide out of their holes, until every part floats weightlessly, spaced apart like a real exploded view. Photorealistic, premium Nordic product cinematography, real optical depth of field, natural motion blur, steady and smooth, one continuous shot, no cuts, no text.",
+        "output": "journey-media/work/v4/clips/T3_b.mp4",
+        "seconds": 688.9,
+        "at": "2026-09-27T22:42:54"
+      },
       "final": "journey-media/final/furniture/material-component.mp4",
       "web": {
         "base": "media/furniture/material-component",
@@ -3022,7 +3333,7 @@
           "1080",
           "540"
         ],
-        "rev": "3c05151ea8",
+        "rev": "7c0e3b3900",
         "codecs": [
           "av1",
           "h264"
@@ -3033,13 +3344,48 @@
         "cue": 0.8,
         "poster": "media/furniture/material"
       },
-      "post": "endpoints pinned to the exact anchor stills with a 6-frame smoothstep blend; AV1 (SVT-AV1 crf 30/32) + H.264 (x264 crf 19/21) at 1080p and 540p, no audio"
+      "post": "endpoints pinned to the exact anchor stills with a 6-frame smoothstep blend"
     },
     "furniture/component>supplier": {
-      "type": "match cut through material on motion: push into A's material, cut at the macro, B's push played in reverse lands on the next anchor",
-      "a_push": "furniture/component@oak",
-      "b_push_reversed": "furniture/supplier@oak",
-      "frames": "48 + 49 = 97",
+      "type": "v4: 2.5D layer animation (real object and camera motion: parts float apart, the leg frame glides, turns, travels and lands, the chair flies; laser raster reveal) rendered by LTX-2.5 video-to-video at denoise 0.975 with BOTH end stills as guides (frame 0 and the last frame)",
+      "move": "T4",
+      "scene": "work/v4/scenes/T4_component-supplier.json",
+      "layers": [
+        "plate",
+        "far_frame",
+        "back_rail",
+        "bolt_far0",
+        "bolt_far1",
+        "bolt_far2",
+        "bolt_far3",
+        "cushions",
+        "front_rail",
+        "bolt_near0",
+        "bolt_near1",
+        "bolt_near2",
+        "bolt_near3",
+        "near_frame"
+      ],
+      "prompt": "The parts of a disassembled oak lounge chair float in mid-air in a bright living room. One oak side frame - front leg, rear leg, back stile, armrest and side rail in one piece - glides smoothly toward the camera and turns slightly, while the other parts drift back and fall softly out of focus behind it. Rack focus onto the oak frame. Photorealistic, premium Nordic product cinematography, real optical depth of field, natural motion blur, steady and smooth, one continuous shot, no cuts, no text.",
+      "seed": 404,
+      "take": "work/v4/clips/T4_b.mp4",
+      "render": {
+        "kind": "v4_move",
+        "key": "T4",
+        "tag": "_b",
+        "model": "ltx-2.5-22b-distilled-int8 (video-to-video, 1920x1088)",
+        "base": "work/v4/bases/T4.mp4",
+        "scene": "work/v4/scenes/T4_component-supplier.json",
+        "denoise": 0.975,
+        "frames": 97,
+        "fps": 24,
+        "seed": 404,
+        "guides": "frame 0 = start still, last frame = end still",
+        "prompt": "The parts of a disassembled oak lounge chair float in mid-air in a bright living room. One oak side frame - front leg, rear leg, back stile, armrest and side rail in one piece - glides smoothly toward the camera and turns slightly, while the other parts drift back and fall softly out of focus behind it. Rack focus onto the oak frame. Photorealistic, premium Nordic product cinematography, real optical depth of field, natural motion blur, steady and smooth, one continuous shot, no cuts, no text.",
+        "output": "journey-media/work/v4/clips/T4_b.mp4",
+        "seconds": 389.6,
+        "at": "2026-09-27T22:53:09"
+      },
       "final": "journey-media/final/furniture/component-supplier.mp4",
       "web": {
         "base": "media/furniture/component-supplier",
@@ -3047,7 +3393,7 @@
           "1080",
           "540"
         ],
-        "rev": "6aa482c9e9",
+        "rev": "8f71056847",
         "codecs": [
           "av1",
           "h264"
@@ -3058,13 +3404,38 @@
         "cue": 0.8,
         "poster": "media/furniture/component"
       },
-      "post": "endpoints pinned to the exact anchor stills with a 6-frame smoothstep blend; AV1 (SVT-AV1 crf 30/32) + H.264 (x264 crf 19/21) at 1080p and 540p, no audio"
+      "post": "endpoints pinned to the exact anchor stills with a 6-frame smoothstep blend"
     },
     "furniture/supplier>logistics": {
-      "type": "match cut through material on motion: push into A's material, cut at the macro, B's push played in reverse lands on the next anchor",
-      "a_push": "furniture/supplier@oak",
-      "b_push_reversed": "furniture/logistics@oak",
-      "frames": "48 + 49 = 97",
+      "type": "v4: 2.5D layer animation (real object and camera motion: parts float apart, the leg frame glides, turns, travels and lands, the chair flies; laser raster reveal) rendered by LTX-2.5 video-to-video at denoise 0.975 with BOTH end stills as guides (frame 0 and the last frame)",
+      "move": "T5",
+      "scene": "work/v4/scenes/T5_supplier-logistics.json",
+      "layers": [
+        "s5_bg",
+        "station",
+        "frame",
+        "s5_exact"
+      ],
+      "prompt": "An oak chair side frame floats in mid-air in the foreground, sharp, while the camera travels with it: behind it the bright living room whips away sideways in a streak of motion blur and a bright furniture component factory hall slides in, softly out of focus, with a work table, a marking machine and pallets of wrapped chairs. The frame drifts and turns slightly as it travels. Photorealistic, premium Nordic product cinematography, real optical depth of field, natural motion blur, steady and smooth, one continuous shot, no cuts, no text.",
+      "seed": 505,
+      "take": "work/v4/clips/T5_b.mp4",
+      "render": {
+        "kind": "v4_move",
+        "key": "T5",
+        "tag": "_b",
+        "model": "ltx-2.5-22b-distilled-int8 (video-to-video, 1920x1088)",
+        "base": "work/v4/bases/T5.mp4",
+        "scene": "work/v4/scenes/T5_supplier-logistics.json",
+        "denoise": 0.975,
+        "frames": 97,
+        "fps": 24,
+        "seed": 505,
+        "guides": "frame 0 = start still, last frame = end still",
+        "prompt": "An oak chair side frame floats in mid-air in the foreground, sharp, while the camera travels with it: behind it the bright living room whips away sideways in a streak of motion blur and a bright furniture component factory hall slides in, softly out of focus, with a work table, a marking machine and pallets of wrapped chairs. The frame drifts and turns slightly as it travels. Photorealistic, premium Nordic product cinematography, real optical depth of field, natural motion blur, steady and smooth, one continuous shot, no cuts, no text.",
+        "output": "journey-media/work/v4/clips/T5_b.mp4",
+        "seconds": 389.0,
+        "at": "2026-09-27T23:09:55"
+      },
       "final": "journey-media/final/furniture/supplier-logistics.mp4",
       "web": {
         "base": "media/furniture/supplier-logistics",
@@ -3072,7 +3443,7 @@
           "1080",
           "540"
         ],
-        "rev": "a413ab983b",
+        "rev": "4b41b9fbd4",
         "codecs": [
           "av1",
           "h264"
@@ -3083,13 +3454,37 @@
         "cue": 0.8,
         "poster": "media/furniture/supplier"
       },
-      "post": "endpoints pinned to the exact anchor stills with a 6-frame smoothstep blend; AV1 (SVT-AV1 crf 30/32) + H.264 (x264 crf 19/21) at 1080p and 540p, no audio"
+      "post": "endpoints pinned to the exact anchor stills with a 6-frame smoothstep blend"
     },
     "furniture/logistics>factory": {
-      "type": "match cut through material on motion: push into A's material, cut at the macro, B's push played in reverse lands on the next anchor",
-      "a_push": "furniture/logistics@oak",
-      "b_push_reversed": "furniture/factory@oak",
-      "frames": "48 + 49 = 97",
+      "type": "v4: 2.5D layer animation (real object and camera motion: parts float apart, the leg frame glides, turns, travels and lands, the chair flies; laser raster reveal) rendered by LTX-2.5 video-to-video at denoise 0.975 with BOTH end stills as guides (frame 0 and the last frame)",
+      "move": "T6",
+      "scene": "work/v4/scenes/T6_logistics-factory.json",
+      "layers": [
+        "station",
+        "frame_shadow",
+        "frame"
+      ],
+      "prompt": "An oak chair side frame floats in a bright factory hall, then turns and glides down to lie flat on a pale beech work table under the head of a compact laser marking machine; the focus racks from the floating frame to the sharp station. Gentle, weightless landing, soft contact shadow. Photorealistic, premium Nordic product cinematography, real optical depth of field, natural motion blur, steady and smooth, one continuous shot, no cuts, no text.",
+      "seed": 606,
+      "take": "work/v4/clips/T6.mp4",
+      "render": {
+        "kind": "v4_move",
+        "key": "T6",
+        "tag": "",
+        "model": "ltx-2.5-22b-distilled-int8 (video-to-video, 1920x1088)",
+        "base": "work/v4/bases/T6.mp4",
+        "scene": "work/v4/scenes/T6_logistics-factory.json",
+        "denoise": 0.975,
+        "frames": 97,
+        "fps": 24,
+        "seed": 606,
+        "guides": "frame 0 = start still, last frame = end still",
+        "prompt": "An oak chair side frame floats in a bright factory hall, then turns and glides down to lie flat on a pale beech work table under the head of a compact laser marking machine; the focus racks from the floating frame to the sharp station. Gentle, weightless landing, soft contact shadow. Photorealistic, premium Nordic product cinematography, real optical depth of field, natural motion blur, steady and smooth, one continuous shot, no cuts, no text.",
+        "output": "journey-media/work/v4/clips/T6.mp4",
+        "seconds": 406.5,
+        "at": "2026-09-27T22:19:02"
+      },
       "final": "journey-media/final/furniture/logistics-factory.mp4",
       "web": {
         "base": "media/furniture/logistics-factory",
@@ -3097,7 +3492,7 @@
           "1080",
           "540"
         ],
-        "rev": "159da6e73e",
+        "rev": "bbcecda66f",
         "codecs": [
           "av1",
           "h264"
@@ -3108,13 +3503,40 @@
         "cue": 0.8,
         "poster": "media/furniture/logistics"
       },
-      "post": "endpoints pinned to the exact anchor stills with a 6-frame smoothstep blend; AV1 (SVT-AV1 crf 30/32) + H.264 (x264 crf 19/21) at 1080p and 540p, no audio"
+      "post": "endpoints pinned to the exact anchor stills with a 6-frame smoothstep blend"
     },
     "furniture/factory>data": {
-      "type": "match cut through material on motion: push into A's material, cut at the macro, B's push played in reverse lands on the next anchor",
-      "a_push": "furniture/factory@oak",
-      "b_push_reversed": "furniture/data@code",
-      "frames": "48 + 49 = 97",
+      "type": "v4: 2.5D layer animation (real object and camera motion: parts float apart, the leg frame glides, turns, travels and lands, the chair flies; laser raster reveal) rendered by LTX-2.5 video-to-video at denoise 0.975 with BOTH end stills as guides (frame 0 and the last frame)",
+      "move": "T7",
+      "scene": "work/v4/scenes/T7_factory-data.json",
+      "layers": [
+        "station",
+        "frame_shadow",
+        "frame",
+        "oak",
+        "qr_burn",
+        "laser"
+      ],
+      "prompt": "The camera pushes smoothly down onto the oak chair frame lying under the laser marking head, into the grain of its side rail; the tiny bright point of the laser races across the oak, row by row, burning a dark square code into the grain with a faint glow and a wisp of smoke, until the freshly etched code and the oak grain fill the frame. Photorealistic, premium Nordic product cinematography, real optical depth of field, natural motion blur, steady and smooth, one continuous shot, no cuts, no text.",
+      "seed": 707,
+      "take": "work/v4/clips/T7.mp4",
+      "render": {
+        "kind": "v4_move",
+        "key": "T7",
+        "tag": "",
+        "model": "ltx-2.5-22b-distilled-int8 (video-to-video, 1920x1088)",
+        "base": "work/v4/bases/T7.mp4",
+        "scene": "work/v4/scenes/T7_factory-data.json",
+        "denoise": 0.975,
+        "frames": 97,
+        "fps": 24,
+        "seed": 707,
+        "guides": "frame 0 = start still, last frame = end still",
+        "prompt": "The camera pushes smoothly down onto the oak chair frame lying under the laser marking head, into the grain of its side rail; the tiny bright point of the laser races across the oak, row by row, burning a dark square code into the grain with a faint glow and a wisp of smoke, until the freshly etched code and the oak grain fill the frame. Photorealistic, premium Nordic product cinematography, real optical depth of field, natural motion blur, steady and smooth, one continuous shot, no cuts, no text.",
+        "output": "journey-media/work/v4/clips/T7.mp4",
+        "seconds": 398.8,
+        "at": "2026-09-27T22:27:05"
+      },
       "final": "journey-media/final/furniture/factory-data.mp4",
       "web": {
         "base": "media/furniture/factory-data",
@@ -3122,7 +3544,7 @@
           "1080",
           "540"
         ],
-        "rev": "73e37f3c26",
+        "rev": "8dacad1d17",
         "codecs": [
           "av1",
           "h264"
@@ -3133,13 +3555,38 @@
         "cue": 0.8,
         "poster": "media/furniture/factory"
       },
-      "post": "endpoints pinned to the exact anchor stills with a 6-frame smoothstep blend; AV1 (SVT-AV1 crf 30/32) + H.264 (x264 crf 19/21) at 1080p and 540p, no audio"
+      "post": "endpoints pinned to the exact anchor stills with a 6-frame smoothstep blend"
     },
     "furniture/data>passport": {
-      "type": "match cut through material on motion: push into A's material, cut at the macro, B's push played in reverse lands on the next anchor",
-      "a_push": "furniture/data@code",
-      "b_push_reversed": "furniture/passport@code",
-      "frames": "48 + 49 = 97",
+      "type": "v4: 2.5D layer animation (real object and camera motion: parts float apart, the leg frame glides, turns, travels and lands, the chair flies; laser raster reveal) rendered by LTX-2.5 video-to-video at denoise 0.975 with BOTH end stills as guides (frame 0 and the last frame)",
+      "move": "T8",
+      "scene": "work/v4/scenes/T8_data-passport.json",
+      "layers": [
+        "lounge",
+        "oak",
+        "qr_burn",
+        "hand"
+      ],
+      "prompt": "Starting on an extreme macro of a square code laser-etched into oak grain, the camera pulls smoothly back and turns to reveal that the code is on the oak side rail of a lounge armchair with cream cushions in a bright Scandinavian living room; a person's hand holding a dark smartphone moves in from the right and holds the phone up toward the chair, its screen showing the camera view. Photorealistic, premium Nordic product cinematography, real optical depth of field, natural motion blur, steady and smooth, one continuous shot, no cuts, no text.",
+      "seed": 808,
+      "take": "work/v4/clips/T8.mp4",
+      "render": {
+        "kind": "v4_move",
+        "key": "T8",
+        "tag": "",
+        "model": "ltx-2.5-22b-distilled-int8 (video-to-video, 1920x1088)",
+        "base": "work/v4/bases/T8.mp4",
+        "scene": "work/v4/scenes/T8_data-passport.json",
+        "denoise": 0.975,
+        "frames": 97,
+        "fps": 24,
+        "seed": 808,
+        "guides": "frame 0 = start still, last frame = end still",
+        "prompt": "Starting on an extreme macro of a square code laser-etched into oak grain, the camera pulls smoothly back and turns to reveal that the code is on the oak side rail of a lounge armchair with cream cushions in a bright Scandinavian living room; a person's hand holding a dark smartphone moves in from the right and holds the phone up toward the chair, its screen showing the camera view. Photorealistic, premium Nordic product cinematography, real optical depth of field, natural motion blur, steady and smooth, one continuous shot, no cuts, no text.",
+        "output": "journey-media/work/v4/clips/T8.mp4",
+        "seconds": 399.7,
+        "at": "2026-09-27T21:54:26"
+      },
       "final": "journey-media/final/furniture/data-passport.mp4",
       "web": {
         "base": "media/furniture/data-passport",
@@ -3147,7 +3594,7 @@
           "1080",
           "540"
         ],
-        "rev": "16300758a4",
+        "rev": "24038a8497",
         "codecs": [
           "av1",
           "h264"
@@ -3158,13 +3605,41 @@
         "cue": 0.8,
         "poster": "media/furniture/data"
       },
-      "post": "endpoints pinned to the exact anchor stills with a 6-frame smoothstep blend; AV1 (SVT-AV1 crf 30/32) + H.264 (x264 crf 19/21) at 1080p and 540p, no audio"
+      "post": "endpoints pinned to the exact anchor stills with a 6-frame smoothstep blend"
     },
     "furniture/passport>nextLife": {
-      "type": "match cut through material on motion: push into A's material, cut at the macro, B's push played in reverse lands on the next anchor",
-      "a_push": "furniture/passport@weave",
-      "b_push_reversed": "furniture/nextLife@cushion",
-      "frames": "48 + 49 = 97",
+      "type": "v4: 2.5D layer animation (real object and camera motion: parts float apart, the leg frame glides, turns, travels and lands, the chair flies; laser raster reveal) rendered by LTX-2.5 video-to-video at denoise 0.975 with BOTH end stills as guides (frame 0 and the last frame)",
+      "move": "T9",
+      "scene": "work/v4/scenes/T9_passport-nextLife.json",
+      "layers": [
+        "lounge",
+        "workshop",
+        "bench_shadow",
+        "lounge_orig",
+        "chair",
+        "hand",
+        "s9_exact"
+      ],
+      "prompt": "The hand with the phone withdraws; the oak lounge armchair lifts gently off the grey rug and floats in the air, then the camera whips fast to the right, following the floating chair through a streak of motion blur into a bright furniture repair workshop, where the chair glides down and settles softly on a long oak workbench next to a craftsperson in a canvas apron. Photorealistic, premium Nordic product cinematography, real optical depth of field, natural motion blur, steady and smooth, one continuous shot, no cuts, no text.",
+      "seed": 909,
+      "take": "work/v4/clips/T9_c.mp4",
+      "render": {
+        "kind": "v4_move",
+        "key": "T9",
+        "tag": "_c",
+        "model": "ltx-2.5-22b-distilled-int8 (video-to-video, 1920x1088)",
+        "base": "work/v4/bases/T9.mp4",
+        "scene": "work/v4/scenes/T9_passport-nextLife.json",
+        "denoise": 0.975,
+        "frames": 97,
+        "fps": 24,
+        "seed": 909,
+        "guides": "frame 0 = start still, last frame = end still",
+        "prompt": "The hand with the phone withdraws; the oak lounge armchair lifts gently off the grey rug and floats in the air, then the camera whips fast to the right, following the floating chair through a streak of motion blur into a bright furniture repair workshop, where the chair glides down and settles softly on a long oak workbench next to a craftsperson in a canvas apron. Photorealistic, premium Nordic product cinematography, real optical depth of field, natural motion blur, steady and smooth, one continuous shot, no cuts, no text.",
+        "output": "journey-media/work/v4/clips/T9_c.mp4",
+        "seconds": 398.1,
+        "at": "2026-09-27T23:20:59"
+      },
       "final": "journey-media/final/furniture/passport-nextLife.mp4",
       "web": {
         "base": "media/furniture/passport-nextLife",
@@ -3172,7 +3647,7 @@
           "1080",
           "540"
         ],
-        "rev": "098fd540a7",
+        "rev": "fe2f3e850e",
         "codecs": [
           "av1",
           "h264"
@@ -3183,7 +3658,7 @@
         "cue": 0.8,
         "poster": "media/furniture/passport"
       },
-      "post": "endpoints pinned to the exact anchor stills with a 6-frame smoothstep blend; AV1 (SVT-AV1 crf 30/32) + H.264 (x264 crf 19/21) at 1080p and 540p, no audio"
+      "post": "endpoints pinned to the exact anchor stills with a 6-frame smoothstep blend"
     },
     "battery/company>product": {
       "type": "single continuous camera move",

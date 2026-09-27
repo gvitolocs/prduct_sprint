@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-09-27T11:14:48",
+  "generated": "2026-09-27T23:46:37",
   "stages": [
     "company",
     "product",
@@ -17,6 +17,7 @@
     "furniture": {
       "industry": "Furniture",
       "object": "Lounge chair",
+      "desktopFocus": "0% 60%",
       "anchors": {
         "company": {
           "base": "media/furniture/company",
@@ -24,10 +25,10 @@
             1920,
             960
           ],
-          "rev": "92952f6c94",
-          "focus": "30% 60%",
+          "rev": "c9d61ffe3e",
+          "focus": "45% 60%",
           "panel": "right",
-          "alt": "A Danish oak lounge chair in a bright Nordic living room"
+          "alt": "A Danish oak lounge chair by tall windows in a bright Nordic living room"
         },
         "product": {
           "base": "media/furniture/product",
@@ -35,10 +36,10 @@
             1920,
             960
           ],
-          "rev": "7d27a23582",
-          "focus": "33% 60%",
+          "rev": "df28d85014",
+          "focus": "30% 60%",
           "panel": "right",
-          "alt": "The lounge chair by the tall windows, closer"
+          "alt": "The oak lounge chair with cream basket-weave cushions"
         },
         "material": {
           "base": "media/furniture/material",
@@ -46,10 +47,10 @@
             1920,
             960
           ],
-          "rev": "62f87fbf9f",
-          "focus": "45% 55%",
+          "rev": "164a97eaca",
+          "focus": "50% 50%",
           "panel": "right",
-          "alt": "The seat cushion close up: cream basket-weave wool on an oak frame"
+          "alt": "The oak of the chair's side rail, close up: straight grain and silver ray flecks"
         },
         "component": {
           "base": "media/furniture/component",
@@ -57,10 +58,10 @@
             1920,
             960
           ],
-          "rev": "667b954a22",
-          "focus": "40% 55%",
+          "rev": "cd5050ef08",
+          "focus": "35% 55%",
           "panel": "right",
-          "alt": "Under the seat: webbing, oak rails and a graphite bolt"
+          "alt": "The chair taken apart: its oak leg frames, rails, bolts and cushions float apart"
         },
         "supplier": {
           "base": "media/furniture/supplier",
@@ -68,10 +69,10 @@
             1920,
             960
           ],
-          "rev": "d077fe2638",
-          "focus": "32% 55%",
+          "rev": "6876c728d1",
+          "focus": "30% 55%",
           "panel": "right",
-          "alt": "Stacks of planed oak boards at a timber supplier"
+          "alt": "One oak leg frame from the chair, on its own: legs, back stile, armrest and side rail"
         },
         "logistics": {
           "base": "media/furniture/logistics",
@@ -79,10 +80,10 @@
             1920,
             960
           ],
-          "rev": "a7a85345ba",
-          "focus": "38% 55%",
+          "rev": "3f694d02c0",
+          "focus": "35% 55%",
           "panel": "right",
-          "alt": "A forklift carries a wrapped bundle of oak boards to a truck"
+          "alt": "The leg frame arrives in the factory that makes it"
         },
         "factory": {
           "base": "media/furniture/factory",
@@ -90,10 +91,10 @@
             1920,
             960
           ],
-          "rev": "5063f53577",
-          "focus": "62% 55%",
+          "rev": "0f2d7d5a1c",
+          "focus": "60% 55%",
           "panel": "left",
-          "alt": "A CNC machine shaping an oak armrest in a furniture factory"
+          "alt": "The leg frame on the table of a laser marking station"
         },
         "data": {
           "base": "media/furniture/data",
@@ -101,14 +102,15 @@
             1920,
             960
           ],
-          "rev": "5275e137cd",
-          "focus": "62% 55%",
+          "rev": "e8d48085eb",
+          "focus": "60% 50%",
           "panel": "left",
-          "alt": "A scanner reads an etched code on an oak part",
+          "alt": "The prduct.com QR code laser-etched into the oak",
           "hotspot": [
-            64,
-            60
-          ]
+            77.6,
+            50.0
+          ],
+          "hotspotSide": "right"
         },
         "passport": {
           "base": "media/furniture/passport",
@@ -116,13 +118,13 @@
             1920,
             960
           ],
-          "rev": "8535bbba7f",
-          "focus": "62% 50%",
-          "panel": "left",
-          "alt": "A phone approaches the code on the chair's oak rail",
+          "rev": "22cb98ae9d",
+          "focus": "30% 60%",
+          "panel": "right",
+          "alt": "A phone scans the QR code on the chair's oak side rail",
           "hotspot": [
-            53.5,
-            60.5
+            16.4,
+            69.1
           ]
         },
         "nextLife": {
@@ -131,10 +133,10 @@
             1920,
             960
           ],
-          "rev": "6bde3dbcb4",
-          "focus": "55% 55%",
+          "rev": "988e3ec7f7",
+          "focus": "45% 55%",
           "panel": "left",
-          "alt": "The chair partly taken apart for repair in a workshop"
+          "alt": "The chair on the bench of a repair and upholstery workshop"
         }
       },
       "transitions": {
@@ -144,7 +146,7 @@
             "1080",
             "540"
           ],
-          "rev": "cf2e0f4140",
+          "rev": "6d9a666b7d",
           "codecs": [
             "av1",
             "h264"
@@ -161,7 +163,7 @@
             "1080",
             "540"
           ],
-          "rev": "fb699c52ae",
+          "rev": "968df00783",
           "codecs": [
             "av1",
             "h264"
@@ -178,7 +180,7 @@
             "1080",
             "540"
           ],
-          "rev": "3c05151ea8",
+          "rev": "9125c9489c",
           "codecs": [
             "av1",
             "h264"
@@ -195,7 +197,7 @@
             "1080",
             "540"
           ],
-          "rev": "6aa482c9e9",
+          "rev": "21f1158f88",
           "codecs": [
             "av1",
             "h264"
@@ -212,7 +214,7 @@
             "1080",
             "540"
           ],
-          "rev": "a413ab983b",
+          "rev": "b393bc6d50",
           "codecs": [
             "av1",
             "h264"
@@ -229,7 +231,7 @@
             "1080",
             "540"
           ],
-          "rev": "159da6e73e",
+          "rev": "97d7d28f25",
           "codecs": [
             "av1",
             "h264"
@@ -246,7 +248,7 @@
             "1080",
             "540"
           ],
-          "rev": "73e37f3c26",
+          "rev": "5c887e7442",
           "codecs": [
             "av1",
             "h264"
@@ -263,7 +265,7 @@
             "1080",
             "540"
           ],
-          "rev": "16300758a4",
+          "rev": "a8dc4f9f8b",
           "codecs": [
             "av1",
             "h264"
@@ -280,7 +282,7 @@
             "1080",
             "540"
           ],
-          "rev": "098fd540a7",
+          "rev": "4d9de633c7",
           "codecs": [
             "av1",
             "h264"
@@ -303,7 +305,7 @@
             1920,
             960
           ],
-          "rev": "0be6e3dfb6",
+          "rev": "ded40cf030",
           "focus": "62% 45%",
           "panel": "left",
           "alt": "Rear three-quarter view of an e-bike with a removable battery"
@@ -314,7 +316,7 @@
             1920,
             960
           ],
-          "rev": "d1385f4974",
+          "rev": "38f68b96c0",
           "focus": "42% 45%",
           "panel": "right",
           "alt": "The graphite battery pack on the e-bike's down tube, closer"
@@ -325,7 +327,7 @@
             1920,
             960
           ],
-          "rev": "8a0551a346",
+          "rev": "e457d10109",
           "focus": "45% 55%",
           "panel": "right",
           "alt": "Close-up of the battery housing: bead-blasted graphite, a fine seam and the lock"
@@ -336,7 +338,7 @@
             1920,
             960
           ],
-          "rev": "3b15092c29",
+          "rev": "50d4c73ac7",
           "focus": "45% 55%",
           "panel": "right",
           "alt": "The battery opened on a service bench: cells and BMS"
@@ -347,7 +349,7 @@
             1920,
             960
           ],
-          "rev": "571541e99e",
+          "rev": "f1ca187742",
           "focus": "40% 55%",
           "panel": "right",
           "alt": "Trays of cells on a conveyor in a cell plant"
@@ -358,7 +360,7 @@
             1920,
             960
           ],
-          "rev": "1a07711176",
+          "rev": "b3b23297e7",
           "focus": "45% 55%",
           "panel": "right",
           "alt": "Certified shipping boxes on a pallet in a dispatch area"
@@ -369,7 +371,7 @@
             1920,
             960
           ],
-          "rev": "84ed5318a7",
+          "rev": "66378c74df",
           "focus": "40% 55%",
           "panel": "right",
           "alt": "A welding station on a battery pack assembly line"
@@ -380,7 +382,7 @@
             1920,
             960
           ],
-          "rev": "e3c2d91bce",
+          "rev": "6a90a8aa6c",
           "focus": "50% 55%",
           "panel": "left",
           "alt": "A scanner reads the etched code on a finished pack at the end-of-line station",
@@ -395,7 +397,7 @@
             1920,
             960
           ],
-          "rev": "31c929a532",
+          "rev": "3fdf3d705d",
           "focus": "50% 50%",
           "panel": "left",
           "alt": "A mechanic's phone at the code on the bike's battery",
@@ -410,7 +412,7 @@
             1920,
             960
           ],
-          "rev": "787fa6e5ac",
+          "rev": "d9106cb7f3",
           "focus": "45% 55%",
           "panel": "right",
           "alt": "The removed battery on a state-of-health tester, modules sorted for reuse"
@@ -423,7 +425,7 @@
             "1080",
             "540"
           ],
-          "rev": "a01975ae9e",
+          "rev": "4a32bc2070",
           "codecs": [
             "av1",
             "h264"
@@ -440,7 +442,7 @@
             "1080",
             "540"
           ],
-          "rev": "5c1559ab85",
+          "rev": "ec23ba1ca9",
           "codecs": [
             "av1",
             "h264"
@@ -457,7 +459,7 @@
             "1080",
             "540"
           ],
-          "rev": "d630d81a58",
+          "rev": "c4753d1c95",
           "codecs": [
             "av1",
             "h264"
@@ -474,7 +476,7 @@
             "1080",
             "540"
           ],
-          "rev": "e954d6b530",
+          "rev": "7652452ed4",
           "codecs": [
             "av1",
             "h264"
@@ -491,7 +493,7 @@
             "1080",
             "540"
           ],
-          "rev": "0685025533",
+          "rev": "f4ccddc556",
           "codecs": [
             "av1",
             "h264"
@@ -508,7 +510,7 @@
             "1080",
             "540"
           ],
-          "rev": "598ab8bfc6",
+          "rev": "024497f41f",
           "codecs": [
             "av1",
             "h264"
@@ -525,7 +527,7 @@
             "1080",
             "540"
           ],
-          "rev": "78625612b1",
+          "rev": "3326deddda",
           "codecs": [
             "av1",
             "h264"
@@ -542,7 +544,7 @@
             "1080",
             "540"
           ],
-          "rev": "e1ca805002",
+          "rev": "570aca35fe",
           "codecs": [
             "av1",
             "h264"
@@ -559,7 +561,7 @@
             "1080",
             "540"
           ],
-          "rev": "3cf1cd5c95",
+          "rev": "d00f27e7d8",
           "codecs": [
             "av1",
             "h264"
@@ -582,7 +584,7 @@
             1920,
             960
           ],
-          "rev": "ea61e90074",
+          "rev": "5a1234ed24",
           "focus": "50% 40%",
           "panel": "right",
           "alt": "A Danish rain jacket hanging against a plaster wall"
@@ -593,7 +595,7 @@
             1920,
             960
           ],
-          "rev": "31e7e1f748",
+          "rev": "96b8c50b2f",
           "focus": "45% 35%",
           "panel": "right",
           "alt": "The rain jacket's shoulders, hood and collar on its hanger"
@@ -604,7 +606,7 @@
             1920,
             960
           ],
-          "rev": "f796865723",
+          "rev": "1bd24710f1",
           "focus": "50% 50%",
           "panel": "right",
           "alt": "Macro of the matte coated waterproof fabric"
@@ -615,7 +617,7 @@
             1920,
             960
           ],
-          "rev": "428447e9b8",
+          "rev": "993493d2e8",
           "focus": "45% 55%",
           "panel": "right",
           "alt": "Zip, seam tape, studs and lining of the opened jacket"
@@ -626,7 +628,7 @@
             1920,
             960
           ],
-          "rev": "306179a66a",
+          "rev": "3c3a808abf",
           "focus": "40% 55%",
           "panel": "right",
           "alt": "A roll of the same fabric in a technical textile mill"
@@ -637,7 +639,7 @@
             1920,
             960
           ],
-          "rev": "25469d4227",
+          "rev": "0e2a8a9abb",
           "focus": "45% 55%",
           "panel": "right",
           "alt": "Wrapped fabric rolls on pallets at dispatch"
@@ -648,7 +650,7 @@
             1920,
             960
           ],
-          "rev": "d663243baf",
+          "rev": "2b8588d77a",
           "focus": "40% 55%",
           "panel": "right",
           "alt": "Jacket panels being cut in a garment workshop"
@@ -659,7 +661,7 @@
             1920,
             960
           ],
-          "rev": "3518ed1697",
+          "rev": "510116b174",
           "focus": "50% 55%",
           "panel": "left",
           "alt": "A scanner reads the care label code inside the collar",
@@ -674,7 +676,7 @@
             1920,
             960
           ],
-          "rev": "c84e0fa35e",
+          "rev": "1b0fd05999",
           "focus": "50% 45%",
           "panel": "left",
           "alt": "A customer's phone at the jacket's label in a store",
@@ -689,7 +691,7 @@
             1920,
             960
           ],
-          "rev": "e320851e6d",
+          "rev": "332ab132bb",
           "focus": "45% 55%",
           "panel": "right",
           "alt": "A technician replaces the jacket's zip at a repair bench"
@@ -702,7 +704,7 @@
             "1080",
             "540"
           ],
-          "rev": "b732507fc1",
+          "rev": "557718a3ac",
           "codecs": [
             "av1",
             "h264"
@@ -719,7 +721,7 @@
             "1080",
             "540"
           ],
-          "rev": "f6651a03b5",
+          "rev": "ded25ff998",
           "codecs": [
             "av1",
             "h264"
@@ -736,7 +738,7 @@
             "1080",
             "540"
           ],
-          "rev": "741f75d9f8",
+          "rev": "288c8d25bd",
           "codecs": [
             "av1",
             "h264"
@@ -753,7 +755,7 @@
             "1080",
             "540"
           ],
-          "rev": "50a4630915",
+          "rev": "280d76a388",
           "codecs": [
             "av1",
             "h264"
@@ -770,7 +772,7 @@
             "1080",
             "540"
           ],
-          "rev": "b500c28d60",
+          "rev": "37e169c7b7",
           "codecs": [
             "av1",
             "h264"
@@ -787,7 +789,7 @@
             "1080",
             "540"
           ],
-          "rev": "1b9bb0cd2c",
+          "rev": "ea19f41800",
           "codecs": [
             "av1",
             "h264"
@@ -804,7 +806,7 @@
             "1080",
             "540"
           ],
-          "rev": "3f39efe4cc",
+          "rev": "77a155ca08",
           "codecs": [
             "av1",
             "h264"
@@ -821,7 +823,7 @@
             "1080",
             "540"
           ],
-          "rev": "2dccc5ac3f",
+          "rev": "dc41723b6c",
           "codecs": [
             "av1",
             "h264"
@@ -838,7 +840,7 @@
             "1080",
             "540"
           ],
-          "rev": "62486ade9f",
+          "rev": "701dcf24a5",
           "codecs": [
             "av1",
             "h264"

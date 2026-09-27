@@ -65,7 +65,7 @@ export class Overlays {
         ["Source evidence", level(answer(state, "supplier.proof") || answer(state, "supplier.depth"))],
         ["Bill of materials", level(answer(state, "component.bom"))]
       ];
-      const right = x < W * 0.62;
+      const right = anchor.hotspotSide ? anchor.hotspotSide === "right" : x < W * 0.62;
       html = `<div class="jr-ov jr-ov-trace${right ? "" : " is-left"}" style="left:${x}px;top:${y}px" aria-hidden="true">
         <span class="jr-ov-reticle"></span>
         <div class="jr-ov-card">
@@ -78,7 +78,7 @@ export class Overlays {
     } else if (stage === "passport") {
       const plate = buildDppPlate(state);
       const labels = PLATE_LABELS[branch] || PLATE_LABELS.furniture;
-      const right = x < W * 0.55;
+      const right = anchor.hotspotSide ? anchor.hotspotSide === "right" : x < W * 0.55;
       html = `<div class="jr-ov jr-ov-passport${right ? "" : " is-left"}" style="left:${x}px;top:${y}px" aria-hidden="true">
         <span class="jr-ov-reticle"></span>
         <div class="jr-ov-card">
@@ -93,6 +93,16 @@ export class Overlays {
     if (!html) return;
     this.root.insertAdjacentHTML("beforeend", html);
     const el = this.root.lastElementChild;
+    // keep the card inside the stage: nudge it back in when the hotspot sits near an edge
+    const card = el.querySelector(".jr-ov-card");
+    const r = card?.getBoundingClientRect();
+    const box = this.root.getBoundingClientRect();
+    if (r) {
+      const over = r.right - (box.right - 16);
+      const under = box.left + 16 - r.left;
+      if (over > 0) card.style.marginLeft = `${-over}px`;
+      else if (under > 0) card.style.marginLeft = `${under}px`;
+    }
     requestAnimationFrame(() => el.classList.add("is-on"));
     setTimeout(() => el.classList.add("is-on"), 60); // background tabs: no frames needed
     this.current = stage;
