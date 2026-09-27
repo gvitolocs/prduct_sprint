@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-27T01:15:35",
+  "generated": "2026-09-27T11:24:54",
   "hardware": "AMD Radeon RX 7900 XTX (24 GB, ROCm 7.2) via ComfyUI 0.37.0, guarded by tools/comfy_up.sh (cgroup memory cap, host-RAM watchdog, GPU yield to the host LLM)",
   "models": {
     "z_image_turbo_bf16": {
@@ -47,6 +47,303 @@
     "tools/build_web.py && tools/check_seams.py          # web media, manifest, seam check",
     "tools/write_metadata.py                             # this file"
   ],
+  "qr_code": {
+    "payload": "HTTPS://PRDUCT.COM",
+    "symbol": "QR version 1, error correction M, alphanumeric mode (21x21 modules)",
+    "how": "tools/qr_overlay.py stamps the real code into each still (print: the old pattern is lifted off the label with a grey closing and the QR is inked on with a multiply blend; etch: burned into the oak with a warm multiply) and into every frame of the clips that show it, along each clip's known camera path. The oak push is rendered from a code-free still so the video model never draws its own code.",
+    "codes": {
+      "furniture/data": {
+        "style": "etch",
+        "quad": [
+          [
+            1212.9,
+            631.0
+          ],
+          [
+            1270.7,
+            636.4
+          ],
+          [
+            1245.0,
+            670.7
+          ],
+          [
+            1186.0,
+            665.4
+          ]
+        ],
+        "quiet": 1,
+        "clean": [
+          [
+            1205.8,
+            622.1
+          ],
+          [
+            1289.6,
+            629.9
+          ],
+          [
+            1252.4,
+            679.6
+          ],
+          [
+            1166.8,
+            671.9
+          ]
+        ],
+        "clean_thresh": 16,
+        "clean_patch": [
+          100,
+          0
+        ]
+      },
+      "furniture/passport": {
+        "style": "print",
+        "paper": [
+          [
+            1001.6,
+            625.5
+          ],
+          [
+            1055.3,
+            621.8
+          ],
+          [
+            1061.2,
+            683.6
+          ],
+          [
+            1005.6,
+            688.9
+          ]
+        ],
+        "quad": [
+          [
+            1002.8,
+            626.7
+          ],
+          [
+            1054.3,
+            623.2
+          ],
+          [
+            1059.9,
+            682.4
+          ],
+          [
+            1006.7,
+            687.5
+          ]
+        ],
+        "quiet": 2
+      },
+      "battery/data": {
+        "style": "print",
+        "paper": [
+          [
+            913.4,
+            615.8
+          ],
+          [
+            1025.5,
+            605.3
+          ],
+          [
+            1098.7,
+            629.3
+          ],
+          [
+            991.7,
+            642.4
+          ]
+        ],
+        "quad": [
+          [
+            917.6,
+            616.1
+          ],
+          [
+            1024.7,
+            606.1
+          ],
+          [
+            1094.6,
+            629.0
+          ],
+          [
+            992.4,
+            641.5
+          ]
+        ],
+        "quiet": 2
+      },
+      "battery/passport": {
+        "style": "print",
+        "paper": [
+          [
+            1036.5,
+            376.5
+          ],
+          [
+            1067.5,
+            376.5
+          ],
+          [
+            1067.5,
+            414.5
+          ],
+          [
+            1036.5,
+            414.5
+          ]
+        ],
+        "quad": [
+          [
+            1037,
+            380.5
+          ],
+          [
+            1067,
+            380.5
+          ],
+          [
+            1067,
+            410.5
+          ],
+          [
+            1037,
+            410.5
+          ]
+        ],
+        "quiet": 2,
+        "paper_rgb": [
+          236,
+          236,
+          232
+        ]
+      },
+      "textile/data": {
+        "style": "print",
+        "paper": [
+          [
+            877.1,
+            691.6
+          ],
+          [
+            920.1,
+            679.0
+          ],
+          [
+            942.9,
+            701.1
+          ],
+          [
+            899.9,
+            716.8
+          ]
+        ],
+        "quad": [
+          [
+            877.8,
+            691.7
+          ],
+          [
+            919.8,
+            679.4
+          ],
+          [
+            942.2,
+            701.0
+          ],
+          [
+            900.2,
+            716.3
+          ]
+        ],
+        "quiet": 2
+      },
+      "textile/passport": {
+        "style": "print",
+        "paper": [
+          [
+            953,
+            507
+          ],
+          [
+            997,
+            507
+          ],
+          [
+            997,
+            550
+          ],
+          [
+            953,
+            550
+          ]
+        ],
+        "quad": [
+          [
+            955,
+            508.5
+          ],
+          [
+            995,
+            508.5
+          ],
+          [
+            995,
+            548.5
+          ],
+          [
+            955,
+            548.5
+          ]
+        ],
+        "quiet": 2
+      },
+      "textile/nextLife": {
+        "style": "print",
+        "paper": [
+          [
+            985.7,
+            540.6
+          ],
+          [
+            1005.4,
+            524.4
+          ],
+          [
+            1040.6,
+            535.9
+          ],
+          [
+            1018.3,
+            554.2
+          ]
+        ],
+        "quad": [
+          [
+            987.1,
+            540.5
+          ],
+          [
+            1005.8,
+            525.1
+          ],
+          [
+            1039.1,
+            536.0
+          ],
+          [
+            1018.0,
+            553.4
+          ]
+        ],
+        "quiet": 2
+      }
+    }
+  },
   "anchors": {
     "furniture/company": {
       "method": "Qwen-Image-Edit-2511 with reference images",
@@ -478,7 +775,7 @@
           1920,
           960
         ],
-        "rev": "d9d67daf30",
+        "rev": "5275e137cd",
         "focus": "62% 55%",
         "panel": "left",
         "alt": "A scanner reads an etched code on an oak part",
@@ -537,7 +834,7 @@
           1920,
           960
         ],
-        "rev": "3f1cfd5bd9",
+        "rev": "8535bbba7f",
         "focus": "62% 50%",
         "panel": "left",
         "alt": "A phone approaches the code on the chair's oak rail",
@@ -929,7 +1226,7 @@
           1920,
           960
         ],
-        "rev": "3a144eb25d",
+        "rev": "e3c2d91bce",
         "focus": "50% 55%",
         "panel": "left",
         "alt": "A scanner reads the etched code on a finished pack at the end-of-line station",
@@ -986,7 +1283,7 @@
           1920,
           960
         ],
-        "rev": "8ffa738523",
+        "rev": "31c929a532",
         "focus": "50% 50%",
         "panel": "left",
         "alt": "A mechanic's phone at the code on the bike's battery",
@@ -1375,7 +1672,7 @@
           1920,
           960
         ],
-        "rev": "672e15986d",
+        "rev": "3518ed1697",
         "focus": "50% 55%",
         "panel": "left",
         "alt": "A scanner reads the care label code inside the collar",
@@ -1432,7 +1729,7 @@
           1920,
           960
         ],
-        "rev": "d01a5b4543",
+        "rev": "c84e0fa35e",
         "focus": "50% 45%",
         "panel": "left",
         "alt": "A customer's phone at the jacket's label in a store",
@@ -1491,7 +1788,7 @@
           1920,
           960
         ],
-        "rev": "6ab08696b6",
+        "rev": "e320851e6d",
         "focus": "45% 55%",
         "panel": "right",
         "alt": "A technician replaces the jacket's zip at a repair bench"
@@ -1797,11 +2094,11 @@
         "fps": 24,
         "seed": 2109,
         "guides": "first frame = start anchor (1.0)",
-        "start": "final/furniture/data.png",
+        "start": "work/v2/furniture_data.clean.png",
         "prompt": "In a furniture workshop, the camera pushes smoothly toward a small square code laser-etched into the top of a finished oak part until the code fills the frame. The hand holding the scanner stays still. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
         "output": "journey-media/work/v2/furniture__data-at-code.v2v.mp4",
-        "seconds": 182.8,
-        "at": "2026-09-26T22:13:20"
+        "seconds": 736.5,
+        "at": "2026-09-27T07:00:07"
       }
     },
     "furniture/passport@code": {
@@ -2825,7 +3122,7 @@
           "1080",
           "540"
         ],
-        "rev": "c42a15f7db",
+        "rev": "73e37f3c26",
         "codecs": [
           "av1",
           "h264"
@@ -2850,7 +3147,7 @@
           "1080",
           "540"
         ],
-        "rev": "f7db1a9d8b",
+        "rev": "16300758a4",
         "codecs": [
           "av1",
           "h264"
@@ -2875,7 +3172,7 @@
           "1080",
           "540"
         ],
-        "rev": "be43b3254f",
+        "rev": "098fd540a7",
         "codecs": [
           "av1",
           "h264"
@@ -3046,7 +3343,7 @@
           "1080",
           "540"
         ],
-        "rev": "f3b9b3546e",
+        "rev": "78625612b1",
         "codecs": [
           "av1",
           "h264"
@@ -3071,7 +3368,7 @@
           "1080",
           "540"
         ],
-        "rev": "ab928e2394",
+        "rev": "e1ca805002",
         "codecs": [
           "av1",
           "h264"
@@ -3096,7 +3393,7 @@
           "1080",
           "540"
         ],
-        "rev": "bb03b770da",
+        "rev": "3cf1cd5c95",
         "codecs": [
           "av1",
           "h264"
@@ -3267,7 +3564,7 @@
           "1080",
           "540"
         ],
-        "rev": "f81d39af94",
+        "rev": "3f39efe4cc",
         "codecs": [
           "av1",
           "h264"
@@ -3292,7 +3589,7 @@
           "1080",
           "540"
         ],
-        "rev": "554e6594b2",
+        "rev": "2dccc5ac3f",
         "codecs": [
           "av1",
           "h264"
@@ -3317,7 +3614,7 @@
           "1080",
           "540"
         ],
-        "rev": "9fff18ec02",
+        "rev": "62486ade9f",
         "codecs": [
           "av1",
           "h264"

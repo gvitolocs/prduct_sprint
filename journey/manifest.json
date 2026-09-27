@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-09-27T01:10:50",
+  "generated": "2026-09-27T11:14:48",
   "stages": [
     "company",
     "product",
@@ -101,7 +101,7 @@
             1920,
             960
           ],
-          "rev": "d9d67daf30",
+          "rev": "5275e137cd",
           "focus": "62% 55%",
           "panel": "left",
           "alt": "A scanner reads an etched code on an oak part",
@@ -116,7 +116,7 @@
             1920,
             960
           ],
-          "rev": "3f1cfd5bd9",
+          "rev": "8535bbba7f",
           "focus": "62% 50%",
           "panel": "left",
           "alt": "A phone approaches the code on the chair's oak rail",
@@ -246,7 +246,7 @@
             "1080",
             "540"
           ],
-          "rev": "c42a15f7db",
+          "rev": "73e37f3c26",
           "codecs": [
             "av1",
             "h264"
@@ -263,7 +263,7 @@
             "1080",
             "540"
           ],
-          "rev": "f7db1a9d8b",
+          "rev": "16300758a4",
           "codecs": [
             "av1",
             "h264"
@@ -280,7 +280,7 @@
             "1080",
             "540"
           ],
-          "rev": "be43b3254f",
+          "rev": "098fd540a7",
           "codecs": [
             "av1",
             "h264"
@@ -380,7 +380,7 @@
             1920,
             960
           ],
-          "rev": "3a144eb25d",
+          "rev": "e3c2d91bce",
           "focus": "50% 55%",
           "panel": "left",
           "alt": "A scanner reads the etched code on a finished pack at the end-of-line station",
@@ -395,7 +395,7 @@
             1920,
             960
           ],
-          "rev": "8ffa738523",
+          "rev": "31c929a532",
           "focus": "50% 50%",
           "panel": "left",
           "alt": "A mechanic's phone at the code on the bike's battery",
@@ -525,7 +525,7 @@
             "1080",
             "540"
           ],
-          "rev": "f3b9b3546e",
+          "rev": "78625612b1",
           "codecs": [
             "av1",
             "h264"
@@ -542,7 +542,7 @@
             "1080",
             "540"
           ],
-          "rev": "ab928e2394",
+          "rev": "e1ca805002",
           "codecs": [
             "av1",
             "h264"
@@ -559,7 +559,7 @@
             "1080",
             "540"
           ],
-          "rev": "bb03b770da",
+          "rev": "3cf1cd5c95",
           "codecs": [
             "av1",
             "h264"
@@ -659,7 +659,7 @@
             1920,
             960
           ],
-          "rev": "672e15986d",
+          "rev": "3518ed1697",
           "focus": "50% 55%",
           "panel": "left",
           "alt": "A scanner reads the care label code inside the collar",
@@ -674,7 +674,7 @@
             1920,
             960
           ],
-          "rev": "d01a5b4543",
+          "rev": "c84e0fa35e",
           "focus": "50% 45%",
           "panel": "left",
           "alt": "A customer's phone at the jacket's label in a store",
@@ -689,7 +689,7 @@
             1920,
             960
           ],
-          "rev": "6ab08696b6",
+          "rev": "e320851e6d",
           "focus": "45% 55%",
           "panel": "right",
           "alt": "A technician replaces the jacket's zip at a repair bench"
@@ -804,7 +804,7 @@
             "1080",
             "540"
           ],
-          "rev": "f81d39af94",
+          "rev": "3f39efe4cc",
           "codecs": [
             "av1",
             "h264"
@@ -821,7 +821,7 @@
             "1080",
             "540"
           ],
-          "rev": "554e6594b2",
+          "rev": "2dccc5ac3f",
           "codecs": [
             "av1",
             "h264"
@@ -838,7 +838,7 @@
             "1080",
             "540"
           ],
-          "rev": "9fff18ec02",
+          "rev": "62486ade9f",
           "codecs": [
             "av1",
             "h264"
