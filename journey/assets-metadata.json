@@ -1,0 +1,3334 @@
+{
+  "generated": "2026-09-27T01:15:35",
+  "hardware": "AMD Radeon RX 7900 XTX (24 GB, ROCm 7.2) via ComfyUI 0.37.0, guarded by tools/comfy_up.sh (cgroup memory cap, host-RAM watchdog, GPU yield to the host LLM)",
+  "models": {
+    "z_image_turbo_bf16": {
+      "name": "Z-Image-Turbo (Tongyi-MAI)",
+      "file": "z_image_turbo_bf16.safetensors",
+      "text_encoder": "qwen_3_4b.safetensors",
+      "vae": "ae.safetensors (Flux VAE)",
+      "licence": "Apache-2.0",
+      "settings": "8 steps, cfg 1.0, res_multistep sampler, simple scheduler, AuraFlow shift 3.0; 1920x1088; also used as a 0.2-denoise detail pass on 1664x928 edits"
+    },
+    "qwen_image_edit_2511_fp8mixed+lightning8": {
+      "name": "Qwen-Image-Edit-2511 (Qwen)",
+      "file": "qwen_image_edit_2511_fp8mixed.safetensors",
+      "lora": "Qwen-Image-Edit-2511-Lightning-8steps-V1.0-bf16 (lightx2v, Apache-2.0)",
+      "text_encoder": "qwen_2.5_vl_7b_fp8_scaled.safetensors",
+      "vae": "qwen_image_vae.safetensors",
+      "licence": "Apache-2.0",
+      "settings": "8 steps, cfg 1.0, euler/simple, AuraFlow shift 3.1, CFGNorm 1.0, reference latents index_timestep_zero, output 1664x928; repairs start from the image's own latent"
+    },
+    "ltx-2.5": {
+      "name": "LTX-2.5 22B distilled (Lightricks)",
+      "file": "ltx-2.5-22b-distilled-transformer-comfy-int8-convrot",
+      "text_encoder": "gemma4-12b-with-proj-ltx-2.5-bf16",
+      "vae": "ltx-2.5-video-vae-bf16",
+      "licence": "LTX-2 Community License (commercial use above USD 10M annual revenue needs a Lightricks licence; generated content must be disclosed as machine-generated)",
+      "settings": "video-to-video at 1920x1088, denoise 0.975 (distilled sigmas 0.975, 0.909375, 0.725, 0.421875, 0), guide = start anchor at frame 0 (strength 1.0), 24 fps, cropped to 1920x1080"
+    },
+    "depth-anything-v2-small": {
+      "name": "Depth-Anything-V2-Small (HF transformers)",
+      "file": "depth-anything/Depth-Anything-V2-Small-hf",
+      "licence": "Apache-2.0",
+      "settings": "relative depth -> metric proxy (near/far), backward-warped camera path (tools/depth_path.py)"
+    }
+  },
+  "method": "anchor -> real generated motion -> anchor. Every camera move is rendered by LTX-2.5 video-to-video (denoise 0.975) over a physical base motion computed from the start anchor: a Depth-Anything-V2 reprojection for same-world dollies, a log-zoom path for pushes into a material. The first frame is guided by the anchor; same-world moves define the next anchor from their own last frame. First-last-frame interpolation was rejected: it cross-dissolved even between geometrically consistent frames.",
+  "pipeline": [
+    "tools/comfy_up.sh start                             # capped, OOM-guarded ComfyUI + GPU yield guard",
+    "tools/gen_anchors.py 'branch/*' --seeds 7           # anchors per shotlist.py",
+    "edit picks.json                                     # curated choices after contact-sheet review",
+    "tools/finalize_anchors.py branch/stage ...          # 1920x1080 finals (+ Z-Image detail pass)",
+    "tools/gen_v2.py 'branch/company>product' --steps base,v2v,derive   # same-world moves",
+    "tools/gen_v2.py branch/stage@ --steps base,v2v      # material pushes (transitions_v2.py)",
+    "tools/gen_v2.py --assemble branch                   # final/<branch>/<from>-<to>.mp4",
+    "tools/inspect_clip.py CLIP --start A --end B        # contact sheet + motion diagnostics",
+    "tools/build_web.py && tools/check_seams.py          # web media, manifest, seam check",
+    "tools/write_metadata.py                             # this file"
+  ],
+  "anchors": {
+    "furniture/company": {
+      "method": "Qwen-Image-Edit-2511 with reference images",
+      "picked_candidate": "work/anchors/furniture/company_q31.png",
+      "generation": {
+        "kind": "anchor",
+        "key": "furniture/company",
+        "model": "qwen_image_edit_2511_fp8mixed+lightning8",
+        "seed": 31,
+        "size": [
+          1664,
+          928
+        ],
+        "steps": 8,
+        "refs": [
+          "work/masters/furniture_f0_s11.png"
+        ],
+        "prompt": "Only the camera moves: it pulls back about two metres and slightly to the right, showing a wider view of the same bright Scandinavian living room. Everything in the room stays exactly as in the reference image: the same oak lounge armchair with cream basket-weave cushions in the same place, now filling about a third of the frame height, left of centre; the same low oak side table on the left with its single grey ceramic vase; the same tall steel-framed windows with softly blurred birch trees behind. Newly visible: the whole grey wool rug, more pale oak floorboards in the foreground, white plaster wall on the right. Same soft overcast daylight, natural soft foliage. Photorealistic interior photograph, 28mm lens.",
+        "output": "journey-media/work/anchors/furniture/company_q31.png",
+        "seconds": 74.9,
+        "at": "2026-09-26T12:42:00"
+      },
+      "prompt": "Only the camera moves: it pulls back about two metres and slightly to the right, showing a wider view of the same bright Scandinavian living room. Everything in the room stays exactly as in the reference image: the same oak lounge armchair with cream basket-weave cushions in the same place, now filling about a third of the frame height, left of centre; the same low oak side table on the left with its single grey ceramic vase; the same tall steel-framed windows with softly blurred birch trees behind. Newly visible: the whole grey wool rug, more pale oak floorboards in the foreground, white plaster wall on the right. Same soft overcast daylight, natural soft foliage. Photorealistic interior photograph, 28mm lens.",
+      "refs": [
+        "furniture/product"
+      ],
+      "refine": {
+        "kind": "refine",
+        "key": "furniture/company",
+        "model": "z_image_turbo_bf16",
+        "denoise": 0.2,
+        "size": [
+          1920,
+          1088
+        ],
+        "source": "work/anchors/furniture/company_q31.png",
+        "prompt": "Photorealistic high-end commercial photograph, crisp natural detail, realistic materials, soft natural light, natural contrast, true optical depth of field, no text, no logos.",
+        "output": "journey-media/work/refined/furniture/company.png",
+        "seconds": 30.4,
+        "at": "2026-09-26T13:07:53"
+      },
+      "final": "journey-media/final/furniture/company.png",
+      "web": {
+        "base": "media/furniture/company",
+        "widths": [
+          1920,
+          960
+        ],
+        "rev": "92952f6c94",
+        "focus": "30% 60%",
+        "panel": "right",
+        "alt": "A Danish oak lounge chair in a bright Nordic living room"
+      }
+    },
+    "furniture/product": {
+      "method": "derived: last frame of the generated camera move furniture/company>product",
+      "move": "furniture/company>product",
+      "picked_source": "work/v2/furniture__company-to-product.clip_last.png",
+      "post": [
+        {
+          "kind": "refine",
+          "key": "furniture/product",
+          "model": "z_image_turbo_bf16",
+          "denoise": 0.2,
+          "size": [
+            1920,
+            1088
+          ],
+          "source": "work/anchors/furniture/product_dolly_q7.png",
+          "prompt": "Photorealistic high-end commercial photograph, crisp natural detail, realistic materials, soft natural light, natural contrast, true optical depth of field, no text, no logos.",
+          "output": "journey-media/work/refined/furniture/product.png",
+          "seconds": 32.0,
+          "at": "2026-09-26T13:08:25"
+        },
+        {
+          "kind": "refine",
+          "key": "furniture/product",
+          "model": "z_image_turbo_bf16",
+          "denoise": 0.2,
+          "size": [
+            1920,
+            1088
+          ],
+          "source": "work/v2/furniture__company-to-product.end.png",
+          "prompt": "Photorealistic high-end commercial photograph, crisp natural detail, realistic materials, soft natural light, natural contrast, true optical depth of field, no text, no logos.",
+          "output": "journey-media/work/v2/furniture__company-to-product.end.refined.png",
+          "seconds": 37.0,
+          "at": "2026-09-26T17:55:26"
+        },
+        {
+          "kind": "refine",
+          "key": "furniture/product",
+          "model": "z_image_turbo_bf16",
+          "denoise": 0.15,
+          "size": [
+            1920,
+            1088
+          ],
+          "source": "work/v2/furniture__company-to-product.clip_last.png",
+          "prompt": "Photorealistic high-end commercial photograph, crisp natural detail, realistic materials, soft natural light, natural contrast, true optical depth of field, no text, no logos.",
+          "output": "journey-media/work/v2/furniture__company-to-product.clip_last.refined.png",
+          "seconds": 64.6,
+          "at": "2026-09-26T20:10:55"
+        }
+      ],
+      "final": "journey-media/final/furniture/product.png",
+      "web": {
+        "base": "media/furniture/product",
+        "widths": [
+          1920,
+          960
+        ],
+        "rev": "7d27a23582",
+        "focus": "33% 60%",
+        "panel": "right",
+        "alt": "The lounge chair by the tall windows, closer"
+      }
+    },
+    "furniture/material": {
+      "method": "derived: last frame of the generated camera move furniture/product>material",
+      "move": "furniture/product>material",
+      "picked_source": "work/v2/furniture_material.weave075.png",
+      "post": [
+        {
+          "kind": "refine",
+          "key": "furniture/material",
+          "model": "z_image_turbo_bf16",
+          "denoise": 0.2,
+          "size": [
+            1920,
+            1088
+          ],
+          "source": "work/anchors/furniture/material_q7.png",
+          "prompt": "Photorealistic high-end commercial photograph, crisp natural detail, realistic materials, soft natural light, natural contrast, true optical depth of field, no text, no logos.",
+          "output": "journey-media/work/refined/furniture/material.png",
+          "seconds": 30.1,
+          "at": "2026-09-26T13:10:00"
+        },
+        {
+          "kind": "refine",
+          "key": "furniture/material",
+          "model": "z_image_turbo_bf16",
+          "denoise": 0.15,
+          "size": [
+            1920,
+            1088
+          ],
+          "source": "work/v2/furniture__product-to-material.clip_last.png",
+          "prompt": "Photorealistic high-end commercial photograph, crisp natural detail, realistic materials, soft natural light, natural contrast, true optical depth of field, no text, no logos.",
+          "output": "journey-media/work/v2/furniture__product-to-material.clip_last.refined.png",
+          "seconds": 39.1,
+          "at": "2026-09-26T20:20:18"
+        },
+        {
+          "kind": "texture_fix",
+          "anchor": "final/furniture/material.png",
+          "ref": "work/refs/furniture_material_weave.png",
+          "model": "qwen_image_edit_2511_fp8mixed+lightning8",
+          "denoise": 0.45,
+          "seed": 7,
+          "prompt": "Keep this exact photograph: same oak lounge armchair, same framing, camera angle, light and colours. Make the seat and back cushion upholstery crisp, clean cream off-white basket-weave wool exactly like the fabric in the second image: regular interlaced yarns, no stray fibres, no lint, no stains. Photorealistic, sharp, no text.",
+          "output": "journey-media/work/v2/furniture_material.texfix.png",
+          "seconds": 99.2,
+          "at": "2026-09-26T21:35:53"
+        },
+        {
+          "kind": "refine",
+          "anchor": "final/furniture/material.png",
+          "model": "z_image_turbo_bf16",
+          "denoise": 0.15,
+          "size": [
+            1920,
+            1088
+          ],
+          "prompt": "Photorealistic high-end commercial photograph, crisp natural detail, realistic materials, soft natural light, natural contrast, true optical depth of field, no text, no logos.",
+          "output": "journey-media/work/v2/furniture_material.texfix.refined.png",
+          "seconds": 52.1,
+          "at": "2026-09-26T21:36:45"
+        },
+        {
+          "kind": "refine",
+          "key": "furniture/material",
+          "model": "z_image_turbo_bf16",
+          "denoise": 0.15,
+          "size": [
+            1920,
+            1088
+          ],
+          "source": "work/v2/furniture_material.weave075.png",
+          "prompt": "Photorealistic high-end commercial photograph, crisp natural detail, realistic materials, soft natural light, natural contrast, true optical depth of field, no text, no logos.",
+          "output": "journey-media/work/v2/furniture_material.weave075.refined.png",
+          "seconds": 52.2,
+          "at": "2026-09-26T21:51:13"
+        }
+      ],
+      "final": "journey-media/final/furniture/material.png",
+      "web": {
+        "base": "media/furniture/material",
+        "widths": [
+          1920,
+          960
+        ],
+        "rev": "62f87fbf9f",
+        "focus": "45% 55%",
+        "panel": "right",
+        "alt": "The seat cushion close up: cream basket-weave wool on an oak frame"
+      }
+    },
+    "furniture/component": {
+      "method": "Qwen-Image-Edit-2511 with reference images",
+      "picked_candidate": "work/anchors/furniture/component_q7.png",
+      "generation": {
+        "kind": "anchor",
+        "key": "furniture/component",
+        "model": "qwen_image_edit_2511_fp8mixed+lightning8",
+        "seed": 7,
+        "size": [
+          1664,
+          928
+        ],
+        "steps": 8,
+        "refs": [
+          "work/masters/furniture_f0_s11.png",
+          "work/anchors/furniture/material_q7.png"
+        ],
+        "prompt": "Low close-up under the front edge of the seat of this same armchair, the camera about thirty centimetres away, just below seat height, looking slightly upward into the construction. The underside edge of the cream basket-weave seat cushion rests on flat black elastic webbing straps that are stretched between the oak front rail and the rear rail; one strap is clipped into a slot in the oak rail; a graphite-black hex bolt joins the front rail to the tapered oak leg, the oak end grain visible at the joint. It is clear how upholstery, cushion, timber frame and fastening work together. Soft daylight, shallow depth of field, the room softly blurred. Photorealistic product detail photograph, 50mm lens.",
+        "output": "journey-media/work/anchors/furniture/component_q7.png",
+        "seconds": 80.1,
+        "at": "2026-09-26T12:47:01"
+      },
+      "prompt": "Low close-up under the front edge of the seat of this same armchair, the camera about thirty centimetres away, just below seat height, looking slightly upward into the construction. The underside edge of the cream basket-weave seat cushion rests on flat black elastic webbing straps that are stretched between the oak front rail and the rear rail; one strap is clipped into a slot in the oak rail; a graphite-black hex bolt joins the front rail to the tapered oak leg, the oak end grain visible at the joint. It is clear how upholstery, cushion, timber frame and fastening work together. Soft daylight, shallow depth of field, the room softly blurred. Photorealistic product detail photograph, 50mm lens.",
+      "refs": [
+        "furniture/master",
+        "furniture/material"
+      ],
+      "refine": {
+        "kind": "refine",
+        "key": "furniture/component",
+        "model": "z_image_turbo_bf16",
+        "denoise": 0.2,
+        "size": [
+          1920,
+          1088
+        ],
+        "source": "work/anchors/furniture/component_q7.png",
+        "prompt": "Photorealistic high-end commercial photograph, crisp natural detail, realistic materials, soft natural light, natural contrast, true optical depth of field, no text, no logos.",
+        "output": "journey-media/work/refined/furniture/component.png",
+        "seconds": 32.0,
+        "at": "2026-09-26T13:10:33"
+      },
+      "final": "journey-media/final/furniture/component.png",
+      "web": {
+        "base": "media/furniture/component",
+        "widths": [
+          1920,
+          960
+        ],
+        "rev": "667b954a22",
+        "focus": "40% 55%",
+        "panel": "right",
+        "alt": "Under the seat: webbing, oak rails and a graphite bolt"
+      }
+    },
+    "furniture/supplier": {
+      "method": "Z-Image-Turbo text-to-image",
+      "picked_candidate": "work/anchors/furniture/supplier_z7.png",
+      "generation": {
+        "kind": "anchor",
+        "key": "furniture/supplier",
+        "model": "z_image_turbo_bf16",
+        "seed": 7,
+        "size": [
+          1920,
+          1088
+        ],
+        "steps": 8,
+        "prompt": "Inside a quiet Danish hardwood supplier's timber hall: neat stacks of kiln-dried, planed European white oak boards (Quercus robur), knot-free, straight-grained, pale golden-brown with fine silvery ray flecks, separated by thin stickers. The end of the nearest stack is close to the camera on the left, its board faces showing the oak figure; each stack carries a small blank paper batch tag. Tall windows with soft northern daylight, pale concrete floor, a graphite-grey forklift parked softly out of focus in the distance. Calm, orderly, premium material, traceable source. Camera at chest height, 35mm lens. Premium Nordic product cinematography, photorealistic, ARRI Alexa 35 look, subtle Cooke lens character, soft northern European daylight, natural contrast, realistic PBR materials, real optical depth of field, restrained luxury, no text, no letters, no logos, no brand marks, no watermark.",
+        "output": "journey-media/work/anchors/furniture/supplier_z7.png",
+        "seconds": 30.1,
+        "at": "2026-09-26T12:42:30"
+      },
+      "prompt": "Inside a quiet Danish hardwood supplier's timber hall: neat stacks of kiln-dried, planed European white oak boards (Quercus robur), knot-free, straight-grained, pale golden-brown with fine silvery ray flecks, separated by thin stickers. The end of the nearest stack is close to the camera on the left, its board faces showing the oak figure; each stack carries a small blank paper batch tag. Tall windows with soft northern daylight, pale concrete floor, a graphite-grey forklift parked softly out of focus in the distance. Calm, orderly, premium material, traceable source. Camera at chest height, 35mm lens. Premium Nordic product cinematography, photorealistic, ARRI Alexa 35 look, subtle Cooke lens character, soft northern European daylight, natural contrast, realistic PBR materials, real optical depth of field, restrained luxury, no text, no letters, no logos, no brand marks, no watermark.",
+      "refs": null,
+      "refine": null,
+      "final": "journey-media/final/furniture/supplier.png",
+      "web": {
+        "base": "media/furniture/supplier",
+        "widths": [
+          1920,
+          960
+        ],
+        "rev": "d077fe2638",
+        "focus": "32% 55%",
+        "panel": "right",
+        "alt": "Stacks of planed oak boards at a timber supplier"
+      }
+    },
+    "furniture/logistics": {
+      "method": "Qwen-Image-Edit-2511 with reference images",
+      "picked_candidate": "work/anchors/furniture/logistics_q7.png",
+      "generation": {
+        "kind": "anchor",
+        "key": "furniture/logistics",
+        "model": "qwen_image_edit_2511_fp8mixed+lightning8",
+        "seed": 7,
+        "size": [
+          1664,
+          928
+        ],
+        "steps": 8,
+        "refs": [
+          "work/anchors/furniture/supplier_z7.png"
+        ],
+        "prompt": "In the same timber warehouse, the camera has moved about four metres to the right towards the open loading bay. A graphite-grey forklift carries a strapped bundle of the same planed oak boards, wrapped in clear protective film on a wooden pallet, towards a waiting truck trailer at the bay door; soft daylight comes through the open door. The end grain of the bundle faces the camera. Same light, same materials. Photorealistic industrial photograph, 35mm lens.",
+        "output": "journey-media/work/anchors/furniture/logistics_q7.png",
+        "seconds": 62.2,
+        "at": "2026-09-26T12:44:38"
+      },
+      "prompt": "In the same timber warehouse, the camera has moved about four metres to the right towards the open loading bay. A graphite-grey forklift carries a strapped bundle of the same planed oak boards, wrapped in clear protective film on a wooden pallet, towards a waiting truck trailer at the bay door; soft daylight comes through the open door. The end grain of the bundle faces the camera. Same light, same materials. Photorealistic industrial photograph, 35mm lens.",
+      "refs": [
+        "furniture/supplier"
+      ],
+      "refine": {
+        "kind": "refine",
+        "key": "furniture/logistics",
+        "model": "z_image_turbo_bf16",
+        "denoise": 0.2,
+        "size": [
+          1920,
+          1088
+        ],
+        "source": "work/anchors/furniture/logistics_q7.png",
+        "prompt": "Photorealistic high-end commercial photograph, crisp natural detail, realistic materials, soft natural light, natural contrast, true optical depth of field, no text, no logos.",
+        "output": "journey-media/work/refined/furniture/logistics.png",
+        "seconds": 32.0,
+        "at": "2026-09-26T13:11:06"
+      },
+      "final": "journey-media/final/furniture/logistics.png",
+      "web": {
+        "base": "media/furniture/logistics",
+        "widths": [
+          1920,
+          960
+        ],
+        "rev": "a7a85345ba",
+        "focus": "38% 55%",
+        "panel": "right",
+        "alt": "A forklift carries a wrapped bundle of oak boards to a truck"
+      }
+    },
+    "furniture/factory": {
+      "method": "Z-Image-Turbo text-to-image",
+      "picked_candidate": "work/anchors/furniture/factory_z7.png",
+      "generation": {
+        "kind": "anchor",
+        "key": "furniture/factory",
+        "model": "z_image_turbo_bf16",
+        "seed": 7,
+        "size": [
+          1920,
+          1088
+        ],
+        "steps": 8,
+        "prompt": "Inside a modern Danish furniture factory: in the foreground a large enclosed industrial five-axis CNC machining centre in graphite grey with its glass door open, the spindle lowered over a curved solid oak armrest clamped on a vacuum table, fine pale oak shavings; beside it a steel trolley holding rows of identical machined oak armrests and tapered legs; beyond, a clean assembly area with rolls of cream upholstery fabric, tall windows and soft northern daylight. Orderly, precise, premium European manufacturing, no people in focus, no screens, no signage. Camera at chest height, 35mm lens. Premium Nordic product cinematography, photorealistic, ARRI Alexa 35 look, subtle Cooke lens character, soft northern European daylight, natural contrast, realistic PBR materials, real optical depth of field, restrained luxury, no text, no letters, no logos, no brand marks, no watermark.",
+        "output": "journey-media/work/anchors/furniture/factory_z7.png",
+        "seconds": 30.7,
+        "at": "2026-09-26T12:43:35"
+      },
+      "prompt": "Inside a modern Danish furniture factory: in the foreground a large enclosed industrial five-axis CNC machining centre in graphite grey with its glass door open, the spindle lowered over a curved solid oak armrest clamped on a vacuum table, fine pale oak shavings; beside it a steel trolley holding rows of identical machined oak armrests and tapered legs; beyond, a clean assembly area with rolls of cream upholstery fabric, tall windows and soft northern daylight. Orderly, precise, premium European manufacturing, no people in focus, no screens, no signage. Camera at chest height, 35mm lens. Premium Nordic product cinematography, photorealistic, ARRI Alexa 35 look, subtle Cooke lens character, soft northern European daylight, natural contrast, realistic PBR materials, real optical depth of field, restrained luxury, no text, no letters, no logos, no brand marks, no watermark.",
+      "refs": null,
+      "refine": null,
+      "final": "journey-media/final/furniture/factory.png",
+      "web": {
+        "base": "media/furniture/factory",
+        "widths": [
+          1920,
+          960
+        ],
+        "rev": "5063f53577",
+        "focus": "62% 55%",
+        "panel": "left",
+        "alt": "A CNC machine shaping an oak armrest in a furniture factory"
+      }
+    },
+    "furniture/data": {
+      "method": "Qwen-Image-Edit-2511 with reference images",
+      "picked_candidate": "work/anchors/furniture/data_q7.png",
+      "generation": {
+        "kind": "anchor",
+        "key": "furniture/data",
+        "model": "qwen_image_edit_2511_fp8mixed+lightning8",
+        "seed": 7,
+        "size": [
+          1664,
+          928
+        ],
+        "steps": 8,
+        "refs": [
+          "work/anchors/furniture/factory_z7.png"
+        ],
+        "prompt": "In the same furniture factory, the camera has moved to a pale oak quality-control bench beside the CNC machine: on the bench lies one finished machined oak armrest part, and a worker's hand holds a graphite handheld scanner over a small laser-etched square code on the oak surface. No screens, monitors or readable text anywhere in the frame. Same soft daylight, shallow depth of field, focus on the etched code and the scanner. Photorealistic industrial photograph, 50mm lens.",
+        "output": "journey-media/work/anchors/furniture/data_q7.png",
+        "seconds": 62.3,
+        "at": "2026-09-26T12:45:40"
+      },
+      "prompt": "In the same furniture factory, the camera has moved to a pale oak quality-control bench beside the CNC machine: on the bench lies one finished machined oak armrest part, and a worker's hand holds a graphite handheld scanner over a small laser-etched square code on the oak surface. No screens, monitors or readable text anywhere in the frame. Same soft daylight, shallow depth of field, focus on the etched code and the scanner. Photorealistic industrial photograph, 50mm lens.",
+      "refs": [
+        "furniture/factory"
+      ],
+      "refine": {
+        "kind": "refine",
+        "key": "furniture/data",
+        "model": "z_image_turbo_bf16",
+        "denoise": 0.2,
+        "size": [
+          1920,
+          1088
+        ],
+        "source": "work/anchors/furniture/data_q7.png",
+        "prompt": "Photorealistic high-end commercial photograph, crisp natural detail, realistic materials, soft natural light, natural contrast, true optical depth of field, no text, no logos.",
+        "output": "journey-media/work/refined/furniture/data.png",
+        "seconds": 32.0,
+        "at": "2026-09-26T13:11:40"
+      },
+      "final": "journey-media/final/furniture/data.png",
+      "web": {
+        "base": "media/furniture/data",
+        "widths": [
+          1920,
+          960
+        ],
+        "rev": "d9d67daf30",
+        "focus": "62% 55%",
+        "panel": "left",
+        "alt": "A scanner reads an etched code on an oak part",
+        "hotspot": [
+          64,
+          60
+        ]
+      }
+    },
+    "furniture/passport": {
+      "method": "Qwen-Image-Edit-2511 with reference images",
+      "picked_candidate": "work/anchors/furniture/passport_q19.png",
+      "generation": {
+        "kind": "anchor",
+        "key": "furniture/passport",
+        "model": "qwen_image_edit_2511_fp8mixed+lightning8",
+        "seed": 19,
+        "size": [
+          1664,
+          928
+        ],
+        "steps": 8,
+        "refs": [
+          "work/masters/furniture_f0_s11.png",
+          "work/anchors/furniture/component_q7.png"
+        ],
+        "prompt": "The same armchair as in the reference images, identical design \u2014 flat oak armrests with dark rounded ends, straight tapered legs, oak side rails with graphite bolt heads, thick cream basket-weave cushions \u2014 in the same bright living room, seen closer from the front right at seat height, about seventy centimetres away. A person's hand holding a dark smartphone approaches a small laser-etched square code on the outer face of the oak side rail below the armrest; the phone screen is dark and faces the chair. Window light behind, shallow depth of field, focus on the rail and the phone. Photorealistic lifestyle product photograph, 50mm lens.",
+        "output": "journey-media/work/anchors/furniture/passport_q19.png",
+        "seconds": 80.9,
+        "at": "2026-09-26T12:48:22"
+      },
+      "prompt": "The same armchair as in the reference images, identical design \u2014 flat oak armrests with dark rounded ends, straight tapered legs, oak side rails with graphite bolt heads, thick cream basket-weave cushions \u2014 in the same bright living room, seen closer from the front right at seat height, about seventy centimetres away. A person's hand holding a dark smartphone approaches a small laser-etched square code on the outer face of the oak side rail below the armrest; the phone screen is dark and faces the chair. Window light behind, shallow depth of field, focus on the rail and the phone. Photorealistic lifestyle product photograph, 50mm lens.",
+      "refs": [
+        "furniture/master",
+        "furniture/component"
+      ],
+      "refine": {
+        "kind": "refine",
+        "key": "furniture/passport",
+        "model": "z_image_turbo_bf16",
+        "denoise": 0.2,
+        "size": [
+          1920,
+          1088
+        ],
+        "source": "work/anchors/furniture/passport_q19.png",
+        "prompt": "Photorealistic high-end commercial photograph, crisp natural detail, realistic materials, soft natural light, natural contrast, true optical depth of field, no text, no logos.",
+        "output": "journey-media/work/refined/furniture/passport.png",
+        "seconds": 32.0,
+        "at": "2026-09-26T13:12:14"
+      },
+      "final": "journey-media/final/furniture/passport.png",
+      "web": {
+        "base": "media/furniture/passport",
+        "widths": [
+          1920,
+          960
+        ],
+        "rev": "3f1cfd5bd9",
+        "focus": "62% 50%",
+        "panel": "left",
+        "alt": "A phone approaches the code on the chair's oak rail",
+        "hotspot": [
+          53.5,
+          60.5
+        ]
+      }
+    },
+    "furniture/nextLife": {
+      "method": "Qwen-Image-Edit-2511 with reference images",
+      "picked_candidate": "work/anchors/furniture/nextLife_q19.png",
+      "generation": {
+        "kind": "anchor",
+        "key": "furniture/nextLife",
+        "model": "qwen_image_edit_2511_fp8mixed+lightning8",
+        "seed": 19,
+        "size": [
+          1664,
+          928
+        ],
+        "steps": 8,
+        "refs": [
+          "work/masters/furniture_f0_s11.png"
+        ],
+        "prompt": "The same armchair years later in a specialist furniture repair workshop. It stands on a sturdy wooden workbench, carefully partly taken apart: the seat and back cushions are off and lie beside it, one cream basket-weave cover unzipped and folded back to show the foam inside; the bare oak frame and the black elastic webbing are visible; graphite bolts and fittings are organised in a small wooden tray; a craftsperson's hands in a canvas apron fit a new webbing strap. Hand tools on a pegboard, warm daylight from tall workshop windows. Clean, calm air with no floating dust or particles, a smooth well-kept oak workbench top. Repair and longevity, precise and unhurried. Photorealistic editorial photograph, 35mm lens.",
+        "output": "journey-media/work/anchors/furniture/nextLife_q19.png",
+        "seconds": 61.2,
+        "at": "2026-09-26T13:01:09"
+      },
+      "prompt": "The same armchair years later in a specialist furniture repair workshop. It stands on a sturdy wooden workbench, carefully partly taken apart: the seat and back cushions are off and lie beside it, one cream basket-weave cover unzipped and folded back to show the foam inside; the bare oak frame and the black elastic webbing are visible; graphite bolts and fittings are organised in a small wooden tray; a craftsperson's hands in a canvas apron fit a new webbing strap. Hand tools on a pegboard, warm daylight from tall workshop windows. Clean, calm air with no floating dust or particles, a smooth well-kept oak workbench top. Repair and longevity, precise and unhurried. Photorealistic editorial photograph, 35mm lens.",
+      "refs": [
+        "furniture/master"
+      ],
+      "refine": {
+        "kind": "refine",
+        "key": "furniture/nextLife",
+        "model": "z_image_turbo_bf16",
+        "denoise": 0.2,
+        "size": [
+          1920,
+          1088
+        ],
+        "source": "work/anchors/furniture/nextLife_q19.png",
+        "prompt": "Photorealistic high-end commercial photograph, crisp natural detail, realistic materials, soft natural light, natural contrast, true optical depth of field, no text, no logos.",
+        "output": "journey-media/work/refined/furniture/nextLife.png",
+        "seconds": 32.0,
+        "at": "2026-09-26T13:13:19"
+      },
+      "final": "journey-media/final/furniture/nextLife.png",
+      "web": {
+        "base": "media/furniture/nextLife",
+        "widths": [
+          1920,
+          960
+        ],
+        "rev": "6bde3dbcb4",
+        "focus": "55% 55%",
+        "panel": "left",
+        "alt": "The chair partly taken apart for repair in a workshop"
+      }
+    },
+    "battery/company": {
+      "method": "approved master (Z-Image-Turbo, round 1)",
+      "picked_candidate": "work/b/b0_rear34_a.png",
+      "generation": {
+        "kind": "edit",
+        "tag": "b0_rear34",
+        "model": "qwen_image_edit_2511_fp8mixed",
+        "lightning": true,
+        "steps": 8,
+        "seed": 5,
+        "size": [
+          1664,
+          928
+        ],
+        "refs": [
+          "work/masters/battery_b0_s37.png"
+        ],
+        "init": null,
+        "denoise": 1.0,
+        "prompt": "Change the camera viewpoint to a low rear three-quarter view: the camera now stands behind the bicycle and to its right, at hip height, about one metre from the rear wheel, looking forward along the frame. The same bicycle, same sand-grey aluminium frame and the same graphite battery on the down tube. The rear wheel, rear hub and drivetrain are large in the foreground on the left, the battery pack on the down tube is sharp in the centre of the frame, showing where its housing sits in a machined mounting rail on the frame and its small round key lock. The front wheel is mostly out of frame. Same minimalist studio, concrete floor, window daylight. Photorealistic product detail photograph, shallow depth of field.",
+        "output": "journey-media/work/b/b0_rear34_a.png",
+        "seconds": 62.1,
+        "at": "2026-09-26T12:06:47"
+      },
+      "prompt": null,
+      "refs": null,
+      "refine": null,
+      "final": "journey-media/final/battery/company.png",
+      "web": {
+        "base": "media/battery/company",
+        "widths": [
+          1920,
+          960
+        ],
+        "rev": "0be6e3dfb6",
+        "focus": "62% 45%",
+        "panel": "left",
+        "alt": "Rear three-quarter view of an e-bike with a removable battery"
+      }
+    },
+    "battery/product": {
+      "method": "derived: last frame of the generated camera move battery/company>product",
+      "move": "battery/company>product",
+      "picked_source": "work/v2/battery__company-to-product.clip_last.png",
+      "post": [
+        {
+          "kind": "derived_anchor",
+          "key": "battery/product",
+          "source": "work/v2/battery__company-to-product.clip_last.png",
+          "post": "unsharp r1.2 30%",
+          "output": "journey-media/final/battery/product.png",
+          "at": "2026-09-26T22:47:20"
+        }
+      ],
+      "final": "journey-media/final/battery/product.png",
+      "web": {
+        "base": "media/battery/product",
+        "widths": [
+          1920,
+          960
+        ],
+        "rev": "d1385f4974",
+        "focus": "42% 45%",
+        "panel": "right",
+        "alt": "The graphite battery pack on the e-bike's down tube, closer"
+      }
+    },
+    "battery/material": {
+      "method": "derived: last frame of the generated camera move battery/product>material",
+      "move": "battery/product>material",
+      "picked_source": "work/v2/battery__product-to-material.clip_last.png",
+      "post": [
+        {
+          "kind": "derived_anchor",
+          "key": "battery/material",
+          "source": "work/v2/battery__product-to-material.clip_last.png",
+          "post": "unsharp r1.2 30%",
+          "output": "journey-media/final/battery/material.png",
+          "at": "2026-09-26T22:53:52"
+        },
+        {
+          "kind": "texture_fix",
+          "anchor": "final/battery/material.png",
+          "ref": "work/refs/battery_housing_macro.png",
+          "model": "qwen_image_edit_2511_fp8mixed+lightning8",
+          "denoise": 0.75,
+          "seed": 7,
+          "prompt": "Keep the exact composition, camera angle, framing, lock position, frame tube, light and colours of the first image. Make every surface crisp and physically real: the battery housing is matte graphite bead-blasted anodised aluminium with a fine even grain exactly like the surface in the second image, a precise thin seam line, the round lock is machined aluminium with a black centre, the frame tube is matte sand-grey powder coat. Sharp focus, photorealistic premium product macro, no text, no logos.",
+          "output": "journey-media/work/v2/battery_material.texfix.png",
+          "seconds": 88.4,
+          "at": "2026-09-26T23:14:43"
+        }
+      ],
+      "final": "journey-media/final/battery/material.png",
+      "web": {
+        "base": "media/battery/material",
+        "widths": [
+          1920,
+          960
+        ],
+        "rev": "8a0551a346",
+        "focus": "45% 55%",
+        "panel": "right",
+        "alt": "Close-up of the battery housing: bead-blasted graphite, a fine seam and the lock"
+      }
+    },
+    "battery/component": {
+      "method": "Qwen-Image-Edit-2511 with reference images",
+      "picked_candidate": "work/anchors/battery/component_q7.png",
+      "generation": {
+        "kind": "anchor",
+        "key": "battery/component",
+        "model": "qwen_image_edit_2511_fp8mixed+lightning8",
+        "seed": 7,
+        "size": [
+          1664,
+          928
+        ],
+        "steps": 8,
+        "refs": [
+          "work/anchors/battery/product_q7.png"
+        ],
+        "prompt": "The same graphite battery pack opened on an ESD-safe grey service bench: the housing halves are separated and laid side by side, inside are neat rows of cylindrical lithium-ion cells in black plastic cell holders joined by bright nickel strips, a green battery-management circuit board with fine wiring and a connector at one end. A technician's blue-gloved hand rests at the edge. Clean workshop light, top-down three-quarter view. Believable service context, no sci-fi. Photorealistic technical photograph, 50mm lens.",
+        "output": "journey-media/work/anchors/battery/component_q7.png",
+        "seconds": 60.8,
+        "at": "2026-09-26T12:52:44"
+      },
+      "prompt": "The same graphite battery pack opened on an ESD-safe grey service bench: the housing halves are separated and laid side by side, inside are neat rows of cylindrical lithium-ion cells in black plastic cell holders joined by bright nickel strips, a green battery-management circuit board with fine wiring and a connector at one end. A technician's blue-gloved hand rests at the edge. Clean workshop light, top-down three-quarter view. Believable service context, no sci-fi. Photorealistic technical photograph, 50mm lens.",
+      "refs": [
+        "battery/product"
+      ],
+      "refine": {
+        "kind": "refine",
+        "key": "battery/component",
+        "model": "z_image_turbo_bf16",
+        "denoise": 0.2,
+        "size": [
+          1920,
+          1088
+        ],
+        "source": "work/anchors/battery/component_q7.png",
+        "prompt": "Photorealistic high-end commercial photograph, crisp natural detail, realistic materials, soft natural light, natural contrast, true optical depth of field, no text, no logos.",
+        "output": "journey-media/work/refined/battery/component.png",
+        "seconds": 37.3,
+        "at": "2026-09-26T22:37:20"
+      },
+      "final": "journey-media/final/battery/component.png",
+      "web": {
+        "base": "media/battery/component",
+        "widths": [
+          1920,
+          960
+        ],
+        "rev": "3b15092c29",
+        "focus": "45% 55%",
+        "panel": "right",
+        "alt": "The battery opened on a service bench: cells and BMS"
+      }
+    },
+    "battery/supplier": {
+      "method": "Z-Image-Turbo text-to-image",
+      "picked_candidate": "work/anchors/battery/supplier_z7.png",
+      "generation": {
+        "kind": "anchor",
+        "key": "battery/supplier",
+        "model": "z_image_turbo_bf16",
+        "seed": 7,
+        "size": [
+          1920,
+          1088
+        ],
+        "steps": 8,
+        "prompt": "Inside a clean modern battery cell manufacturing plant in Europe: long trays of identical cylindrical lithium-ion cells moving on a stainless conveyor in the foreground, formation and testing racks with small status lights receding into the background, technicians in grey workwear softly out of focus, cool daylight from high windows mixed with soft LED light, orderly, precise, traceable. Camera at bench height, 35mm lens. Premium Nordic product cinematography, photorealistic, ARRI Alexa 35 look, subtle Cooke lens character, soft northern European daylight, natural contrast, realistic PBR materials, real optical depth of field, restrained luxury, no text, no letters, no logos, no brand marks, no watermark.",
+        "output": "journey-media/work/anchors/battery/supplier_z7.png",
+        "seconds": 30.4,
+        "at": "2026-09-26T12:53:44"
+      },
+      "prompt": "Inside a clean modern battery cell manufacturing plant in Europe: long trays of identical cylindrical lithium-ion cells moving on a stainless conveyor in the foreground, formation and testing racks with small status lights receding into the background, technicians in grey workwear softly out of focus, cool daylight from high windows mixed with soft LED light, orderly, precise, traceable. Camera at bench height, 35mm lens. Premium Nordic product cinematography, photorealistic, ARRI Alexa 35 look, subtle Cooke lens character, soft northern European daylight, natural contrast, realistic PBR materials, real optical depth of field, restrained luxury, no text, no letters, no logos, no brand marks, no watermark.",
+      "refs": null,
+      "refine": null,
+      "final": "journey-media/final/battery/supplier.png",
+      "web": {
+        "base": "media/battery/supplier",
+        "widths": [
+          1920,
+          960
+        ],
+        "rev": "571541e99e",
+        "focus": "40% 55%",
+        "panel": "right",
+        "alt": "Trays of cells on a conveyor in a cell plant"
+      }
+    },
+    "battery/logistics": {
+      "method": "Qwen-Image-Edit-2511 with reference images",
+      "picked_candidate": "work/anchors/battery/logistics_q19.png",
+      "generation": {
+        "kind": "anchor",
+        "key": "battery/logistics",
+        "model": "qwen_image_edit_2511_fp8mixed+lightning8",
+        "seed": 19,
+        "size": [
+          1664,
+          928
+        ],
+        "steps": 8,
+        "refs": [
+          "work/anchors/battery/supplier_z7.png"
+        ],
+        "prompt": "In the same battery plant, the camera has moved to the controlled dispatch area: plain grey sealed shipping boxes for lithium-ion cells stacked on a wooden pallet and neatly stretch-wrapped, each box with one small plain white diamond-shaped label that is completely blank, a graphite pallet truck beside it, a simple painted yellow safety outline on the clean floor. Absolutely no text, letters, numbers, symbols, signs or floor lettering anywhere. The conveyor from before is softly visible behind. Same light. Photorealistic industrial photograph, 35mm lens.",
+        "output": "journey-media/work/anchors/battery/logistics_q19.png",
+        "seconds": 64.2,
+        "at": "2026-09-26T16:47:19"
+      },
+      "prompt": "In the same battery plant, the camera has moved to the controlled dispatch area: plain grey sealed shipping boxes for lithium-ion cells stacked on a wooden pallet and neatly stretch-wrapped, each box with one small plain white diamond-shaped label that is completely blank, a graphite pallet truck beside it, a simple painted yellow safety outline on the clean floor. Absolutely no text, letters, numbers, symbols, signs or floor lettering anywhere. The conveyor from before is softly visible behind. Same light. Photorealistic industrial photograph, 35mm lens.",
+      "refs": [
+        "battery/supplier"
+      ],
+      "refine": {
+        "kind": "refine",
+        "key": "battery/logistics",
+        "model": "z_image_turbo_bf16",
+        "denoise": 0.2,
+        "size": [
+          1920,
+          1088
+        ],
+        "source": "work/anchors/battery/logistics_q19.png",
+        "prompt": "Photorealistic high-end commercial photograph, crisp natural detail, realistic materials, soft natural light, natural contrast, true optical depth of field, no text, no logos.",
+        "output": "journey-media/work/refined/battery/logistics.png",
+        "seconds": 33.1,
+        "at": "2026-09-26T22:37:54"
+      },
+      "final": "journey-media/final/battery/logistics.png",
+      "web": {
+        "base": "media/battery/logistics",
+        "widths": [
+          1920,
+          960
+        ],
+        "rev": "1a07711176",
+        "focus": "45% 55%",
+        "panel": "right",
+        "alt": "Certified shipping boxes on a pallet in a dispatch area"
+      }
+    },
+    "battery/factory": {
+      "method": "Z-Image-Turbo text-to-image",
+      "picked_candidate": "work/anchors/battery/factory_z7.png",
+      "generation": {
+        "kind": "anchor",
+        "key": "battery/factory",
+        "model": "z_image_turbo_bf16",
+        "seed": 7,
+        "size": [
+          1920,
+          1088
+        ],
+        "steps": 8,
+        "prompt": "Inside a modern European e-bike battery pack assembly line: in the foreground an automated spot-welding station joining bright nickel strips onto a module of cylindrical cells in a black holder, graphite-black battery housings waiting on a conveyor, operators in grey workwear softly out of focus, clean white and grey hall, soft daylight and LED light. Camera at bench height, 35mm lens. Premium Nordic product cinematography, photorealistic, ARRI Alexa 35 look, subtle Cooke lens character, soft northern European daylight, natural contrast, realistic PBR materials, real optical depth of field, restrained luxury, no text, no letters, no logos, no brand marks, no watermark.",
+        "output": "journey-media/work/anchors/battery/factory_z7.png",
+        "seconds": 32.0,
+        "at": "2026-09-26T12:55:50"
+      },
+      "prompt": "Inside a modern European e-bike battery pack assembly line: in the foreground an automated spot-welding station joining bright nickel strips onto a module of cylindrical cells in a black holder, graphite-black battery housings waiting on a conveyor, operators in grey workwear softly out of focus, clean white and grey hall, soft daylight and LED light. Camera at bench height, 35mm lens. Premium Nordic product cinematography, photorealistic, ARRI Alexa 35 look, subtle Cooke lens character, soft northern European daylight, natural contrast, realistic PBR materials, real optical depth of field, restrained luxury, no text, no letters, no logos, no brand marks, no watermark.",
+      "refs": null,
+      "refine": null,
+      "final": "journey-media/final/battery/factory.png",
+      "web": {
+        "base": "media/battery/factory",
+        "widths": [
+          1920,
+          960
+        ],
+        "rev": "84ed5318a7",
+        "focus": "40% 55%",
+        "panel": "right",
+        "alt": "A welding station on a battery pack assembly line"
+      }
+    },
+    "battery/data": {
+      "method": "Qwen-Image-Edit-2511 with reference images",
+      "picked_candidate": "work/anchors/battery/data_q31.png",
+      "generation": {
+        "kind": "anchor",
+        "key": "battery/data",
+        "model": "qwen_image_edit_2511_fp8mixed+lightning8",
+        "seed": 31,
+        "size": [
+          1664,
+          928
+        ],
+        "steps": 8,
+        "refs": [
+          "work/anchors/battery/factory_z7.png",
+          "work/anchors/battery/product_q7.png"
+        ],
+        "prompt": "In the same battery assembly hall, the camera has moved to the end-of-line test station: a finished graphite-black battery pack, identical to the one on the e-bike, lies on the test bench connected to a diagnostic cable; a worker's hand holds a handheld scanner over a small laser-etched square data matrix code on the aluminium housing. There are no monitors, screens or displays anywhere in the frame, only machines, cables and the blurred assembly line behind. Focus on the code and the scanner. Photorealistic industrial photograph, 50mm lens.",
+        "output": "journey-media/work/anchors/battery/data_q31.png",
+        "seconds": 110.8,
+        "at": "2026-09-26T22:33:29"
+      },
+      "prompt": "In the same battery assembly hall, the camera has moved to the end-of-line test station: a finished graphite-black battery pack, identical to the one on the e-bike, lies on the test bench connected to a diagnostic cable; a worker's hand holds a handheld scanner over a small laser-etched square data matrix code on the aluminium housing. There are no monitors, screens or displays anywhere in the frame, only machines, cables and the blurred assembly line behind. Focus on the code and the scanner. Photorealistic industrial photograph, 50mm lens.",
+      "refs": [
+        "battery/factory",
+        "battery/product"
+      ],
+      "refine": {
+        "kind": "refine",
+        "key": "battery/data",
+        "model": "z_image_turbo_bf16",
+        "denoise": 0.2,
+        "size": [
+          1920,
+          1088
+        ],
+        "source": "work/anchors/battery/data_q31.png",
+        "prompt": "Photorealistic high-end commercial photograph, crisp natural detail, realistic materials, soft natural light, natural contrast, true optical depth of field, no text, no logos.",
+        "output": "journey-media/work/refined/battery/data.png",
+        "seconds": 37.1,
+        "at": "2026-09-26T23:17:24"
+      },
+      "final": "journey-media/final/battery/data.png",
+      "web": {
+        "base": "media/battery/data",
+        "widths": [
+          1920,
+          960
+        ],
+        "rev": "3a144eb25d",
+        "focus": "50% 55%",
+        "panel": "left",
+        "alt": "A scanner reads the etched code on a finished pack at the end-of-line station",
+        "hotspot": [
+          51.5,
+          57
+        ]
+      }
+    },
+    "battery/passport": {
+      "method": "Qwen-Image-Edit-2511 with reference images",
+      "picked_candidate": "work/anchors/battery/passport_q7.png",
+      "generation": {
+        "kind": "anchor",
+        "key": "battery/passport",
+        "model": "qwen_image_edit_2511_fp8mixed+lightning8",
+        "seed": 7,
+        "size": [
+          1664,
+          928
+        ],
+        "steps": 8,
+        "refs": [
+          "work/b/b0_rear34_a.png"
+        ],
+        "prompt": "The same e-bike in a bright, calm bicycle service workshop, clamped in a repair stand. A mechanic's hand holds a dark smartphone close to a small laser-etched square code on the graphite battery housing on the down tube; the phone screen is dark. Tools hang on a pegboard wall behind, soft daylight, shallow depth of field with focus on the battery and the phone. Not a commercial, a real working moment. Photorealistic editorial photograph, 50mm lens.",
+        "output": "journey-media/work/anchors/battery/passport_q7.png",
+        "seconds": 70.6,
+        "at": "2026-09-26T16:49:35"
+      },
+      "prompt": "The same e-bike in a bright, calm bicycle service workshop, clamped in a repair stand. A mechanic's hand holds a dark smartphone close to a small laser-etched square code on the graphite battery housing on the down tube; the phone screen is dark. Tools hang on a pegboard wall behind, soft daylight, shallow depth of field with focus on the battery and the phone. Not a commercial, a real working moment. Photorealistic editorial photograph, 50mm lens.",
+      "refs": [
+        "battery/company"
+      ],
+      "refine": {
+        "kind": "refine",
+        "key": "battery/passport",
+        "model": "z_image_turbo_bf16",
+        "denoise": 0.2,
+        "size": [
+          1920,
+          1088
+        ],
+        "source": "work/anchors/battery/passport_q7.png",
+        "prompt": "Photorealistic high-end commercial photograph, crisp natural detail, realistic materials, soft natural light, natural contrast, true optical depth of field, no text, no logos.",
+        "output": "journey-media/work/refined/battery/passport.png",
+        "seconds": 33.3,
+        "at": "2026-09-26T22:38:29"
+      },
+      "final": "journey-media/final/battery/passport.png",
+      "web": {
+        "base": "media/battery/passport",
+        "widths": [
+          1920,
+          960
+        ],
+        "rev": "8ffa738523",
+        "focus": "50% 50%",
+        "panel": "left",
+        "alt": "A mechanic's phone at the code on the bike's battery",
+        "hotspot": [
+          54.7,
+          36
+        ]
+      }
+    },
+    "battery/nextLife": {
+      "method": "Qwen-Image-Edit-2511 with reference images",
+      "picked_candidate": "work/anchors/battery/nextLife_q7.png",
+      "generation": {
+        "kind": "anchor",
+        "key": "battery/nextLife",
+        "model": "qwen_image_edit_2511_fp8mixed+lightning8",
+        "seed": 7,
+        "size": [
+          1664,
+          928
+        ],
+        "steps": 8,
+        "refs": [
+          "work/anchors/battery/passport_q7.png",
+          "work/anchors/battery/component_q7.png"
+        ],
+        "prompt": "In the same service workshop, the battery has been removed from the e-bike: the graphite battery pack lies on the workbench connected by a cable to a compact state-of-health tester, and beside it an opened older pack shows its cell modules carefully sorted into two plain grey crates, one for second-life reuse and one for recycling, without any text. The e-bike stands softly out of focus in the background. Calm industrial daylight. Photorealistic editorial photograph, 35mm lens.",
+        "output": "journey-media/work/anchors/battery/nextLife_q7.png",
+        "seconds": 89.4,
+        "at": "2026-09-26T16:51:05"
+      },
+      "prompt": "In the same service workshop, the battery has been removed from the e-bike: the graphite battery pack lies on the workbench connected by a cable to a compact state-of-health tester, and beside it an opened older pack shows its cell modules carefully sorted into two plain grey crates, one for second-life reuse and one for recycling, without any text. The e-bike stands softly out of focus in the background. Calm industrial daylight. Photorealistic editorial photograph, 35mm lens.",
+      "refs": [
+        "battery/passport",
+        "battery/component"
+      ],
+      "refine": {
+        "kind": "refine",
+        "key": "battery/nextLife",
+        "model": "z_image_turbo_bf16",
+        "denoise": 0.2,
+        "size": [
+          1920,
+          1088
+        ],
+        "source": "work/anchors/battery/nextLife_q7.png",
+        "prompt": "Photorealistic high-end commercial photograph, crisp natural detail, realistic materials, soft natural light, natural contrast, true optical depth of field, no text, no logos.",
+        "output": "journey-media/work/refined/battery/nextLife.png",
+        "seconds": 33.1,
+        "at": "2026-09-26T22:39:03"
+      },
+      "final": "journey-media/final/battery/nextLife.png",
+      "web": {
+        "base": "media/battery/nextLife",
+        "widths": [
+          1920,
+          960
+        ],
+        "rev": "787fa6e5ac",
+        "focus": "45% 55%",
+        "panel": "right",
+        "alt": "The removed battery on a state-of-health tester, modules sorted for reuse"
+      }
+    },
+    "textile/company": {
+      "method": "approved master (Z-Image-Turbo, round 1)",
+      "picked_candidate": "work/masters/textile_t0_s11.png",
+      "generation": {
+        "kind": "master",
+        "name": "textile_t0",
+        "model": "z_image_turbo_bf16",
+        "seed": 11,
+        "size": [
+          1920,
+          1088
+        ],
+        "steps": 8,
+        "sampler": "res_multistep",
+        "prompt": "Still-life product photograph of a premium Danish rain jacket displayed as an industrial design object, hanging from a slim oak hanger on a fine steel wire in front of a pale warm-grey plaster wall, soft diffused daylight from a window on the left. The jacket is a long, clean A-line raincoat in dark moss-green rubberised waterproof fabric with a completely matte, dry, non-shiny surface and crisp structured drape: a structured hood, a concealed front zip under a narrow placket closed with small matte black press studs, two front pockets with flaps, precise welded seams, snap-adjustable cuffs and small metal eyelets under the arms. Extremely clean Scandinavian silhouette, beautiful seam construction, precise hardware, restrained palette, centred composition with generous negative space and a soft shadow on the wall, no mannequin, no labels. 85mm lens. Premium Nordic product cinematography, photorealistic, ARRI Alexa 35 look with subtle Cooke lens character, soft northern European daylight, natural contrast, realistic materials, real optical depth of field, restrained luxury, no people, no text, no logos, no brand marks, no watermark.",
+        "output": "journey-media/work/masters/textile_t0_s11.png",
+        "seconds": 26.0,
+        "at": "2026-09-26T11:57:33"
+      },
+      "prompt": null,
+      "refs": null,
+      "refine": null,
+      "final": "journey-media/final/textile/company.png",
+      "web": {
+        "base": "media/textile/company",
+        "widths": [
+          1920,
+          960
+        ],
+        "rev": "ea61e90074",
+        "focus": "50% 40%",
+        "panel": "right",
+        "alt": "A Danish rain jacket hanging against a plaster wall"
+      }
+    },
+    "textile/product": {
+      "method": "derived: last frame of the generated camera move textile/company>product",
+      "move": "textile/company>product",
+      "picked_source": "work/v2/textile__company-to-product.clip_last.png",
+      "post": [
+        {
+          "kind": "derived_anchor",
+          "key": "textile/product",
+          "source": "work/v2/textile__company-to-product.clip_last.png",
+          "post": "unsharp r1.2 30%",
+          "output": "journey-media/final/textile/product.png",
+          "at": "2026-09-26T23:06:00"
+        }
+      ],
+      "final": "journey-media/final/textile/product.png",
+      "web": {
+        "base": "media/textile/product",
+        "widths": [
+          1920,
+          960
+        ],
+        "rev": "31e7e1f748",
+        "focus": "45% 35%",
+        "panel": "right",
+        "alt": "The rain jacket's shoulders, hood and collar on its hanger"
+      }
+    },
+    "textile/material": {
+      "method": "derived: last frame of the generated camera move textile/product>material",
+      "move": "textile/product>material",
+      "picked_source": "work/v2/textile__product-to-material.clip_last.png",
+      "post": [
+        {
+          "kind": "derived_anchor",
+          "key": "textile/material",
+          "source": "work/v2/textile__product-to-material.clip_last.png",
+          "post": "unsharp r1.2 30%",
+          "output": "journey-media/final/textile/material.png",
+          "at": "2026-09-26T23:13:09"
+        },
+        {
+          "kind": "texture_fix",
+          "anchor": "final/textile/material.png",
+          "ref": "work/refs/textile_fabric_macro.png",
+          "model": "qwen_image_edit_2511_fp8mixed+lightning8",
+          "denoise": 0.7,
+          "seed": 7,
+          "prompt": "Keep the exact composition, camera angle, framing, placket, seams, folds, light and colours of the first image. Make the fabric crisp and physically real: matte dark moss-green rubberised waterproof fabric with a fine regular woven structure visible under its thin coating, exactly like the fabric in the second image, precise welded seams and a neat narrow placket. Sharp focus, photorealistic premium product macro, no text, no labels.",
+          "output": "journey-media/work/v2/textile_material.texfix.png",
+          "seconds": 101.2,
+          "at": "2026-09-26T23:16:46"
+        }
+      ],
+      "final": "journey-media/final/textile/material.png",
+      "web": {
+        "base": "media/textile/material",
+        "widths": [
+          1920,
+          960
+        ],
+        "rev": "f796865723",
+        "focus": "50% 50%",
+        "panel": "right",
+        "alt": "Macro of the matte coated waterproof fabric"
+      }
+    },
+    "textile/component": {
+      "method": "Qwen-Image-Edit-2511 with reference images",
+      "picked_candidate": "work/anchors/textile/component_q19.png",
+      "generation": {
+        "kind": "anchor",
+        "key": "textile/component",
+        "model": "qwen_image_edit_2511_fp8mixed+lightning8",
+        "seed": 19,
+        "size": [
+          1664,
+          928
+        ],
+        "steps": 8,
+        "refs": [
+          "work/masters/textile_t0_s11.png"
+        ],
+        "prompt": "Close-up of the front opening of this same rain jacket laid on a pale oak table with one front panel folded back: the matte black zipper teeth, the placket with matte black press studs, the narrow heat-sealed seam tape on the inside of the seams, the mesh lining, a small drawcord toggle \u2014 the multi-layer construction clearly readable. No labels, no tags, no printed text anywhere. Soft daylight from the left, shallow depth of field. Photorealistic product detail photograph, 50mm lens.",
+        "output": "journey-media/work/anchors/textile/component_q19.png",
+        "seconds": 95.4,
+        "at": "2026-09-26T22:35:05"
+      },
+      "prompt": "Close-up of the front opening of this same rain jacket laid on a pale oak table with one front panel folded back: the matte black zipper teeth, the placket with matte black press studs, the narrow heat-sealed seam tape on the inside of the seams, the mesh lining, a small drawcord toggle \u2014 the multi-layer construction clearly readable. No labels, no tags, no printed text anywhere. Soft daylight from the left, shallow depth of field. Photorealistic product detail photograph, 50mm lens.",
+      "refs": [
+        "textile/company"
+      ],
+      "refine": {
+        "kind": "refine",
+        "key": "textile/component",
+        "model": "z_image_turbo_bf16",
+        "denoise": 0.2,
+        "size": [
+          1920,
+          1088
+        ],
+        "source": "work/anchors/textile/component_q19.png",
+        "prompt": "Photorealistic high-end commercial photograph, crisp natural detail, realistic materials, soft natural light, natural contrast, true optical depth of field, no text, no logos.",
+        "output": "journey-media/work/refined/textile/component.png",
+        "seconds": 33.1,
+        "at": "2026-09-26T23:17:58"
+      },
+      "final": "journey-media/final/textile/component.png",
+      "web": {
+        "base": "media/textile/component",
+        "widths": [
+          1920,
+          960
+        ],
+        "rev": "428447e9b8",
+        "focus": "45% 55%",
+        "panel": "right",
+        "alt": "Zip, seam tape, studs and lining of the opened jacket"
+      }
+    },
+    "textile/supplier": {
+      "method": "Z-Image-Turbo text-to-image",
+      "picked_candidate": "work/anchors/textile/supplier_z7.png",
+      "generation": {
+        "kind": "anchor",
+        "key": "textile/supplier",
+        "model": "z_image_turbo_bf16",
+        "seed": 7,
+        "size": [
+          1920,
+          1088
+        ],
+        "steps": 8,
+        "prompt": "Inside a clean modern European technical textile mill: in the foreground a large roll of dark moss-green coated waterproof fabric on an inspection frame, the fabric running smoothly over polished rollers towards the camera, a coating line and more fabric rolls softly out of focus in the background, high windows with soft daylight, orderly and precise. Camera at chest height, 35mm lens. Premium Nordic product cinematography, photorealistic, ARRI Alexa 35 look, subtle Cooke lens character, soft northern European daylight, natural contrast, realistic PBR materials, real optical depth of field, restrained luxury, no text, no letters, no logos, no brand marks, no watermark.",
+        "output": "journey-media/work/anchors/textile/supplier_z7.png",
+        "seconds": 113.3,
+        "at": "2026-09-26T17:10:43"
+      },
+      "prompt": "Inside a clean modern European technical textile mill: in the foreground a large roll of dark moss-green coated waterproof fabric on an inspection frame, the fabric running smoothly over polished rollers towards the camera, a coating line and more fabric rolls softly out of focus in the background, high windows with soft daylight, orderly and precise. Camera at chest height, 35mm lens. Premium Nordic product cinematography, photorealistic, ARRI Alexa 35 look, subtle Cooke lens character, soft northern European daylight, natural contrast, realistic PBR materials, real optical depth of field, restrained luxury, no text, no letters, no logos, no brand marks, no watermark.",
+      "refs": null,
+      "refine": null,
+      "final": "journey-media/final/textile/supplier.png",
+      "web": {
+        "base": "media/textile/supplier",
+        "widths": [
+          1920,
+          960
+        ],
+        "rev": "306179a66a",
+        "focus": "40% 55%",
+        "panel": "right",
+        "alt": "A roll of the same fabric in a technical textile mill"
+      }
+    },
+    "textile/logistics": {
+      "method": "Qwen-Image-Edit-2511 with reference images",
+      "picked_candidate": "work/anchors/textile/logistics_q7.png",
+      "generation": {
+        "kind": "anchor",
+        "key": "textile/logistics",
+        "model": "qwen_image_edit_2511_fp8mixed+lightning8",
+        "seed": 7,
+        "size": [
+          1664,
+          928
+        ],
+        "steps": 8,
+        "refs": [
+          "work/anchors/textile/supplier_z7.png"
+        ],
+        "prompt": "In the same textile mill, the camera has moved to the dispatch area: finished rolls of the same dark moss-green fabric wrapped in clear film are stacked on wooden pallets, one pallet on a pallet truck heading to an open loading door with soft daylight, orderly and clean. Same light. Photorealistic industrial photograph, 35mm lens.",
+        "output": "journey-media/work/anchors/textile/logistics_q7.png",
+        "seconds": 148.2,
+        "at": "2026-09-26T17:13:11"
+      },
+      "prompt": "In the same textile mill, the camera has moved to the dispatch area: finished rolls of the same dark moss-green fabric wrapped in clear film are stacked on wooden pallets, one pallet on a pallet truck heading to an open loading door with soft daylight, orderly and clean. Same light. Photorealistic industrial photograph, 35mm lens.",
+      "refs": [
+        "textile/supplier"
+      ],
+      "refine": {
+        "kind": "refine",
+        "key": "textile/logistics",
+        "model": "z_image_turbo_bf16",
+        "denoise": 0.2,
+        "size": [
+          1920,
+          1088
+        ],
+        "source": "work/anchors/textile/logistics_q7.png",
+        "prompt": "Photorealistic high-end commercial photograph, crisp natural detail, realistic materials, soft natural light, natural contrast, true optical depth of field, no text, no logos.",
+        "output": "journey-media/work/refined/textile/logistics.png",
+        "seconds": 33.1,
+        "at": "2026-09-26T22:39:37"
+      },
+      "final": "journey-media/final/textile/logistics.png",
+      "web": {
+        "base": "media/textile/logistics",
+        "widths": [
+          1920,
+          960
+        ],
+        "rev": "25469d4227",
+        "focus": "45% 55%",
+        "panel": "right",
+        "alt": "Wrapped fabric rolls on pallets at dispatch"
+      }
+    },
+    "textile/factory": {
+      "method": "Z-Image-Turbo text-to-image",
+      "picked_candidate": "work/anchors/textile/factory_z7.png",
+      "generation": {
+        "kind": "anchor",
+        "key": "textile/factory",
+        "model": "z_image_turbo_bf16",
+        "seed": 7,
+        "size": [
+          1920,
+          1088
+        ],
+        "steps": 8,
+        "prompt": "Inside a bright modern European garment workshop: in the foreground an automated cutting table cutting jacket panels from dark moss-green coated waterproof fabric, cut panels neatly stacked, behind it a seam-sealing machine applying tape to a seam and a sewing station, soft daylight from tall windows, skilled operators softly out of focus, calm and precise. Camera at chest height, 35mm lens. Premium Nordic product cinematography, photorealistic, ARRI Alexa 35 look, subtle Cooke lens character, soft northern European daylight, natural contrast, realistic PBR materials, real optical depth of field, restrained luxury, no text, no letters, no logos, no brand marks, no watermark.",
+        "output": "journey-media/work/anchors/textile/factory_z7.png",
+        "seconds": 113.0,
+        "at": "2026-09-26T17:15:04"
+      },
+      "prompt": "Inside a bright modern European garment workshop: in the foreground an automated cutting table cutting jacket panels from dark moss-green coated waterproof fabric, cut panels neatly stacked, behind it a seam-sealing machine applying tape to a seam and a sewing station, soft daylight from tall windows, skilled operators softly out of focus, calm and precise. Camera at chest height, 35mm lens. Premium Nordic product cinematography, photorealistic, ARRI Alexa 35 look, subtle Cooke lens character, soft northern European daylight, natural contrast, realistic PBR materials, real optical depth of field, restrained luxury, no text, no letters, no logos, no brand marks, no watermark.",
+      "refs": null,
+      "refine": null,
+      "final": "journey-media/final/textile/factory.png",
+      "web": {
+        "base": "media/textile/factory",
+        "widths": [
+          1920,
+          960
+        ],
+        "rev": "d663243baf",
+        "focus": "40% 55%",
+        "panel": "right",
+        "alt": "Jacket panels being cut in a garment workshop"
+      }
+    },
+    "textile/data": {
+      "method": "Qwen-Image-Edit-2511 with reference images",
+      "picked_candidate": "work/anchors/textile/data_q7.png",
+      "generation": {
+        "kind": "anchor",
+        "key": "textile/data",
+        "model": "qwen_image_edit_2511_fp8mixed+lightning8",
+        "seed": 7,
+        "size": [
+          1664,
+          928
+        ],
+        "steps": 8,
+        "refs": [
+          "work/anchors/textile/factory_z7.png",
+          "work/masters/textile_t0_s11.png"
+        ],
+        "prompt": "In the same garment workshop, the camera has moved to the final inspection table: the finished dark moss-green rain jacket, identical to the hanging one, lies flat with its inside neck visible; a small woven care label with a tiny square code is sewn inside, and a worker's hand holds a handheld scanner over it. No readable text anywhere. Focus on the label and the scanner. Photorealistic industrial photograph, 50mm lens.",
+        "output": "journey-media/work/anchors/textile/data_q7.png",
+        "seconds": 85.1,
+        "at": "2026-09-26T17:16:30"
+      },
+      "prompt": "In the same garment workshop, the camera has moved to the final inspection table: the finished dark moss-green rain jacket, identical to the hanging one, lies flat with its inside neck visible; a small woven care label with a tiny square code is sewn inside, and a worker's hand holds a handheld scanner over it. No readable text anywhere. Focus on the label and the scanner. Photorealistic industrial photograph, 50mm lens.",
+      "refs": [
+        "textile/factory",
+        "textile/company"
+      ],
+      "refine": {
+        "kind": "refine",
+        "key": "textile/data",
+        "model": "z_image_turbo_bf16",
+        "denoise": 0.2,
+        "size": [
+          1920,
+          1088
+        ],
+        "source": "work/anchors/textile/data_q7.png",
+        "prompt": "Photorealistic high-end commercial photograph, crisp natural detail, realistic materials, soft natural light, natural contrast, true optical depth of field, no text, no logos.",
+        "output": "journey-media/work/refined/textile/data.png",
+        "seconds": 33.3,
+        "at": "2026-09-26T22:40:11"
+      },
+      "final": "journey-media/final/textile/data.png",
+      "web": {
+        "base": "media/textile/data",
+        "widths": [
+          1920,
+          960
+        ],
+        "rev": "672e15986d",
+        "focus": "50% 55%",
+        "panel": "left",
+        "alt": "A scanner reads the care label code inside the collar",
+        "hotspot": [
+          47.5,
+          58
+        ]
+      }
+    },
+    "textile/passport": {
+      "method": "Qwen-Image-Edit-2511 with reference images",
+      "picked_candidate": "work/anchors/textile/passport_q7.png",
+      "generation": {
+        "kind": "anchor",
+        "key": "textile/passport",
+        "model": "qwen_image_edit_2511_fp8mixed+lightning8",
+        "seed": 7,
+        "size": [
+          1664,
+          928
+        ],
+        "steps": 8,
+        "refs": [
+          "work/masters/textile_t0_s11.png"
+        ],
+        "prompt": "The same rain jacket hanging on a slim steel rail in a minimalist Copenhagen store with pale plaster walls and oak floor. A customer's hand holding a dark smartphone approaches the small woven label with a tiny square code at the inside of the collar; the phone screen is dark. Soft daylight, shallow depth of field, focus on the collar and the phone. Photorealistic editorial photograph, 50mm lens.",
+        "output": "journey-media/work/anchors/textile/passport_q7.png",
+        "seconds": 62.2,
+        "at": "2026-09-26T17:34:03"
+      },
+      "prompt": "The same rain jacket hanging on a slim steel rail in a minimalist Copenhagen store with pale plaster walls and oak floor. A customer's hand holding a dark smartphone approaches the small woven label with a tiny square code at the inside of the collar; the phone screen is dark. Soft daylight, shallow depth of field, focus on the collar and the phone. Photorealistic editorial photograph, 50mm lens.",
+      "refs": [
+        "textile/company"
+      ],
+      "refine": {
+        "kind": "refine",
+        "key": "textile/passport",
+        "model": "z_image_turbo_bf16",
+        "denoise": 0.2,
+        "size": [
+          1920,
+          1088
+        ],
+        "source": "work/anchors/textile/passport_q7.png",
+        "prompt": "Photorealistic high-end commercial photograph, crisp natural detail, realistic materials, soft natural light, natural contrast, true optical depth of field, no text, no logos.",
+        "output": "journey-media/work/refined/textile/passport.png",
+        "seconds": 33.1,
+        "at": "2026-09-26T22:40:45"
+      },
+      "final": "journey-media/final/textile/passport.png",
+      "web": {
+        "base": "media/textile/passport",
+        "widths": [
+          1920,
+          960
+        ],
+        "rev": "d01a5b4543",
+        "focus": "50% 45%",
+        "panel": "left",
+        "alt": "A customer's phone at the jacket's label in a store",
+        "hotspot": [
+          51,
+          49
+        ]
+      }
+    },
+    "textile/nextLife": {
+      "method": "Qwen-Image-Edit-2511 with reference images",
+      "picked_candidate": "work/anchors/textile/nextLife_q7.png",
+      "generation": {
+        "kind": "anchor",
+        "key": "textile/nextLife",
+        "model": "qwen_image_edit_2511_fp8mixed+lightning8",
+        "seed": 7,
+        "size": [
+          1664,
+          928
+        ],
+        "steps": 8,
+        "refs": [
+          "work/anchors/textile/passport_q7.png",
+          "work/masters/textile_t0_s11.png"
+        ],
+        "prompt": "The repair corner at the back of the same Copenhagen store: the same dark moss-green rain jacket lies on a pale oak workbench under a warm lamp, a repair technician's hands replace its zipper with a new matte black zipper, the old zipper set aside, spools of matching thread, seam tape and small tools neatly organised. Repair, resale and longevity made tangible. Photorealistic editorial photograph, 35mm lens.",
+        "output": "journey-media/work/anchors/textile/nextLife_q7.png",
+        "seconds": 97.3,
+        "at": "2026-09-26T22:36:43"
+      },
+      "prompt": "The repair corner at the back of the same Copenhagen store: the same dark moss-green rain jacket lies on a pale oak workbench under a warm lamp, a repair technician's hands replace its zipper with a new matte black zipper, the old zipper set aside, spools of matching thread, seam tape and small tools neatly organised. Repair, resale and longevity made tangible. Photorealistic editorial photograph, 35mm lens.",
+      "refs": [
+        "textile/passport",
+        "textile/company"
+      ],
+      "refine": {
+        "kind": "refine",
+        "key": "textile/nextLife",
+        "model": "z_image_turbo_bf16",
+        "denoise": 0.2,
+        "size": [
+          1920,
+          1088
+        ],
+        "source": "work/anchors/textile/nextLife_q7.png",
+        "prompt": "Photorealistic high-end commercial photograph, crisp natural detail, realistic materials, soft natural light, natural contrast, true optical depth of field, no text, no logos.",
+        "output": "journey-media/work/refined/textile/nextLife.png",
+        "seconds": 35.1,
+        "at": "2026-09-26T23:18:34"
+      },
+      "final": "journey-media/final/textile/nextLife.png",
+      "web": {
+        "base": "media/textile/nextLife",
+        "widths": [
+          1920,
+          960
+        ],
+        "rev": "6ab08696b6",
+        "focus": "45% 55%",
+        "panel": "right",
+        "alt": "A technician replaces the jacket's zip at a repair bench"
+      }
+    }
+  },
+  "moves": {
+    "furniture/company>product": {
+      "start_anchor": "furniture/company",
+      "frames": 97,
+      "fps": 24,
+      "seed": 2101,
+      "prompt": "A slow, elegant dolly shot: the camera glides forward into a bright Scandinavian living room toward a Danish oak lounge armchair with thick cream basket-weave cushions standing on a grey wool rug, tall steel-framed windows with birch trees behind. The chair grows larger in frame with natural parallax. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+      "base_motion": {
+        "kind": "depth reprojection (tools/depth_path.py)",
+        "target": [
+          30,
+          52
+        ],
+        "tz": 0.45,
+        "near": 1.0,
+        "far": 8,
+        "fov": 54,
+        "zmax": 3.7,
+        "aim": false
+      },
+      "derives_anchor": "furniture/product",
+      "render": {
+        "kind": "transition_move",
+        "key": "furniture/company>product",
+        "model": "ltx-2.5-22b-distilled-int8 (video-to-video, 1920x1088)",
+        "base_motion": "work/v2/furniture__company-to-product.path.mp4",
+        "denoise": 0.975,
+        "frames": 97,
+        "fps": 24,
+        "seed": 2101,
+        "guides": "first frame = start anchor (1.0)",
+        "start": "final/furniture/company.png",
+        "prompt": "A slow, elegant dolly shot: the camera glides forward into a bright Scandinavian living room toward a Danish oak lounge armchair with thick cream basket-weave cushions standing on a grey wool rug, tall steel-framed windows with birch trees behind. The chair grows larger in frame with natural parallax. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+        "output": "journey-media/work/v2/furniture__company-to-product.v2v.mp4",
+        "seconds": 1712.6,
+        "at": "2026-09-26T20:09:48"
+      }
+    },
+    "furniture/product>material": {
+      "start_anchor": "furniture/product",
+      "frames": 97,
+      "fps": 24,
+      "seed": 2102,
+      "prompt": "The camera moves slowly and smoothly closer to the oak lounge armchair, gliding toward the front edge of its thick cream basket-weave wool seat cushion until the woven yarns fill most of the frame. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+      "base_motion": {
+        "kind": "depth reprojection (tools/depth_path.py)",
+        "target": [
+          40,
+          64
+        ],
+        "tz": 0.72,
+        "near": 1.0,
+        "far": 8,
+        "fov": 54,
+        "zmax": 3.7,
+        "aim": true
+      },
+      "derives_anchor": "furniture/material",
+      "render": {
+        "kind": "transition_move",
+        "key": "furniture/product>material",
+        "model": "ltx-2.5-22b-distilled-int8 (video-to-video, 1920x1088)",
+        "base_motion": "work/v2/furniture__product-to-material.path.mp4",
+        "denoise": 0.975,
+        "frames": 97,
+        "fps": 24,
+        "seed": 2102,
+        "guides": "first frame = start anchor (1.0)",
+        "start": "final/furniture/product.png",
+        "prompt": "The camera moves slowly and smoothly closer to the oak lounge armchair, gliding toward the front edge of its thick cream basket-weave wool seat cushion until the woven yarns fill most of the frame. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+        "output": "journey-media/work/v2/furniture__product-to-material.v2v.mp4",
+        "seconds": 436.9,
+        "at": "2026-09-26T20:19:36"
+      }
+    },
+    "furniture/material@weave": {
+      "start_anchor": "furniture/material",
+      "frames": 49,
+      "fps": 24,
+      "seed": 2103,
+      "prompt": "Macro shot: the camera pushes smoothly into the seat cushion of an oak lounge chair until its crisp, tightly woven cream basket-weave upholstery fabric fills the whole frame: a regular grid of flat interlaced yarn bundles, smooth and clean. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+      "base_motion": {
+        "kind": "zoom crop path (tools/zoom_path.py)",
+        "target_pct": [
+          50,
+          55
+        ],
+        "magnification": 3,
+        "ease": "log-zoom, ease-in power 2.2"
+      },
+      "derives_anchor": null,
+      "render": {
+        "kind": "transition_move",
+        "key": "furniture/material@weave",
+        "model": "ltx-2.5-22b-distilled-int8 (video-to-video, 1920x1088)",
+        "base_motion": "work/v2/furniture__material-at-weave.path.mp4",
+        "denoise": 0.975,
+        "frames": 49,
+        "fps": 24,
+        "seed": 2103,
+        "guides": "first frame = start anchor (1.0)",
+        "start": "final/furniture/material.png",
+        "prompt": "Macro shot: the camera pushes smoothly into the seat cushion of an oak lounge chair until its crisp, tightly woven cream basket-weave upholstery fabric fills the whole frame: a regular grid of flat interlaced yarn bundles, smooth and clean. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+        "output": "journey-media/work/v2/furniture__material-at-weave.v2v.mp4",
+        "seconds": 186.1,
+        "at": "2026-09-26T22:29:27"
+      }
+    },
+    "furniture/component@weave": {
+      "start_anchor": "furniture/component",
+      "frames": 49,
+      "fps": 24,
+      "seed": 2104,
+      "prompt": "Macro shot under an oak lounge chair: the camera pushes smoothly toward the side of the cream basket-weave wool seat cushion until the woven yarns fill the whole frame. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+      "base_motion": {
+        "kind": "zoom crop path (tools/zoom_path.py)",
+        "target_pct": [
+          30,
+          30
+        ],
+        "magnification": 3.5,
+        "ease": "log-zoom, ease-in power 2.2"
+      },
+      "derives_anchor": null,
+      "render": {
+        "kind": "transition_move",
+        "key": "furniture/component@weave",
+        "model": "ltx-2.5-22b-distilled-int8 (video-to-video, 1920x1088)",
+        "base_motion": "work/v2/furniture__component-at-weave.path.mp4",
+        "denoise": 0.975,
+        "frames": 49,
+        "fps": 24,
+        "seed": 2104,
+        "guides": "first frame = start anchor (1.0)",
+        "start": "final/furniture/component.png",
+        "prompt": "Macro shot under an oak lounge chair: the camera pushes smoothly toward the side of the cream basket-weave wool seat cushion until the woven yarns fill the whole frame. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+        "output": "journey-media/work/v2/furniture__component-at-weave.v2v.mp4",
+        "seconds": 203.6,
+        "at": "2026-09-26T21:57:22"
+      }
+    },
+    "furniture/component@oak": {
+      "start_anchor": "furniture/component",
+      "frames": 49,
+      "fps": 24,
+      "seed": 2105,
+      "prompt": "Macro shot under an oak lounge chair: the camera pushes smoothly toward the solid oak seat rail between two black webbing straps until the fine oak grain fills the whole frame. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+      "base_motion": {
+        "kind": "zoom crop path (tools/zoom_path.py)",
+        "target_pct": [
+          31.5,
+          62.5
+        ],
+        "magnification": 10,
+        "ease": "log-zoom, ease-in power 2.2"
+      },
+      "derives_anchor": null,
+      "render": {
+        "kind": "transition_move",
+        "key": "furniture/component@oak",
+        "model": "ltx-2.5-22b-distilled-int8 (video-to-video, 1920x1088)",
+        "base_motion": "work/v2/furniture__component-at-oak.path.mp4",
+        "denoise": 0.975,
+        "frames": 49,
+        "fps": 24,
+        "seed": 2105,
+        "guides": "first frame = start anchor (1.0)",
+        "start": "final/furniture/component.png",
+        "prompt": "Macro shot under an oak lounge chair: the camera pushes smoothly toward the solid oak seat rail between two black webbing straps until the fine oak grain fills the whole frame. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+        "output": "journey-media/work/v2/furniture__component-at-oak.v2v.mp4",
+        "seconds": 182.7,
+        "at": "2026-09-26T22:00:27"
+      }
+    },
+    "furniture/supplier@oak": {
+      "start_anchor": "furniture/supplier",
+      "frames": 49,
+      "fps": 24,
+      "seed": 2106,
+      "prompt": "In a bright timber warehouse, the camera pushes smoothly toward a stack of sawn oak boards until the fine grain of one board face fills the whole frame. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+      "base_motion": {
+        "kind": "zoom crop path (tools/zoom_path.py)",
+        "target_pct": [
+          18,
+          50
+        ],
+        "magnification": 9,
+        "ease": "log-zoom, ease-in power 2.2"
+      },
+      "derives_anchor": null,
+      "render": {
+        "kind": "transition_move",
+        "key": "furniture/supplier@oak",
+        "model": "ltx-2.5-22b-distilled-int8 (video-to-video, 1920x1088)",
+        "base_motion": "work/v2/furniture__supplier-at-oak.path.mp4",
+        "denoise": 0.975,
+        "frames": 49,
+        "fps": 24,
+        "seed": 2106,
+        "guides": "first frame = start anchor (1.0)",
+        "start": "final/furniture/supplier.png",
+        "prompt": "In a bright timber warehouse, the camera pushes smoothly toward a stack of sawn oak boards until the fine grain of one board face fills the whole frame. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+        "output": "journey-media/work/v2/furniture__supplier-at-oak.v2v.mp4",
+        "seconds": 177.2,
+        "at": "2026-09-26T22:03:27"
+      }
+    },
+    "furniture/logistics@oak": {
+      "start_anchor": "furniture/logistics",
+      "frames": 49,
+      "fps": 24,
+      "seed": 2107,
+      "prompt": "In a logistics hall, the camera pushes smoothly toward a film-wrapped bundle of oak boards on a pallet until the oak grain under the clear film fills the whole frame. The forklift stands still. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+      "base_motion": {
+        "kind": "zoom crop path (tools/zoom_path.py)",
+        "target_pct": [
+          48,
+          50
+        ],
+        "magnification": 9,
+        "ease": "log-zoom, ease-in power 2.2"
+      },
+      "derives_anchor": null,
+      "render": {
+        "kind": "transition_move",
+        "key": "furniture/logistics@oak",
+        "model": "ltx-2.5-22b-distilled-int8 (video-to-video, 1920x1088)",
+        "base_motion": "work/v2/furniture__logistics-at-oak.path.mp4",
+        "denoise": 0.975,
+        "frames": 49,
+        "fps": 24,
+        "seed": 2107,
+        "guides": "first frame = start anchor (1.0)",
+        "start": "final/furniture/logistics.png",
+        "prompt": "In a logistics hall, the camera pushes smoothly toward a film-wrapped bundle of oak boards on a pallet until the oak grain under the clear film fills the whole frame. The forklift stands still. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+        "output": "journey-media/work/v2/furniture__logistics-at-oak.v2v.mp4",
+        "seconds": 200.4,
+        "at": "2026-09-26T22:06:50"
+      }
+    },
+    "furniture/factory@oak": {
+      "start_anchor": "furniture/factory",
+      "frames": 49,
+      "fps": 24,
+      "seed": 2108,
+      "prompt": "In a furniture factory, the camera pushes smoothly into an enclosed CNC machine toward the freshly machined oak part until its fine oak grain fills the whole frame. The machine is paused. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+      "base_motion": {
+        "kind": "zoom crop path (tools/zoom_path.py)",
+        "target_pct": [
+          47,
+          60
+        ],
+        "magnification": 14,
+        "ease": "log-zoom, ease-in power 2.2"
+      },
+      "derives_anchor": null,
+      "render": {
+        "kind": "transition_move",
+        "key": "furniture/factory@oak",
+        "model": "ltx-2.5-22b-distilled-int8 (video-to-video, 1920x1088)",
+        "base_motion": "work/v2/furniture__factory-at-oak.path.mp4",
+        "denoise": 0.975,
+        "frames": 49,
+        "fps": 24,
+        "seed": 2108,
+        "guides": "first frame = start anchor (1.0)",
+        "start": "final/furniture/factory.png",
+        "prompt": "In a furniture factory, the camera pushes smoothly into an enclosed CNC machine toward the freshly machined oak part until its fine oak grain fills the whole frame. The machine is paused. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+        "output": "journey-media/work/v2/furniture__factory-at-oak.v2v.mp4",
+        "seconds": 201.4,
+        "at": "2026-09-26T22:10:15"
+      }
+    },
+    "furniture/data@code": {
+      "start_anchor": "furniture/data",
+      "frames": 49,
+      "fps": 24,
+      "seed": 2109,
+      "prompt": "In a furniture workshop, the camera pushes smoothly toward a small square code laser-etched into the top of a finished oak part until the code fills the frame. The hand holding the scanner stays still. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+      "base_motion": {
+        "kind": "zoom crop path (tools/zoom_path.py)",
+        "target_pct": [
+          64,
+          60
+        ],
+        "magnification": 11,
+        "ease": "log-zoom, ease-in power 2.2"
+      },
+      "derives_anchor": null,
+      "render": {
+        "kind": "transition_move",
+        "key": "furniture/data@code",
+        "model": "ltx-2.5-22b-distilled-int8 (video-to-video, 1920x1088)",
+        "base_motion": "work/v2/furniture__data-at-code.path.mp4",
+        "denoise": 0.975,
+        "frames": 49,
+        "fps": 24,
+        "seed": 2109,
+        "guides": "first frame = start anchor (1.0)",
+        "start": "final/furniture/data.png",
+        "prompt": "In a furniture workshop, the camera pushes smoothly toward a small square code laser-etched into the top of a finished oak part until the code fills the frame. The hand holding the scanner stays still. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+        "output": "journey-media/work/v2/furniture__data-at-code.v2v.mp4",
+        "seconds": 182.8,
+        "at": "2026-09-26T22:13:20"
+      }
+    },
+    "furniture/passport@code": {
+      "start_anchor": "furniture/passport",
+      "frames": 49,
+      "fps": 24,
+      "seed": 2110,
+      "prompt": "In a bright living room, the camera pushes smoothly toward a small square code label on the oak post of a lounge armchair until the code fills the frame. The hand holding the phone stays still. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+      "base_motion": {
+        "kind": "zoom crop path (tools/zoom_path.py)",
+        "target_pct": [
+          53.5,
+          60.5
+        ],
+        "magnification": 8.3,
+        "ease": "log-zoom, ease-in power 2.2"
+      },
+      "derives_anchor": null,
+      "render": {
+        "kind": "transition_move",
+        "key": "furniture/passport@code",
+        "model": "ltx-2.5-22b-distilled-int8 (video-to-video, 1920x1088)",
+        "base_motion": "work/v2/furniture__passport-at-code.path.mp4",
+        "denoise": 0.975,
+        "frames": 49,
+        "fps": 24,
+        "seed": 2110,
+        "guides": "first frame = start anchor (1.0)",
+        "start": "final/furniture/passport.png",
+        "prompt": "In a bright living room, the camera pushes smoothly toward a small square code label on the oak post of a lounge armchair until the code fills the frame. The hand holding the phone stays still. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+        "output": "journey-media/work/v2/furniture__passport-at-code.v2v.mp4",
+        "seconds": 182.7,
+        "at": "2026-09-26T22:16:26"
+      }
+    },
+    "furniture/passport@weave": {
+      "start_anchor": "furniture/passport",
+      "frames": 49,
+      "fps": 24,
+      "seed": 2111,
+      "prompt": "In a bright living room, the camera pushes smoothly toward the front of the thick cream basket-weave seat cushion of an oak lounge armchair until the woven yarns fill the whole frame. The hand holding the phone stays still. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+      "base_motion": {
+        "kind": "zoom crop path (tools/zoom_path.py)",
+        "target_pct": [
+          62,
+          86
+        ],
+        "magnification": 4,
+        "ease": "log-zoom, ease-in power 2.2"
+      },
+      "derives_anchor": null,
+      "render": {
+        "kind": "transition_move",
+        "key": "furniture/passport@weave",
+        "model": "ltx-2.5-22b-distilled-int8 (video-to-video, 1920x1088)",
+        "base_motion": "work/v2/furniture__passport-at-weave.path.mp4",
+        "denoise": 0.975,
+        "frames": 49,
+        "fps": 24,
+        "seed": 2111,
+        "guides": "first frame = start anchor (1.0)",
+        "start": "final/furniture/passport.png",
+        "prompt": "In a bright living room, the camera pushes smoothly toward the front of the thick cream basket-weave seat cushion of an oak lounge armchair until the woven yarns fill the whole frame. The hand holding the phone stays still. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+        "output": "journey-media/work/v2/furniture__passport-at-weave.v2v.mp4",
+        "seconds": 184.2,
+        "at": "2026-09-26T22:19:33"
+      }
+    },
+    "furniture/nextLife@cushion": {
+      "start_anchor": "furniture/nextLife",
+      "frames": 49,
+      "fps": 24,
+      "seed": 2112,
+      "prompt": "In a warm repair workshop, the camera pushes smoothly toward the cream upholstered seat cushion lying on the oak workbench until its woven fabric fills the whole frame. The craftsman stays still. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+      "base_motion": {
+        "kind": "zoom crop path (tools/zoom_path.py)",
+        "target_pct": [
+          20,
+          63
+        ],
+        "magnification": 7,
+        "ease": "log-zoom, ease-in power 2.2"
+      },
+      "derives_anchor": null,
+      "render": {
+        "kind": "transition_move",
+        "key": "furniture/nextLife@cushion",
+        "model": "ltx-2.5-22b-distilled-int8 (video-to-video, 1920x1088)",
+        "base_motion": "work/v2/furniture__nextLife-at-cushion.path.mp4",
+        "denoise": 0.975,
+        "frames": 49,
+        "fps": 24,
+        "seed": 2112,
+        "guides": "first frame = start anchor (1.0)",
+        "start": "final/furniture/nextLife.png",
+        "prompt": "In a warm repair workshop, the camera pushes smoothly toward the cream upholstered seat cushion lying on the oak workbench until its woven fabric fills the whole frame. The craftsman stays still. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+        "output": "journey-media/work/v2/furniture__nextLife-at-cushion.v2v.mp4",
+        "seconds": 184.5,
+        "at": "2026-09-26T22:22:40"
+      }
+    },
+    "battery/company>product": {
+      "start_anchor": "battery/company",
+      "frames": 97,
+      "fps": 24,
+      "seed": 3101,
+      "prompt": "A slow, elegant dolly shot in a bright white studio: the camera glides toward a premium e-bike with a matte sand-grey aluminium frame, moving closer to the graphite-black removable battery pack mounted on its down tube, with natural parallax between the wheels and the frame. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+      "base_motion": {
+        "kind": "zoom crop path (tools/zoom_path.py)",
+        "target_pct": [
+          56,
+          32
+        ],
+        "magnification": 2.0,
+        "ease": "log-zoom, ease-in power 2.2"
+      },
+      "derives_anchor": "battery/product",
+      "render": {
+        "kind": "transition_move",
+        "key": "battery/company>product",
+        "model": "ltx-2.5-22b-distilled-int8 (video-to-video, 1920x1088)",
+        "base_motion": "work/v2/battery__company-to-product.path.mp4",
+        "denoise": 0.975,
+        "frames": 97,
+        "fps": 24,
+        "seed": 3101,
+        "guides": "first frame = start anchor (1.0)",
+        "start": "final/battery/company.png",
+        "prompt": "A slow, elegant dolly shot in a bright white studio: the camera glides toward a premium e-bike with a matte sand-grey aluminium frame, moving closer to the graphite-black removable battery pack mounted on its down tube, with natural parallax between the wheels and the frame. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+        "output": "journey-media/work/v2/battery__company-to-product.v2v.mp4",
+        "seconds": 389.5,
+        "at": "2026-09-26T22:47:19"
+      }
+    },
+    "battery/product>material": {
+      "start_anchor": "battery/product",
+      "frames": 97,
+      "fps": 24,
+      "seed": 3102,
+      "prompt": "The camera moves slowly and smoothly closer to the graphite-black removable battery pack on the e-bike down tube until its matte bead-blasted housing surface and a fine seam fill most of the frame. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+      "base_motion": {
+        "kind": "zoom crop path (tools/zoom_path.py)",
+        "target_pct": [
+          47,
+          48
+        ],
+        "magnification": 3.2,
+        "ease": "log-zoom, ease-in power 2.2"
+      },
+      "derives_anchor": "battery/material",
+      "render": {
+        "kind": "transition_move",
+        "key": "battery/product>material",
+        "model": "ltx-2.5-22b-distilled-int8 (video-to-video, 1920x1088)",
+        "base_motion": "work/v2/battery__product-to-material.path.mp4",
+        "denoise": 0.975,
+        "frames": 97,
+        "fps": 24,
+        "seed": 3102,
+        "guides": "first frame = start anchor (1.0)",
+        "start": "final/battery/product.png",
+        "prompt": "The camera moves slowly and smoothly closer to the graphite-black removable battery pack on the e-bike down tube until its matte bead-blasted housing surface and a fine seam fill most of the frame. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+        "output": "journey-media/work/v2/battery__product-to-material.v2v.mp4",
+        "seconds": 387.0,
+        "at": "2026-09-26T22:53:51"
+      }
+    },
+    "battery/material@housing": {
+      "start_anchor": "battery/material",
+      "frames": 49,
+      "fps": 24,
+      "seed": 3103,
+      "prompt": "Extreme macro shot: the camera pushes smoothly into the matte graphite bead-blasted surface of a battery housing until its fine texture fills the whole frame. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+      "base_motion": {
+        "kind": "zoom crop path (tools/zoom_path.py)",
+        "target_pct": [
+          50,
+          50
+        ],
+        "magnification": 3,
+        "ease": "log-zoom, ease-in power 2.2"
+      },
+      "derives_anchor": null,
+      "render": {
+        "kind": "transition_move",
+        "key": "battery/material@housing",
+        "model": "ltx-2.5-22b-distilled-int8 (video-to-video, 1920x1088)",
+        "base_motion": "work/v2/battery__material-at-housing.path.mp4",
+        "denoise": 0.975,
+        "frames": 49,
+        "fps": 24,
+        "seed": 3103,
+        "guides": "first frame = start anchor (1.0)",
+        "start": "final/battery/material.png",
+        "prompt": "Extreme macro shot: the camera pushes smoothly into the matte graphite bead-blasted surface of a battery housing until its fine texture fills the whole frame. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+        "output": "journey-media/work/v2/battery__material-at-housing.v2v.mp4",
+        "seconds": 203.7,
+        "at": "2026-09-26T23:22:00"
+      }
+    },
+    "battery/component@housing": {
+      "start_anchor": "battery/component",
+      "frames": 49,
+      "fps": 24,
+      "seed": 3104,
+      "prompt": "On a grey service bench, the camera pushes smoothly toward the matte black shell of an opened e-bike battery pack until its surface fills the whole frame. The gloved hand stays still. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+      "base_motion": {
+        "kind": "zoom crop path (tools/zoom_path.py)",
+        "target_pct": [
+          40,
+          20
+        ],
+        "magnification": 6,
+        "ease": "log-zoom, ease-in power 2.2"
+      },
+      "derives_anchor": null,
+      "render": {
+        "kind": "transition_move",
+        "key": "battery/component@housing",
+        "model": "ltx-2.5-22b-distilled-int8 (video-to-video, 1920x1088)",
+        "base_motion": "work/v2/battery__component-at-housing.path.mp4",
+        "denoise": 0.975,
+        "frames": 49,
+        "fps": 24,
+        "seed": 3104,
+        "guides": "first frame = start anchor (1.0)",
+        "start": "final/battery/component.png",
+        "prompt": "On a grey service bench, the camera pushes smoothly toward the matte black shell of an opened e-bike battery pack until its surface fills the whole frame. The gloved hand stays still. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+        "output": "journey-media/work/v2/battery__component-at-housing.v2v.mp4",
+        "seconds": 200.9,
+        "at": "2026-09-26T23:25:24"
+      }
+    },
+    "battery/component@cells": {
+      "start_anchor": "battery/component",
+      "frames": 49,
+      "fps": 24,
+      "seed": 3105,
+      "prompt": "On a grey service bench, the camera pushes smoothly toward the rows of cylindrical lithium-ion cells and bright nickel strips inside an opened e-bike battery pack until they fill the whole frame. The gloved hand stays still. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+      "base_motion": {
+        "kind": "zoom crop path (tools/zoom_path.py)",
+        "target_pct": [
+          65,
+          42
+        ],
+        "magnification": 5,
+        "ease": "log-zoom, ease-in power 2.2"
+      },
+      "derives_anchor": null,
+      "render": {
+        "kind": "transition_move",
+        "key": "battery/component@cells",
+        "model": "ltx-2.5-22b-distilled-int8 (video-to-video, 1920x1088)",
+        "base_motion": "work/v2/battery__component-at-cells.path.mp4",
+        "denoise": 0.975,
+        "frames": 49,
+        "fps": 24,
+        "seed": 3105,
+        "guides": "first frame = start anchor (1.0)",
+        "start": "final/battery/component.png",
+        "prompt": "On a grey service bench, the camera pushes smoothly toward the rows of cylindrical lithium-ion cells and bright nickel strips inside an opened e-bike battery pack until they fill the whole frame. The gloved hand stays still. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+        "output": "journey-media/work/v2/battery__component-at-cells.v2v.mp4",
+        "seconds": 182.7,
+        "at": "2026-09-26T23:28:29"
+      }
+    },
+    "battery/supplier@cells": {
+      "start_anchor": "battery/supplier",
+      "frames": 49,
+      "fps": 24,
+      "seed": 3106,
+      "prompt": "In a clean battery cell plant, the camera pushes smoothly toward rows of identical cylindrical lithium-ion cells standing on a stainless conveyor until the cell tops fill the whole frame. The line is paused and the workers stay still. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+      "base_motion": {
+        "kind": "zoom crop path (tools/zoom_path.py)",
+        "target_pct": [
+          40,
+          72
+        ],
+        "magnification": 5,
+        "ease": "log-zoom, ease-in power 2.2"
+      },
+      "derives_anchor": null,
+      "render": {
+        "kind": "transition_move",
+        "key": "battery/supplier@cells",
+        "model": "ltx-2.5-22b-distilled-int8 (video-to-video, 1920x1088)",
+        "base_motion": "work/v2/battery__supplier-at-cells.path.mp4",
+        "denoise": 0.975,
+        "frames": 49,
+        "fps": 24,
+        "seed": 3106,
+        "guides": "first frame = start anchor (1.0)",
+        "start": "final/battery/supplier.png",
+        "prompt": "In a clean battery cell plant, the camera pushes smoothly toward rows of identical cylindrical lithium-ion cells standing on a stainless conveyor until the cell tops fill the whole frame. The line is paused and the workers stay still. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+        "output": "journey-media/work/v2/battery__supplier-at-cells.v2v.mp4",
+        "seconds": 184.7,
+        "at": "2026-09-26T23:31:37"
+      }
+    },
+    "battery/logistics@box": {
+      "start_anchor": "battery/logistics",
+      "frames": 49,
+      "fps": 24,
+      "seed": 3107,
+      "prompt": "In a bright dispatch hall, the camera pushes smoothly toward a stack of plain grey sealed shipping boxes wrapped in clear film until the box surface under the film fills the whole frame. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+      "base_motion": {
+        "kind": "zoom crop path (tools/zoom_path.py)",
+        "target_pct": [
+          30,
+          30
+        ],
+        "magnification": 7,
+        "ease": "log-zoom, ease-in power 2.2"
+      },
+      "derives_anchor": null,
+      "render": {
+        "kind": "transition_move",
+        "key": "battery/logistics@box",
+        "model": "ltx-2.5-22b-distilled-int8 (video-to-video, 1920x1088)",
+        "base_motion": "work/v2/battery__logistics-at-box.path.mp4",
+        "denoise": 0.975,
+        "frames": 49,
+        "fps": 24,
+        "seed": 3107,
+        "guides": "first frame = start anchor (1.0)",
+        "start": "final/battery/logistics.png",
+        "prompt": "In a bright dispatch hall, the camera pushes smoothly toward a stack of plain grey sealed shipping boxes wrapped in clear film until the box surface under the film fills the whole frame. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+        "output": "journey-media/work/v2/battery__logistics-at-box.v2v.mp4",
+        "seconds": 182.6,
+        "at": "2026-09-26T23:34:42"
+      }
+    },
+    "battery/factory@cells": {
+      "start_anchor": "battery/factory",
+      "frames": 49,
+      "fps": 24,
+      "seed": 3108,
+      "prompt": "In a battery pack assembly hall, the camera pushes smoothly toward a module of black cylindrical cells under a paused welding head until the cells fill the whole frame. The workers stay still. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+      "base_motion": {
+        "kind": "zoom crop path (tools/zoom_path.py)",
+        "target_pct": [
+          57,
+          70
+        ],
+        "magnification": 5,
+        "ease": "log-zoom, ease-in power 2.2"
+      },
+      "derives_anchor": null,
+      "render": {
+        "kind": "transition_move",
+        "key": "battery/factory@cells",
+        "model": "ltx-2.5-22b-distilled-int8 (video-to-video, 1920x1088)",
+        "base_motion": "work/v2/battery__factory-at-cells.path.mp4",
+        "denoise": 0.975,
+        "frames": 49,
+        "fps": 24,
+        "seed": 3108,
+        "guides": "first frame = start anchor (1.0)",
+        "start": "final/battery/factory.png",
+        "prompt": "In a battery pack assembly hall, the camera pushes smoothly toward a module of black cylindrical cells under a paused welding head until the cells fill the whole frame. The workers stay still. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+        "output": "journey-media/work/v2/battery__factory-at-cells.v2v.mp4",
+        "seconds": 184.2,
+        "at": "2026-09-26T23:37:49"
+      }
+    },
+    "battery/data@code": {
+      "start_anchor": "battery/data",
+      "frames": 49,
+      "fps": 24,
+      "seed": 3109,
+      "prompt": "At an end-of-line test bench, the camera pushes smoothly toward a small square code laser-etched into the aluminium housing of a finished battery pack until the code fills the frame. The hand holding the scanner stays still. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+      "base_motion": {
+        "kind": "zoom crop path (tools/zoom_path.py)",
+        "target_pct": [
+          51.5,
+          57
+        ],
+        "magnification": 9,
+        "ease": "log-zoom, ease-in power 2.2"
+      },
+      "derives_anchor": null,
+      "render": {
+        "kind": "transition_move",
+        "key": "battery/data@code",
+        "model": "ltx-2.5-22b-distilled-int8 (video-to-video, 1920x1088)",
+        "base_motion": "work/v2/battery__data-at-code.path.mp4",
+        "denoise": 0.975,
+        "frames": 49,
+        "fps": 24,
+        "seed": 3109,
+        "guides": "first frame = start anchor (1.0)",
+        "start": "final/battery/data.png",
+        "prompt": "At an end-of-line test bench, the camera pushes smoothly toward a small square code laser-etched into the aluminium housing of a finished battery pack until the code fills the frame. The hand holding the scanner stays still. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+        "output": "journey-media/work/v2/battery__data-at-code.v2v.mp4",
+        "seconds": 178.3,
+        "at": "2026-09-26T23:40:50"
+      }
+    },
+    "battery/passport@code": {
+      "start_anchor": "battery/passport",
+      "frames": 49,
+      "fps": 24,
+      "seed": 3130,
+      "prompt": "In a bicycle service workshop, the camera pushes smoothly toward a small red-framed label on the graphite battery pack of an e-bike until it fills the frame. The label carries only a square data-matrix code of black and white modules: no letters, no numbers, no words anywhere. The hand holding the phone stays still. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+      "base_motion": {
+        "kind": "zoom crop path (tools/zoom_path.py)",
+        "target_pct": [
+          54.7,
+          36
+        ],
+        "magnification": 10,
+        "ease": "log-zoom, ease-in power 2.2"
+      },
+      "derives_anchor": null,
+      "render": {
+        "kind": "transition_move",
+        "key": "battery/passport@code",
+        "model": "ltx-2.5-22b-distilled-int8 (video-to-video, 1920x1088)",
+        "base_motion": "work/v2/battery__passport-at-code.path.mp4",
+        "denoise": 0.909375,
+        "frames": 49,
+        "fps": 24,
+        "seed": 3130,
+        "guides": "first frame = start anchor (1.0)",
+        "start": "final/battery/passport.png",
+        "prompt": "In a bicycle service workshop, the camera pushes smoothly toward a small red-framed label on the graphite battery pack of an e-bike until it fills the frame. The label carries only a square data-matrix code of black and white modules: no letters, no numbers, no words anywhere. The hand holding the phone stays still. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+        "output": "journey-media/work/v2/battery__passport-at-code.v2v.mp4",
+        "seconds": 273.6,
+        "at": "2026-09-27T00:58:43"
+      }
+    },
+    "battery/passport@housing": {
+      "start_anchor": "battery/passport",
+      "frames": 49,
+      "fps": 24,
+      "seed": 3111,
+      "prompt": "In a bicycle service workshop, the camera pushes smoothly toward the matte graphite housing of the battery pack on an e-bike until its surface fills the whole frame. The hand holding the phone stays still. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+      "base_motion": {
+        "kind": "zoom crop path (tools/zoom_path.py)",
+        "target_pct": [
+          55,
+          22
+        ],
+        "magnification": 5,
+        "ease": "log-zoom, ease-in power 2.2"
+      },
+      "derives_anchor": null,
+      "render": {
+        "kind": "transition_move",
+        "key": "battery/passport@housing",
+        "model": "ltx-2.5-22b-distilled-int8 (video-to-video, 1920x1088)",
+        "base_motion": "work/v2/battery__passport-at-housing.path.mp4",
+        "denoise": 0.975,
+        "frames": 49,
+        "fps": 24,
+        "seed": 3111,
+        "guides": "first frame = start anchor (1.0)",
+        "start": "final/battery/passport.png",
+        "prompt": "In a bicycle service workshop, the camera pushes smoothly toward the matte graphite housing of the battery pack on an e-bike until its surface fills the whole frame. The hand holding the phone stays still. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+        "output": "journey-media/work/v2/battery__passport-at-housing.v2v.mp4",
+        "seconds": 199.0,
+        "at": "2026-09-27T00:28:18"
+      }
+    },
+    "battery/nextLife@housing": {
+      "start_anchor": "battery/nextLife",
+      "frames": 49,
+      "fps": 24,
+      "seed": 3112,
+      "prompt": "On a workshop bench, the camera pushes smoothly toward the matte black housing of a removed e-bike battery pack until its surface fills the whole frame. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+      "base_motion": {
+        "kind": "zoom crop path (tools/zoom_path.py)",
+        "target_pct": [
+          28,
+          55
+        ],
+        "magnification": 5,
+        "ease": "log-zoom, ease-in power 2.2"
+      },
+      "derives_anchor": null,
+      "render": {
+        "kind": "transition_move",
+        "key": "battery/nextLife@housing",
+        "model": "ltx-2.5-22b-distilled-int8 (video-to-video, 1920x1088)",
+        "base_motion": "work/v2/battery__nextLife-at-housing.path.mp4",
+        "denoise": 0.975,
+        "frames": 49,
+        "fps": 24,
+        "seed": 3112,
+        "guides": "first frame = start anchor (1.0)",
+        "start": "final/battery/nextLife.png",
+        "prompt": "On a workshop bench, the camera pushes smoothly toward the matte black housing of a removed e-bike battery pack until its surface fills the whole frame. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+        "output": "journey-media/work/v2/battery__nextLife-at-housing.v2v.mp4",
+        "seconds": 200.0,
+        "at": "2026-09-26T23:51:21"
+      }
+    },
+    "textile/company>product": {
+      "start_anchor": "textile/company",
+      "frames": 97,
+      "fps": 24,
+      "seed": 4101,
+      "prompt": "A slow, elegant dolly shot in a bright, calm room: the camera glides toward a dark moss-green rain jacket hanging on a wooden hanger, moving closer to its shoulders, collar and hood. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+      "base_motion": {
+        "kind": "depth reprojection (tools/depth_path.py)",
+        "target": [
+          52,
+          30
+        ],
+        "tz": 0.55,
+        "near": 1.5,
+        "far": 4.5,
+        "fov": 54,
+        "aim": true
+      },
+      "derives_anchor": "textile/product",
+      "render": {
+        "kind": "transition_move",
+        "key": "textile/company>product",
+        "model": "ltx-2.5-22b-distilled-int8 (video-to-video, 1920x1088)",
+        "base_motion": "work/v2/textile__company-to-product.path.mp4",
+        "denoise": 0.975,
+        "frames": 97,
+        "fps": 24,
+        "seed": 4101,
+        "guides": "first frame = start anchor (1.0)",
+        "start": "final/textile/company.png",
+        "prompt": "A slow, elegant dolly shot in a bright, calm room: the camera glides toward a dark moss-green rain jacket hanging on a wooden hanger, moving closer to its shoulders, collar and hood. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+        "output": "journey-media/work/v2/textile__company-to-product.v2v.mp4",
+        "seconds": 727.6,
+        "at": "2026-09-26T23:05:59"
+      }
+    },
+    "textile/product>material": {
+      "start_anchor": "textile/product",
+      "frames": 97,
+      "fps": 24,
+      "seed": 4102,
+      "prompt": "The camera moves slowly and smoothly closer to the hanging moss-green rain jacket until the matte rubberised fabric of its chest panel and a precise welded seam fill most of the frame. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+      "base_motion": {
+        "kind": "zoom crop path (tools/zoom_path.py)",
+        "target_pct": [
+          45,
+          62
+        ],
+        "magnification": 3.2,
+        "ease": "log-zoom, ease-in power 2.2"
+      },
+      "derives_anchor": "textile/material",
+      "render": {
+        "kind": "transition_move",
+        "key": "textile/product>material",
+        "model": "ltx-2.5-22b-distilled-int8 (video-to-video, 1920x1088)",
+        "base_motion": "work/v2/textile__product-to-material.path.mp4",
+        "denoise": 0.975,
+        "frames": 97,
+        "fps": 24,
+        "seed": 4102,
+        "guides": "first frame = start anchor (1.0)",
+        "start": "final/textile/product.png",
+        "prompt": "The camera moves slowly and smoothly closer to the hanging moss-green rain jacket until the matte rubberised fabric of its chest panel and a precise welded seam fill most of the frame. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+        "output": "journey-media/work/v2/textile__product-to-material.v2v.mp4",
+        "seconds": 424.1,
+        "at": "2026-09-26T23:13:08"
+      }
+    },
+    "textile/material@fabric": {
+      "start_anchor": "textile/material",
+      "frames": 49,
+      "fps": 24,
+      "seed": 4103,
+      "prompt": "Extreme macro shot: the camera pushes smoothly into dark moss-green coated technical fabric until its fine woven texture fills the whole frame. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+      "base_motion": {
+        "kind": "zoom crop path (tools/zoom_path.py)",
+        "target_pct": [
+          50,
+          50
+        ],
+        "magnification": 3,
+        "ease": "log-zoom, ease-in power 2.2"
+      },
+      "derives_anchor": null,
+      "render": {
+        "kind": "transition_move",
+        "key": "textile/material@fabric",
+        "model": "ltx-2.5-22b-distilled-int8 (video-to-video, 1920x1088)",
+        "base_motion": "work/v2/textile__material-at-fabric.path.mp4",
+        "denoise": 0.975,
+        "frames": 49,
+        "fps": 24,
+        "seed": 4103,
+        "guides": "first frame = start anchor (1.0)",
+        "start": "final/textile/material.png",
+        "prompt": "Extreme macro shot: the camera pushes smoothly into dark moss-green coated technical fabric until its fine woven texture fills the whole frame. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+        "output": "journey-media/work/v2/textile__material-at-fabric.v2v.mp4",
+        "seconds": 218.3,
+        "at": "2026-09-26T23:55:33"
+      }
+    },
+    "textile/component@fabric": {
+      "start_anchor": "textile/component",
+      "frames": 49,
+      "fps": 24,
+      "seed": 4104,
+      "prompt": "The camera pushes smoothly toward the moss-green coated fabric of a rain jacket laid on a pale oak table until the fabric fills the whole frame. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+      "base_motion": {
+        "kind": "zoom crop path (tools/zoom_path.py)",
+        "target_pct": [
+          22,
+          40
+        ],
+        "magnification": 5,
+        "ease": "log-zoom, ease-in power 2.2"
+      },
+      "derives_anchor": null,
+      "render": {
+        "kind": "transition_move",
+        "key": "textile/component@fabric",
+        "model": "ltx-2.5-22b-distilled-int8 (video-to-video, 1920x1088)",
+        "base_motion": "work/v2/textile__component-at-fabric.path.mp4",
+        "denoise": 0.975,
+        "frames": 49,
+        "fps": 24,
+        "seed": 4104,
+        "guides": "first frame = start anchor (1.0)",
+        "start": "final/textile/component.png",
+        "prompt": "The camera pushes smoothly toward the moss-green coated fabric of a rain jacket laid on a pale oak table until the fabric fills the whole frame. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+        "output": "journey-media/work/v2/textile__component-at-fabric.v2v.mp4",
+        "seconds": 227.2,
+        "at": "2026-09-26T23:59:24"
+      }
+    },
+    "textile/supplier@fabric": {
+      "start_anchor": "textile/supplier",
+      "frames": 49,
+      "fps": 24,
+      "seed": 4106,
+      "prompt": "In a bright textile mill, the camera pushes smoothly toward a large roll of dark moss-green coated fabric until the fabric surface fills the whole frame. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+      "base_motion": {
+        "kind": "zoom crop path (tools/zoom_path.py)",
+        "target_pct": [
+          40,
+          70
+        ],
+        "magnification": 5,
+        "ease": "log-zoom, ease-in power 2.2"
+      },
+      "derives_anchor": null,
+      "render": {
+        "kind": "transition_move",
+        "key": "textile/supplier@fabric",
+        "model": "ltx-2.5-22b-distilled-int8 (video-to-video, 1920x1088)",
+        "base_motion": "work/v2/textile__supplier-at-fabric.path.mp4",
+        "denoise": 0.975,
+        "frames": 49,
+        "fps": 24,
+        "seed": 4106,
+        "guides": "first frame = start anchor (1.0)",
+        "start": "final/textile/supplier.png",
+        "prompt": "In a bright textile mill, the camera pushes smoothly toward a large roll of dark moss-green coated fabric until the fabric surface fills the whole frame. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+        "output": "journey-media/work/v2/textile__supplier-at-fabric.v2v.mp4",
+        "seconds": 182.4,
+        "at": "2026-09-27T00:02:30"
+      }
+    },
+    "textile/logistics@roll": {
+      "start_anchor": "textile/logistics",
+      "frames": 49,
+      "fps": 24,
+      "seed": 4107,
+      "prompt": "In a dispatch area, the camera pushes smoothly toward film-wrapped rolls of moss-green fabric on a pallet until the wrapped fabric fills the whole frame. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+      "base_motion": {
+        "kind": "zoom crop path (tools/zoom_path.py)",
+        "target_pct": [
+          20,
+          45
+        ],
+        "magnification": 6,
+        "ease": "log-zoom, ease-in power 2.2"
+      },
+      "derives_anchor": null,
+      "render": {
+        "kind": "transition_move",
+        "key": "textile/logistics@roll",
+        "model": "ltx-2.5-22b-distilled-int8 (video-to-video, 1920x1088)",
+        "base_motion": "work/v2/textile__logistics-at-roll.path.mp4",
+        "denoise": 0.975,
+        "frames": 49,
+        "fps": 24,
+        "seed": 4107,
+        "guides": "first frame = start anchor (1.0)",
+        "start": "final/textile/logistics.png",
+        "prompt": "In a dispatch area, the camera pushes smoothly toward film-wrapped rolls of moss-green fabric on a pallet until the wrapped fabric fills the whole frame. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+        "output": "journey-media/work/v2/textile__logistics-at-roll.v2v.mp4",
+        "seconds": 200.1,
+        "at": "2026-09-27T00:05:53"
+      }
+    },
+    "textile/factory@fabric": {
+      "start_anchor": "textile/factory",
+      "frames": 49,
+      "fps": 24,
+      "seed": 4108,
+      "prompt": "In a bright garment workshop, the camera pushes smoothly toward a finished moss-green rain jacket lying on a white cutting table until its fabric fills the whole frame. The makers stay still. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+      "base_motion": {
+        "kind": "zoom crop path (tools/zoom_path.py)",
+        "target_pct": [
+          45,
+          72
+        ],
+        "magnification": 6,
+        "ease": "log-zoom, ease-in power 2.2"
+      },
+      "derives_anchor": null,
+      "render": {
+        "kind": "transition_move",
+        "key": "textile/factory@fabric",
+        "model": "ltx-2.5-22b-distilled-int8 (video-to-video, 1920x1088)",
+        "base_motion": "work/v2/textile__factory-at-fabric.path.mp4",
+        "denoise": 0.975,
+        "frames": 49,
+        "fps": 24,
+        "seed": 4108,
+        "guides": "first frame = start anchor (1.0)",
+        "start": "final/textile/factory.png",
+        "prompt": "In a bright garment workshop, the camera pushes smoothly toward a finished moss-green rain jacket lying on a white cutting table until its fabric fills the whole frame. The makers stay still. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+        "output": "journey-media/work/v2/textile__factory-at-fabric.v2v.mp4",
+        "seconds": 200.8,
+        "at": "2026-09-27T00:09:16"
+      }
+    },
+    "textile/data@label": {
+      "start_anchor": "textile/data",
+      "frames": 49,
+      "fps": 24,
+      "seed": 4109,
+      "prompt": "At a final inspection table, the camera pushes smoothly toward a small off-white fabric label sewn inside a moss-green rain jacket until its printed square data-matrix code fills the frame. The label carries only the square code of black modules: no letters, no numbers, no words. The hand holding the scanner stays still. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+      "base_motion": {
+        "kind": "zoom crop path (tools/zoom_path.py)",
+        "target_pct": [
+          49,
+          61
+        ],
+        "magnification": 7.5,
+        "ease": "log-zoom, ease-in power 2.2"
+      },
+      "derives_anchor": null,
+      "render": {
+        "kind": "transition_move",
+        "key": "textile/data@label",
+        "model": "ltx-2.5-22b-distilled-int8 (video-to-video, 1920x1088)",
+        "base_motion": "work/v2/textile__data-at-label.path.mp4",
+        "denoise": 0.909375,
+        "frames": 49,
+        "fps": 24,
+        "seed": 4109,
+        "guides": "first frame = start anchor (1.0)",
+        "start": "final/textile/data.png",
+        "prompt": "At a final inspection table, the camera pushes smoothly toward a small off-white fabric label sewn inside a moss-green rain jacket until its printed square data-matrix code fills the frame. The label carries only the square code of black modules: no letters, no numbers, no words. The hand holding the scanner stays still. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+        "output": "journey-media/work/v2/textile__data-at-label.v2v.mp4",
+        "seconds": 150.8,
+        "at": "2026-09-27T01:01:14"
+      }
+    },
+    "textile/passport@label": {
+      "start_anchor": "textile/passport",
+      "frames": 49,
+      "fps": 24,
+      "seed": 4110,
+      "prompt": "In a bright store, the camera pushes smoothly toward a small woven label with a plain gold border inside the collar of a moss-green rain jacket until its square data-matrix code fills the frame. The label carries only the square code of navy modules: no letters, no numbers, no words. The hand holding the phone stays still. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+      "base_motion": {
+        "kind": "zoom crop path (tools/zoom_path.py)",
+        "target_pct": [
+          51,
+          49
+        ],
+        "magnification": 10,
+        "ease": "log-zoom, ease-in power 2.2"
+      },
+      "derives_anchor": null,
+      "render": {
+        "kind": "transition_move",
+        "key": "textile/passport@label",
+        "model": "ltx-2.5-22b-distilled-int8 (video-to-video, 1920x1088)",
+        "base_motion": "work/v2/textile__passport-at-label.path.mp4",
+        "denoise": 0.909375,
+        "frames": 49,
+        "fps": 24,
+        "seed": 4110,
+        "guides": "first frame = start anchor (1.0)",
+        "start": "final/textile/passport.png",
+        "prompt": "In a bright store, the camera pushes smoothly toward a small woven label with a plain gold border inside the collar of a moss-green rain jacket until its square data-matrix code fills the frame. The label carries only the square code of navy modules: no letters, no numbers, no words. The hand holding the phone stays still. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+        "output": "journey-media/work/v2/textile__passport-at-label.v2v.mp4",
+        "seconds": 155.5,
+        "at": "2026-09-27T01:03:50"
+      }
+    },
+    "textile/passport@fabric": {
+      "start_anchor": "textile/passport",
+      "frames": 49,
+      "fps": 24,
+      "seed": 4111,
+      "prompt": "In a bright store, the camera pushes smoothly toward the matte moss-green fabric of a hanging rain jacket until the fabric fills the whole frame. The hand holding the phone stays still. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+      "base_motion": {
+        "kind": "zoom crop path (tools/zoom_path.py)",
+        "target_pct": [
+          70,
+          75
+        ],
+        "magnification": 5,
+        "ease": "log-zoom, ease-in power 2.2"
+      },
+      "derives_anchor": null,
+      "render": {
+        "kind": "transition_move",
+        "key": "textile/passport@fabric",
+        "model": "ltx-2.5-22b-distilled-int8 (video-to-video, 1920x1088)",
+        "base_motion": "work/v2/textile__passport-at-fabric.path.mp4",
+        "denoise": 0.975,
+        "frames": 49,
+        "fps": 24,
+        "seed": 4111,
+        "guides": "first frame = start anchor (1.0)",
+        "start": "final/textile/passport.png",
+        "prompt": "In a bright store, the camera pushes smoothly toward the matte moss-green fabric of a hanging rain jacket until the fabric fills the whole frame. The hand holding the phone stays still. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+        "output": "journey-media/work/v2/textile__passport-at-fabric.v2v.mp4",
+        "seconds": 156.0,
+        "at": "2026-09-27T00:52:55"
+      }
+    },
+    "textile/nextLife@fabric": {
+      "start_anchor": "textile/nextLife",
+      "frames": 49,
+      "fps": 24,
+      "seed": 4112,
+      "prompt": "In a warm repair corner, the camera pushes smoothly toward a moss-green rain jacket lying on an oak workbench until its coated fabric fills the whole frame. The hands stay still. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+      "base_motion": {
+        "kind": "zoom crop path (tools/zoom_path.py)",
+        "target_pct": [
+          35,
+          45
+        ],
+        "magnification": 5,
+        "ease": "log-zoom, ease-in power 2.2"
+      },
+      "derives_anchor": null,
+      "render": {
+        "kind": "transition_move",
+        "key": "textile/nextLife@fabric",
+        "model": "ltx-2.5-22b-distilled-int8 (video-to-video, 1920x1088)",
+        "base_motion": "work/v2/textile__nextLife-at-fabric.path.mp4",
+        "denoise": 0.975,
+        "frames": 49,
+        "fps": 24,
+        "seed": 4112,
+        "guides": "first frame = start anchor (1.0)",
+        "start": "final/textile/nextLife.png",
+        "prompt": "In a warm repair corner, the camera pushes smoothly toward a moss-green rain jacket lying on an oak workbench until its coated fabric fills the whole frame. The hands stay still. Only the camera moves; the scene itself stays completely still. Smooth, steady, continuous camera motion with no cuts. Photorealistic premium Nordic product cinematography, soft natural daylight, natural contrast, real optical depth of field.",
+        "output": "journey-media/work/v2/textile__nextLife-at-fabric.v2v.mp4",
+        "seconds": 184.3,
+        "at": "2026-09-27T00:21:41"
+      }
+    }
+  },
+  "transitions": {
+    "furniture/company>product": {
+      "type": "single continuous camera move",
+      "move": "furniture/company>product",
+      "final": "journey-media/final/furniture/company-product.mp4",
+      "web": {
+        "base": "media/furniture/company-product",
+        "sizes": [
+          "1080",
+          "540"
+        ],
+        "rev": "cf2e0f4140",
+        "codecs": [
+          "av1",
+          "h264"
+        ],
+        "frames": 97,
+        "fps": 24,
+        "duration": 4.042,
+        "cue": 0.8,
+        "poster": "media/furniture/company"
+      },
+      "post": "endpoints pinned to the exact anchor stills with a 6-frame smoothstep blend; AV1 (SVT-AV1 crf 30/32) + H.264 (x264 crf 19/21) at 1080p and 540p, no audio"
+    },
+    "furniture/product>material": {
+      "type": "single continuous camera move",
+      "move": "furniture/product>material",
+      "final": "journey-media/final/furniture/product-material.mp4",
+      "web": {
+        "base": "media/furniture/product-material",
+        "sizes": [
+          "1080",
+          "540"
+        ],
+        "rev": "fb699c52ae",
+        "codecs": [
+          "av1",
+          "h264"
+        ],
+        "frames": 97,
+        "fps": 24,
+        "duration": 4.042,
+        "cue": 0.8,
+        "poster": "media/furniture/product"
+      },
+      "post": "endpoints pinned to the exact anchor stills with a 6-frame smoothstep blend; AV1 (SVT-AV1 crf 30/32) + H.264 (x264 crf 19/21) at 1080p and 540p, no audio"
+    },
+    "furniture/material>component": {
+      "type": "match cut through material on motion: push into A's material, cut at the macro, B's push played in reverse lands on the next anchor",
+      "a_push": "furniture/material@weave",
+      "b_push_reversed": "furniture/component@weave",
+      "frames": "48 + 49 = 97",
+      "final": "journey-media/final/furniture/material-component.mp4",
+      "web": {
+        "base": "media/furniture/material-component",
+        "sizes": [
+          "1080",
+          "540"
+        ],
+        "rev": "3c05151ea8",
+        "codecs": [
+          "av1",
+          "h264"
+        ],
+        "frames": 97,
+        "fps": 24,
+        "duration": 4.042,
+        "cue": 0.8,
+        "poster": "media/furniture/material"
+      },
+      "post": "endpoints pinned to the exact anchor stills with a 6-frame smoothstep blend; AV1 (SVT-AV1 crf 30/32) + H.264 (x264 crf 19/21) at 1080p and 540p, no audio"
+    },
+    "furniture/component>supplier": {
+      "type": "match cut through material on motion: push into A's material, cut at the macro, B's push played in reverse lands on the next anchor",
+      "a_push": "furniture/component@oak",
+      "b_push_reversed": "furniture/supplier@oak",
+      "frames": "48 + 49 = 97",
+      "final": "journey-media/final/furniture/component-supplier.mp4",
+      "web": {
+        "base": "media/furniture/component-supplier",
+        "sizes": [
+          "1080",
+          "540"
+        ],
+        "rev": "6aa482c9e9",
+        "codecs": [
+          "av1",
+          "h264"
+        ],
+        "frames": 97,
+        "fps": 24,
+        "duration": 4.042,
+        "cue": 0.8,
+        "poster": "media/furniture/component"
+      },
+      "post": "endpoints pinned to the exact anchor stills with a 6-frame smoothstep blend; AV1 (SVT-AV1 crf 30/32) + H.264 (x264 crf 19/21) at 1080p and 540p, no audio"
+    },
+    "furniture/supplier>logistics": {
+      "type": "match cut through material on motion: push into A's material, cut at the macro, B's push played in reverse lands on the next anchor",
+      "a_push": "furniture/supplier@oak",
+      "b_push_reversed": "furniture/logistics@oak",
+      "frames": "48 + 49 = 97",
+      "final": "journey-media/final/furniture/supplier-logistics.mp4",
+      "web": {
+        "base": "media/furniture/supplier-logistics",
+        "sizes": [
+          "1080",
+          "540"
+        ],
+        "rev": "a413ab983b",
+        "codecs": [
+          "av1",
+          "h264"
+        ],
+        "frames": 97,
+        "fps": 24,
+        "duration": 4.042,
+        "cue": 0.8,
+        "poster": "media/furniture/supplier"
+      },
+      "post": "endpoints pinned to the exact anchor stills with a 6-frame smoothstep blend; AV1 (SVT-AV1 crf 30/32) + H.264 (x264 crf 19/21) at 1080p and 540p, no audio"
+    },
+    "furniture/logistics>factory": {
+      "type": "match cut through material on motion: push into A's material, cut at the macro, B's push played in reverse lands on the next anchor",
+      "a_push": "furniture/logistics@oak",
+      "b_push_reversed": "furniture/factory@oak",
+      "frames": "48 + 49 = 97",
+      "final": "journey-media/final/furniture/logistics-factory.mp4",
+      "web": {
+        "base": "media/furniture/logistics-factory",
+        "sizes": [
+          "1080",
+          "540"
+        ],
+        "rev": "159da6e73e",
+        "codecs": [
+          "av1",
+          "h264"
+        ],
+        "frames": 97,
+        "fps": 24,
+        "duration": 4.042,
+        "cue": 0.8,
+        "poster": "media/furniture/logistics"
+      },
+      "post": "endpoints pinned to the exact anchor stills with a 6-frame smoothstep blend; AV1 (SVT-AV1 crf 30/32) + H.264 (x264 crf 19/21) at 1080p and 540p, no audio"
+    },
+    "furniture/factory>data": {
+      "type": "match cut through material on motion: push into A's material, cut at the macro, B's push played in reverse lands on the next anchor",
+      "a_push": "furniture/factory@oak",
+      "b_push_reversed": "furniture/data@code",
+      "frames": "48 + 49 = 97",
+      "final": "journey-media/final/furniture/factory-data.mp4",
+      "web": {
+        "base": "media/furniture/factory-data",
+        "sizes": [
+          "1080",
+          "540"
+        ],
+        "rev": "c42a15f7db",
+        "codecs": [
+          "av1",
+          "h264"
+        ],
+        "frames": 97,
+        "fps": 24,
+        "duration": 4.042,
+        "cue": 0.8,
+        "poster": "media/furniture/factory"
+      },
+      "post": "endpoints pinned to the exact anchor stills with a 6-frame smoothstep blend; AV1 (SVT-AV1 crf 30/32) + H.264 (x264 crf 19/21) at 1080p and 540p, no audio"
+    },
+    "furniture/data>passport": {
+      "type": "match cut through material on motion: push into A's material, cut at the macro, B's push played in reverse lands on the next anchor",
+      "a_push": "furniture/data@code",
+      "b_push_reversed": "furniture/passport@code",
+      "frames": "48 + 49 = 97",
+      "final": "journey-media/final/furniture/data-passport.mp4",
+      "web": {
+        "base": "media/furniture/data-passport",
+        "sizes": [
+          "1080",
+          "540"
+        ],
+        "rev": "f7db1a9d8b",
+        "codecs": [
+          "av1",
+          "h264"
+        ],
+        "frames": 97,
+        "fps": 24,
+        "duration": 4.042,
+        "cue": 0.8,
+        "poster": "media/furniture/data"
+      },
+      "post": "endpoints pinned to the exact anchor stills with a 6-frame smoothstep blend; AV1 (SVT-AV1 crf 30/32) + H.264 (x264 crf 19/21) at 1080p and 540p, no audio"
+    },
+    "furniture/passport>nextLife": {
+      "type": "match cut through material on motion: push into A's material, cut at the macro, B's push played in reverse lands on the next anchor",
+      "a_push": "furniture/passport@weave",
+      "b_push_reversed": "furniture/nextLife@cushion",
+      "frames": "48 + 49 = 97",
+      "final": "journey-media/final/furniture/passport-nextLife.mp4",
+      "web": {
+        "base": "media/furniture/passport-nextLife",
+        "sizes": [
+          "1080",
+          "540"
+        ],
+        "rev": "be43b3254f",
+        "codecs": [
+          "av1",
+          "h264"
+        ],
+        "frames": 97,
+        "fps": 24,
+        "duration": 4.042,
+        "cue": 0.8,
+        "poster": "media/furniture/passport"
+      },
+      "post": "endpoints pinned to the exact anchor stills with a 6-frame smoothstep blend; AV1 (SVT-AV1 crf 30/32) + H.264 (x264 crf 19/21) at 1080p and 540p, no audio"
+    },
+    "battery/company>product": {
+      "type": "single continuous camera move",
+      "move": "battery/company>product",
+      "final": "journey-media/final/battery/company-product.mp4",
+      "web": {
+        "base": "media/battery/company-product",
+        "sizes": [
+          "1080",
+          "540"
+        ],
+        "rev": "a01975ae9e",
+        "codecs": [
+          "av1",
+          "h264"
+        ],
+        "frames": 97,
+        "fps": 24,
+        "duration": 4.042,
+        "cue": 0.8,
+        "poster": "media/battery/company"
+      },
+      "post": "endpoints pinned to the exact anchor stills with a 6-frame smoothstep blend; AV1 (SVT-AV1 crf 30/32) + H.264 (x264 crf 19/21) at 1080p and 540p, no audio"
+    },
+    "battery/product>material": {
+      "type": "single continuous camera move",
+      "move": "battery/product>material",
+      "final": "journey-media/final/battery/product-material.mp4",
+      "web": {
+        "base": "media/battery/product-material",
+        "sizes": [
+          "1080",
+          "540"
+        ],
+        "rev": "5c1559ab85",
+        "codecs": [
+          "av1",
+          "h264"
+        ],
+        "frames": 97,
+        "fps": 24,
+        "duration": 4.042,
+        "cue": 0.8,
+        "poster": "media/battery/product"
+      },
+      "post": "endpoints pinned to the exact anchor stills with a 6-frame smoothstep blend; AV1 (SVT-AV1 crf 30/32) + H.264 (x264 crf 19/21) at 1080p and 540p, no audio"
+    },
+    "battery/material>component": {
+      "type": "match cut through material on motion: push into A's material, cut at the macro, B's push played in reverse lands on the next anchor",
+      "a_push": "battery/material@housing",
+      "b_push_reversed": "battery/component@housing",
+      "frames": "48 + 49 = 97",
+      "final": "journey-media/final/battery/material-component.mp4",
+      "web": {
+        "base": "media/battery/material-component",
+        "sizes": [
+          "1080",
+          "540"
+        ],
+        "rev": "d630d81a58",
+        "codecs": [
+          "av1",
+          "h264"
+        ],
+        "frames": 97,
+        "fps": 24,
+        "duration": 4.042,
+        "cue": 0.8,
+        "poster": "media/battery/material"
+      },
+      "post": "endpoints pinned to the exact anchor stills with a 6-frame smoothstep blend; AV1 (SVT-AV1 crf 30/32) + H.264 (x264 crf 19/21) at 1080p and 540p, no audio"
+    },
+    "battery/component>supplier": {
+      "type": "match cut through material on motion: push into A's material, cut at the macro, B's push played in reverse lands on the next anchor",
+      "a_push": "battery/component@cells",
+      "b_push_reversed": "battery/supplier@cells",
+      "frames": "48 + 49 = 97",
+      "final": "journey-media/final/battery/component-supplier.mp4",
+      "web": {
+        "base": "media/battery/component-supplier",
+        "sizes": [
+          "1080",
+          "540"
+        ],
+        "rev": "e954d6b530",
+        "codecs": [
+          "av1",
+          "h264"
+        ],
+        "frames": 97,
+        "fps": 24,
+        "duration": 4.042,
+        "cue": 0.8,
+        "poster": "media/battery/component"
+      },
+      "post": "endpoints pinned to the exact anchor stills with a 6-frame smoothstep blend; AV1 (SVT-AV1 crf 30/32) + H.264 (x264 crf 19/21) at 1080p and 540p, no audio"
+    },
+    "battery/supplier>logistics": {
+      "type": "match cut through material on motion: push into A's material, cut at the macro, B's push played in reverse lands on the next anchor",
+      "a_push": "battery/supplier@cells",
+      "b_push_reversed": "battery/logistics@box",
+      "frames": "48 + 49 = 97",
+      "final": "journey-media/final/battery/supplier-logistics.mp4",
+      "web": {
+        "base": "media/battery/supplier-logistics",
+        "sizes": [
+          "1080",
+          "540"
+        ],
+        "rev": "0685025533",
+        "codecs": [
+          "av1",
+          "h264"
+        ],
+        "frames": 97,
+        "fps": 24,
+        "duration": 4.042,
+        "cue": 0.8,
+        "poster": "media/battery/supplier"
+      },
+      "post": "endpoints pinned to the exact anchor stills with a 6-frame smoothstep blend; AV1 (SVT-AV1 crf 30/32) + H.264 (x264 crf 19/21) at 1080p and 540p, no audio"
+    },
+    "battery/logistics>factory": {
+      "type": "match cut through material on motion: push into A's material, cut at the macro, B's push played in reverse lands on the next anchor",
+      "a_push": "battery/logistics@box",
+      "b_push_reversed": "battery/factory@cells",
+      "frames": "48 + 49 = 97",
+      "final": "journey-media/final/battery/logistics-factory.mp4",
+      "web": {
+        "base": "media/battery/logistics-factory",
+        "sizes": [
+          "1080",
+          "540"
+        ],
+        "rev": "598ab8bfc6",
+        "codecs": [
+          "av1",
+          "h264"
+        ],
+        "frames": 97,
+        "fps": 24,
+        "duration": 4.042,
+        "cue": 0.8,
+        "poster": "media/battery/logistics"
+      },
+      "post": "endpoints pinned to the exact anchor stills with a 6-frame smoothstep blend; AV1 (SVT-AV1 crf 30/32) + H.264 (x264 crf 19/21) at 1080p and 540p, no audio"
+    },
+    "battery/factory>data": {
+      "type": "match cut through material on motion: push into A's material, cut at the macro, B's push played in reverse lands on the next anchor",
+      "a_push": "battery/factory@cells",
+      "b_push_reversed": "battery/data@code",
+      "frames": "48 + 49 = 97",
+      "final": "journey-media/final/battery/factory-data.mp4",
+      "web": {
+        "base": "media/battery/factory-data",
+        "sizes": [
+          "1080",
+          "540"
+        ],
+        "rev": "f3b9b3546e",
+        "codecs": [
+          "av1",
+          "h264"
+        ],
+        "frames": 97,
+        "fps": 24,
+        "duration": 4.042,
+        "cue": 0.8,
+        "poster": "media/battery/factory"
+      },
+      "post": "endpoints pinned to the exact anchor stills with a 6-frame smoothstep blend; AV1 (SVT-AV1 crf 30/32) + H.264 (x264 crf 19/21) at 1080p and 540p, no audio"
+    },
+    "battery/data>passport": {
+      "type": "match cut through material on motion: push into A's material, cut at the macro, B's push played in reverse lands on the next anchor",
+      "a_push": "battery/data@code",
+      "b_push_reversed": "battery/passport@code",
+      "frames": "48 + 49 = 97",
+      "final": "journey-media/final/battery/data-passport.mp4",
+      "web": {
+        "base": "media/battery/data-passport",
+        "sizes": [
+          "1080",
+          "540"
+        ],
+        "rev": "ab928e2394",
+        "codecs": [
+          "av1",
+          "h264"
+        ],
+        "frames": 97,
+        "fps": 24,
+        "duration": 4.042,
+        "cue": 0.8,
+        "poster": "media/battery/data"
+      },
+      "post": "endpoints pinned to the exact anchor stills with a 6-frame smoothstep blend; AV1 (SVT-AV1 crf 30/32) + H.264 (x264 crf 19/21) at 1080p and 540p, no audio"
+    },
+    "battery/passport>nextLife": {
+      "type": "match cut through material on motion: push into A's material, cut at the macro, B's push played in reverse lands on the next anchor",
+      "a_push": "battery/passport@housing",
+      "b_push_reversed": "battery/nextLife@housing",
+      "frames": "48 + 49 = 97",
+      "final": "journey-media/final/battery/passport-nextLife.mp4",
+      "web": {
+        "base": "media/battery/passport-nextLife",
+        "sizes": [
+          "1080",
+          "540"
+        ],
+        "rev": "bb03b770da",
+        "codecs": [
+          "av1",
+          "h264"
+        ],
+        "frames": 97,
+        "fps": 24,
+        "duration": 4.042,
+        "cue": 0.8,
+        "poster": "media/battery/passport"
+      },
+      "post": "endpoints pinned to the exact anchor stills with a 6-frame smoothstep blend; AV1 (SVT-AV1 crf 30/32) + H.264 (x264 crf 19/21) at 1080p and 540p, no audio"
+    },
+    "textile/company>product": {
+      "type": "single continuous camera move",
+      "move": "textile/company>product",
+      "final": "journey-media/final/textile/company-product.mp4",
+      "web": {
+        "base": "media/textile/company-product",
+        "sizes": [
+          "1080",
+          "540"
+        ],
+        "rev": "b732507fc1",
+        "codecs": [
+          "av1",
+          "h264"
+        ],
+        "frames": 97,
+        "fps": 24,
+        "duration": 4.042,
+        "cue": 0.8,
+        "poster": "media/textile/company"
+      },
+      "post": "endpoints pinned to the exact anchor stills with a 6-frame smoothstep blend; AV1 (SVT-AV1 crf 30/32) + H.264 (x264 crf 19/21) at 1080p and 540p, no audio"
+    },
+    "textile/product>material": {
+      "type": "single continuous camera move",
+      "move": "textile/product>material",
+      "final": "journey-media/final/textile/product-material.mp4",
+      "web": {
+        "base": "media/textile/product-material",
+        "sizes": [
+          "1080",
+          "540"
+        ],
+        "rev": "f6651a03b5",
+        "codecs": [
+          "av1",
+          "h264"
+        ],
+        "frames": 97,
+        "fps": 24,
+        "duration": 4.042,
+        "cue": 0.8,
+        "poster": "media/textile/product"
+      },
+      "post": "endpoints pinned to the exact anchor stills with a 6-frame smoothstep blend; AV1 (SVT-AV1 crf 30/32) + H.264 (x264 crf 19/21) at 1080p and 540p, no audio"
+    },
+    "textile/material>component": {
+      "type": "match cut through material on motion: push into A's material, cut at the macro, B's push played in reverse lands on the next anchor",
+      "a_push": "textile/material@fabric",
+      "b_push_reversed": "textile/component@fabric",
+      "frames": "48 + 49 = 97",
+      "final": "journey-media/final/textile/material-component.mp4",
+      "web": {
+        "base": "media/textile/material-component",
+        "sizes": [
+          "1080",
+          "540"
+        ],
+        "rev": "741f75d9f8",
+        "codecs": [
+          "av1",
+          "h264"
+        ],
+        "frames": 97,
+        "fps": 24,
+        "duration": 4.042,
+        "cue": 0.8,
+        "poster": "media/textile/material"
+      },
+      "post": "endpoints pinned to the exact anchor stills with a 6-frame smoothstep blend; AV1 (SVT-AV1 crf 30/32) + H.264 (x264 crf 19/21) at 1080p and 540p, no audio"
+    },
+    "textile/component>supplier": {
+      "type": "match cut through material on motion: push into A's material, cut at the macro, B's push played in reverse lands on the next anchor",
+      "a_push": "textile/component@fabric",
+      "b_push_reversed": "textile/supplier@fabric",
+      "frames": "48 + 49 = 97",
+      "final": "journey-media/final/textile/component-supplier.mp4",
+      "web": {
+        "base": "media/textile/component-supplier",
+        "sizes": [
+          "1080",
+          "540"
+        ],
+        "rev": "50a4630915",
+        "codecs": [
+          "av1",
+          "h264"
+        ],
+        "frames": 97,
+        "fps": 24,
+        "duration": 4.042,
+        "cue": 0.8,
+        "poster": "media/textile/component"
+      },
+      "post": "endpoints pinned to the exact anchor stills with a 6-frame smoothstep blend; AV1 (SVT-AV1 crf 30/32) + H.264 (x264 crf 19/21) at 1080p and 540p, no audio"
+    },
+    "textile/supplier>logistics": {
+      "type": "match cut through material on motion: push into A's material, cut at the macro, B's push played in reverse lands on the next anchor",
+      "a_push": "textile/supplier@fabric",
+      "b_push_reversed": "textile/logistics@roll",
+      "frames": "48 + 49 = 97",
+      "final": "journey-media/final/textile/supplier-logistics.mp4",
+      "web": {
+        "base": "media/textile/supplier-logistics",
+        "sizes": [
+          "1080",
+          "540"
+        ],
+        "rev": "b500c28d60",
+        "codecs": [
+          "av1",
+          "h264"
+        ],
+        "frames": 97,
+        "fps": 24,
+        "duration": 4.042,
+        "cue": 0.8,
+        "poster": "media/textile/supplier"
+      },
+      "post": "endpoints pinned to the exact anchor stills with a 6-frame smoothstep blend; AV1 (SVT-AV1 crf 30/32) + H.264 (x264 crf 19/21) at 1080p and 540p, no audio"
+    },
+    "textile/logistics>factory": {
+      "type": "match cut through material on motion: push into A's material, cut at the macro, B's push played in reverse lands on the next anchor",
+      "a_push": "textile/logistics@roll",
+      "b_push_reversed": "textile/factory@fabric",
+      "frames": "48 + 49 = 97",
+      "final": "journey-media/final/textile/logistics-factory.mp4",
+      "web": {
+        "base": "media/textile/logistics-factory",
+        "sizes": [
+          "1080",
+          "540"
+        ],
+        "rev": "1b9bb0cd2c",
+        "codecs": [
+          "av1",
+          "h264"
+        ],
+        "frames": 97,
+        "fps": 24,
+        "duration": 4.042,
+        "cue": 0.8,
+        "poster": "media/textile/logistics"
+      },
+      "post": "endpoints pinned to the exact anchor stills with a 6-frame smoothstep blend; AV1 (SVT-AV1 crf 30/32) + H.264 (x264 crf 19/21) at 1080p and 540p, no audio"
+    },
+    "textile/factory>data": {
+      "type": "match cut through material on motion: push into A's material, cut at the macro, B's push played in reverse lands on the next anchor",
+      "a_push": "textile/factory@fabric",
+      "b_push_reversed": "textile/data@label",
+      "frames": "48 + 49 = 97",
+      "final": "journey-media/final/textile/factory-data.mp4",
+      "web": {
+        "base": "media/textile/factory-data",
+        "sizes": [
+          "1080",
+          "540"
+        ],
+        "rev": "f81d39af94",
+        "codecs": [
+          "av1",
+          "h264"
+        ],
+        "frames": 97,
+        "fps": 24,
+        "duration": 4.042,
+        "cue": 0.8,
+        "poster": "media/textile/factory"
+      },
+      "post": "endpoints pinned to the exact anchor stills with a 6-frame smoothstep blend; AV1 (SVT-AV1 crf 30/32) + H.264 (x264 crf 19/21) at 1080p and 540p, no audio"
+    },
+    "textile/data>passport": {
+      "type": "match cut through material on motion: push into A's material, cut at the macro, B's push played in reverse lands on the next anchor",
+      "a_push": "textile/data@label",
+      "b_push_reversed": "textile/passport@label",
+      "frames": "48 + 49 = 97",
+      "final": "journey-media/final/textile/data-passport.mp4",
+      "web": {
+        "base": "media/textile/data-passport",
+        "sizes": [
+          "1080",
+          "540"
+        ],
+        "rev": "554e6594b2",
+        "codecs": [
+          "av1",
+          "h264"
+        ],
+        "frames": 97,
+        "fps": 24,
+        "duration": 4.042,
+        "cue": 0.8,
+        "poster": "media/textile/data"
+      },
+      "post": "endpoints pinned to the exact anchor stills with a 6-frame smoothstep blend; AV1 (SVT-AV1 crf 30/32) + H.264 (x264 crf 19/21) at 1080p and 540p, no audio"
+    },
+    "textile/passport>nextLife": {
+      "type": "match cut through material on motion: push into A's material, cut at the macro, B's push played in reverse lands on the next anchor",
+      "a_push": "textile/passport@fabric",
+      "b_push_reversed": "textile/nextLife@fabric",
+      "frames": "48 + 49 = 97",
+      "final": "journey-media/final/textile/passport-nextLife.mp4",
+      "web": {
+        "base": "media/textile/passport-nextLife",
+        "sizes": [
+          "1080",
+          "540"
+        ],
+        "rev": "9fff18ec02",
+        "codecs": [
+          "av1",
+          "h264"
+        ],
+        "frames": 97,
+        "fps": 24,
+        "duration": 4.042,
+        "cue": 0.8,
+        "poster": "media/textile/passport"
+      },
+      "post": "endpoints pinned to the exact anchor stills with a 6-frame smoothstep blend; AV1 (SVT-AV1 crf 30/32) + H.264 (x264 crf 19/21) at 1080p and 540p, no audio"
+    }
+  }
+}

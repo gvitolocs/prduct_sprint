@@ -1,0 +1,855 @@
+{
+  "version": 1,
+  "generated": "2026-09-27T01:10:50",
+  "stages": [
+    "company",
+    "product",
+    "material",
+    "component",
+    "supplier",
+    "logistics",
+    "factory",
+    "data",
+    "passport",
+    "nextLife"
+  ],
+  "branches": {
+    "furniture": {
+      "industry": "Furniture",
+      "object": "Lounge chair",
+      "anchors": {
+        "company": {
+          "base": "media/furniture/company",
+          "widths": [
+            1920,
+            960
+          ],
+          "rev": "92952f6c94",
+          "focus": "30% 60%",
+          "panel": "right",
+          "alt": "A Danish oak lounge chair in a bright Nordic living room"
+        },
+        "product": {
+          "base": "media/furniture/product",
+          "widths": [
+            1920,
+            960
+          ],
+          "rev": "7d27a23582",
+          "focus": "33% 60%",
+          "panel": "right",
+          "alt": "The lounge chair by the tall windows, closer"
+        },
+        "material": {
+          "base": "media/furniture/material",
+          "widths": [
+            1920,
+            960
+          ],
+          "rev": "62f87fbf9f",
+          "focus": "45% 55%",
+          "panel": "right",
+          "alt": "The seat cushion close up: cream basket-weave wool on an oak frame"
+        },
+        "component": {
+          "base": "media/furniture/component",
+          "widths": [
+            1920,
+            960
+          ],
+          "rev": "667b954a22",
+          "focus": "40% 55%",
+          "panel": "right",
+          "alt": "Under the seat: webbing, oak rails and a graphite bolt"
+        },
+        "supplier": {
+          "base": "media/furniture/supplier",
+          "widths": [
+            1920,
+            960
+          ],
+          "rev": "d077fe2638",
+          "focus": "32% 55%",
+          "panel": "right",
+          "alt": "Stacks of planed oak boards at a timber supplier"
+        },
+        "logistics": {
+          "base": "media/furniture/logistics",
+          "widths": [
+            1920,
+            960
+          ],
+          "rev": "a7a85345ba",
+          "focus": "38% 55%",
+          "panel": "right",
+          "alt": "A forklift carries a wrapped bundle of oak boards to a truck"
+        },
+        "factory": {
+          "base": "media/furniture/factory",
+          "widths": [
+            1920,
+            960
+          ],
+          "rev": "5063f53577",
+          "focus": "62% 55%",
+          "panel": "left",
+          "alt": "A CNC machine shaping an oak armrest in a furniture factory"
+        },
+        "data": {
+          "base": "media/furniture/data",
+          "widths": [
+            1920,
+            960
+          ],
+          "rev": "d9d67daf30",
+          "focus": "62% 55%",
+          "panel": "left",
+          "alt": "A scanner reads an etched code on an oak part",
+          "hotspot": [
+            64,
+            60
+          ]
+        },
+        "passport": {
+          "base": "media/furniture/passport",
+          "widths": [
+            1920,
+            960
+          ],
+          "rev": "3f1cfd5bd9",
+          "focus": "62% 50%",
+          "panel": "left",
+          "alt": "A phone approaches the code on the chair's oak rail",
+          "hotspot": [
+            53.5,
+            60.5
+          ]
+        },
+        "nextLife": {
+          "base": "media/furniture/nextLife",
+          "widths": [
+            1920,
+            960
+          ],
+          "rev": "6bde3dbcb4",
+          "focus": "55% 55%",
+          "panel": "left",
+          "alt": "The chair partly taken apart for repair in a workshop"
+        }
+      },
+      "transitions": {
+        "company>product": {
+          "base": "media/furniture/company-product",
+          "sizes": [
+            "1080",
+            "540"
+          ],
+          "rev": "cf2e0f4140",
+          "codecs": [
+            "av1",
+            "h264"
+          ],
+          "frames": 97,
+          "fps": 24,
+          "duration": 4.042,
+          "cue": 0.8,
+          "poster": "media/furniture/company"
+        },
+        "product>material": {
+          "base": "media/furniture/product-material",
+          "sizes": [
+            "1080",
+            "540"
+          ],
+          "rev": "fb699c52ae",
+          "codecs": [
+            "av1",
+            "h264"
+          ],
+          "frames": 97,
+          "fps": 24,
+          "duration": 4.042,
+          "cue": 0.8,
+          "poster": "media/furniture/product"
+        },
+        "material>component": {
+          "base": "media/furniture/material-component",
+          "sizes": [
+            "1080",
+            "540"
+          ],
+          "rev": "3c05151ea8",
+          "codecs": [
+            "av1",
+            "h264"
+          ],
+          "frames": 97,
+          "fps": 24,
+          "duration": 4.042,
+          "cue": 0.8,
+          "poster": "media/furniture/material"
+        },
+        "component>supplier": {
+          "base": "media/furniture/component-supplier",
+          "sizes": [
+            "1080",
+            "540"
+          ],
+          "rev": "6aa482c9e9",
+          "codecs": [
+            "av1",
+            "h264"
+          ],
+          "frames": 97,
+          "fps": 24,
+          "duration": 4.042,
+          "cue": 0.8,
+          "poster": "media/furniture/component"
+        },
+        "supplier>logistics": {
+          "base": "media/furniture/supplier-logistics",
+          "sizes": [
+            "1080",
+            "540"
+          ],
+          "rev": "a413ab983b",
+          "codecs": [
+            "av1",
+            "h264"
+          ],
+          "frames": 97,
+          "fps": 24,
+          "duration": 4.042,
+          "cue": 0.8,
+          "poster": "media/furniture/supplier"
+        },
+        "logistics>factory": {
+          "base": "media/furniture/logistics-factory",
+          "sizes": [
+            "1080",
+            "540"
+          ],
+          "rev": "159da6e73e",
+          "codecs": [
+            "av1",
+            "h264"
+          ],
+          "frames": 97,
+          "fps": 24,
+          "duration": 4.042,
+          "cue": 0.8,
+          "poster": "media/furniture/logistics"
+        },
+        "factory>data": {
+          "base": "media/furniture/factory-data",
+          "sizes": [
+            "1080",
+            "540"
+          ],
+          "rev": "c42a15f7db",
+          "codecs": [
+            "av1",
+            "h264"
+          ],
+          "frames": 97,
+          "fps": 24,
+          "duration": 4.042,
+          "cue": 0.8,
+          "poster": "media/furniture/factory"
+        },
+        "data>passport": {
+          "base": "media/furniture/data-passport",
+          "sizes": [
+            "1080",
+            "540"
+          ],
+          "rev": "f7db1a9d8b",
+          "codecs": [
+            "av1",
+            "h264"
+          ],
+          "frames": 97,
+          "fps": 24,
+          "duration": 4.042,
+          "cue": 0.8,
+          "poster": "media/furniture/data"
+        },
+        "passport>nextLife": {
+          "base": "media/furniture/passport-nextLife",
+          "sizes": [
+            "1080",
+            "540"
+          ],
+          "rev": "be43b3254f",
+          "codecs": [
+            "av1",
+            "h264"
+          ],
+          "frames": 97,
+          "fps": 24,
+          "duration": 4.042,
+          "cue": 0.8,
+          "poster": "media/furniture/passport"
+        }
+      }
+    },
+    "battery": {
+      "industry": "Battery & e-mobility",
+      "object": "E-bike battery",
+      "anchors": {
+        "company": {
+          "base": "media/battery/company",
+          "widths": [
+            1920,
+            960
+          ],
+          "rev": "0be6e3dfb6",
+          "focus": "62% 45%",
+          "panel": "left",
+          "alt": "Rear three-quarter view of an e-bike with a removable battery"
+        },
+        "product": {
+          "base": "media/battery/product",
+          "widths": [
+            1920,
+            960
+          ],
+          "rev": "d1385f4974",
+          "focus": "42% 45%",
+          "panel": "right",
+          "alt": "The graphite battery pack on the e-bike's down tube, closer"
+        },
+        "material": {
+          "base": "media/battery/material",
+          "widths": [
+            1920,
+            960
+          ],
+          "rev": "8a0551a346",
+          "focus": "45% 55%",
+          "panel": "right",
+          "alt": "Close-up of the battery housing: bead-blasted graphite, a fine seam and the lock"
+        },
+        "component": {
+          "base": "media/battery/component",
+          "widths": [
+            1920,
+            960
+          ],
+          "rev": "3b15092c29",
+          "focus": "45% 55%",
+          "panel": "right",
+          "alt": "The battery opened on a service bench: cells and BMS"
+        },
+        "supplier": {
+          "base": "media/battery/supplier",
+          "widths": [
+            1920,
+            960
+          ],
+          "rev": "571541e99e",
+          "focus": "40% 55%",
+          "panel": "right",
+          "alt": "Trays of cells on a conveyor in a cell plant"
+        },
+        "logistics": {
+          "base": "media/battery/logistics",
+          "widths": [
+            1920,
+            960
+          ],
+          "rev": "1a07711176",
+          "focus": "45% 55%",
+          "panel": "right",
+          "alt": "Certified shipping boxes on a pallet in a dispatch area"
+        },
+        "factory": {
+          "base": "media/battery/factory",
+          "widths": [
+            1920,
+            960
+          ],
+          "rev": "84ed5318a7",
+          "focus": "40% 55%",
+          "panel": "right",
+          "alt": "A welding station on a battery pack assembly line"
+        },
+        "data": {
+          "base": "media/battery/data",
+          "widths": [
+            1920,
+            960
+          ],
+          "rev": "3a144eb25d",
+          "focus": "50% 55%",
+          "panel": "left",
+          "alt": "A scanner reads the etched code on a finished pack at the end-of-line station",
+          "hotspot": [
+            51.5,
+            57
+          ]
+        },
+        "passport": {
+          "base": "media/battery/passport",
+          "widths": [
+            1920,
+            960
+          ],
+          "rev": "8ffa738523",
+          "focus": "50% 50%",
+          "panel": "left",
+          "alt": "A mechanic's phone at the code on the bike's battery",
+          "hotspot": [
+            54.7,
+            36
+          ]
+        },
+        "nextLife": {
+          "base": "media/battery/nextLife",
+          "widths": [
+            1920,
+            960
+          ],
+          "rev": "787fa6e5ac",
+          "focus": "45% 55%",
+          "panel": "right",
+          "alt": "The removed battery on a state-of-health tester, modules sorted for reuse"
+        }
+      },
+      "transitions": {
+        "company>product": {
+          "base": "media/battery/company-product",
+          "sizes": [
+            "1080",
+            "540"
+          ],
+          "rev": "a01975ae9e",
+          "codecs": [
+            "av1",
+            "h264"
+          ],
+          "frames": 97,
+          "fps": 24,
+          "duration": 4.042,
+          "cue": 0.8,
+          "poster": "media/battery/company"
+        },
+        "product>material": {
+          "base": "media/battery/product-material",
+          "sizes": [
+            "1080",
+            "540"
+          ],
+          "rev": "5c1559ab85",
+          "codecs": [
+            "av1",
+            "h264"
+          ],
+          "frames": 97,
+          "fps": 24,
+          "duration": 4.042,
+          "cue": 0.8,
+          "poster": "media/battery/product"
+        },
+        "material>component": {
+          "base": "media/battery/material-component",
+          "sizes": [
+            "1080",
+            "540"
+          ],
+          "rev": "d630d81a58",
+          "codecs": [
+            "av1",
+            "h264"
+          ],
+          "frames": 97,
+          "fps": 24,
+          "duration": 4.042,
+          "cue": 0.8,
+          "poster": "media/battery/material"
+        },
+        "component>supplier": {
+          "base": "media/battery/component-supplier",
+          "sizes": [
+            "1080",
+            "540"
+          ],
+          "rev": "e954d6b530",
+          "codecs": [
+            "av1",
+            "h264"
+          ],
+          "frames": 97,
+          "fps": 24,
+          "duration": 4.042,
+          "cue": 0.8,
+          "poster": "media/battery/component"
+        },
+        "supplier>logistics": {
+          "base": "media/battery/supplier-logistics",
+          "sizes": [
+            "1080",
+            "540"
+          ],
+          "rev": "0685025533",
+          "codecs": [
+            "av1",
+            "h264"
+          ],
+          "frames": 97,
+          "fps": 24,
+          "duration": 4.042,
+          "cue": 0.8,
+          "poster": "media/battery/supplier"
+        },
+        "logistics>factory": {
+          "base": "media/battery/logistics-factory",
+          "sizes": [
+            "1080",
+            "540"
+          ],
+          "rev": "598ab8bfc6",
+          "codecs": [
+            "av1",
+            "h264"
+          ],
+          "frames": 97,
+          "fps": 24,
+          "duration": 4.042,
+          "cue": 0.8,
+          "poster": "media/battery/logistics"
+        },
+        "factory>data": {
+          "base": "media/battery/factory-data",
+          "sizes": [
+            "1080",
+            "540"
+          ],
+          "rev": "f3b9b3546e",
+          "codecs": [
+            "av1",
+            "h264"
+          ],
+          "frames": 97,
+          "fps": 24,
+          "duration": 4.042,
+          "cue": 0.8,
+          "poster": "media/battery/factory"
+        },
+        "data>passport": {
+          "base": "media/battery/data-passport",
+          "sizes": [
+            "1080",
+            "540"
+          ],
+          "rev": "ab928e2394",
+          "codecs": [
+            "av1",
+            "h264"
+          ],
+          "frames": 97,
+          "fps": 24,
+          "duration": 4.042,
+          "cue": 0.8,
+          "poster": "media/battery/data"
+        },
+        "passport>nextLife": {
+          "base": "media/battery/passport-nextLife",
+          "sizes": [
+            "1080",
+            "540"
+          ],
+          "rev": "bb03b770da",
+          "codecs": [
+            "av1",
+            "h264"
+          ],
+          "frames": 97,
+          "fps": 24,
+          "duration": 4.042,
+          "cue": 0.8,
+          "poster": "media/battery/passport"
+        }
+      }
+    },
+    "textile": {
+      "industry": "Textiles & apparel",
+      "object": "Rain jacket",
+      "anchors": {
+        "company": {
+          "base": "media/textile/company",
+          "widths": [
+            1920,
+            960
+          ],
+          "rev": "ea61e90074",
+          "focus": "50% 40%",
+          "panel": "right",
+          "alt": "A Danish rain jacket hanging against a plaster wall"
+        },
+        "product": {
+          "base": "media/textile/product",
+          "widths": [
+            1920,
+            960
+          ],
+          "rev": "31e7e1f748",
+          "focus": "45% 35%",
+          "panel": "right",
+          "alt": "The rain jacket's shoulders, hood and collar on its hanger"
+        },
+        "material": {
+          "base": "media/textile/material",
+          "widths": [
+            1920,
+            960
+          ],
+          "rev": "f796865723",
+          "focus": "50% 50%",
+          "panel": "right",
+          "alt": "Macro of the matte coated waterproof fabric"
+        },
+        "component": {
+          "base": "media/textile/component",
+          "widths": [
+            1920,
+            960
+          ],
+          "rev": "428447e9b8",
+          "focus": "45% 55%",
+          "panel": "right",
+          "alt": "Zip, seam tape, studs and lining of the opened jacket"
+        },
+        "supplier": {
+          "base": "media/textile/supplier",
+          "widths": [
+            1920,
+            960
+          ],
+          "rev": "306179a66a",
+          "focus": "40% 55%",
+          "panel": "right",
+          "alt": "A roll of the same fabric in a technical textile mill"
+        },
+        "logistics": {
+          "base": "media/textile/logistics",
+          "widths": [
+            1920,
+            960
+          ],
+          "rev": "25469d4227",
+          "focus": "45% 55%",
+          "panel": "right",
+          "alt": "Wrapped fabric rolls on pallets at dispatch"
+        },
+        "factory": {
+          "base": "media/textile/factory",
+          "widths": [
+            1920,
+            960
+          ],
+          "rev": "d663243baf",
+          "focus": "40% 55%",
+          "panel": "right",
+          "alt": "Jacket panels being cut in a garment workshop"
+        },
+        "data": {
+          "base": "media/textile/data",
+          "widths": [
+            1920,
+            960
+          ],
+          "rev": "672e15986d",
+          "focus": "50% 55%",
+          "panel": "left",
+          "alt": "A scanner reads the care label code inside the collar",
+          "hotspot": [
+            47.5,
+            58
+          ]
+        },
+        "passport": {
+          "base": "media/textile/passport",
+          "widths": [
+            1920,
+            960
+          ],
+          "rev": "d01a5b4543",
+          "focus": "50% 45%",
+          "panel": "left",
+          "alt": "A customer's phone at the jacket's label in a store",
+          "hotspot": [
+            51,
+            49
+          ]
+        },
+        "nextLife": {
+          "base": "media/textile/nextLife",
+          "widths": [
+            1920,
+            960
+          ],
+          "rev": "6ab08696b6",
+          "focus": "45% 55%",
+          "panel": "right",
+          "alt": "A technician replaces the jacket's zip at a repair bench"
+        }
+      },
+      "transitions": {
+        "company>product": {
+          "base": "media/textile/company-product",
+          "sizes": [
+            "1080",
+            "540"
+          ],
+          "rev": "b732507fc1",
+          "codecs": [
+            "av1",
+            "h264"
+          ],
+          "frames": 97,
+          "fps": 24,
+          "duration": 4.042,
+          "cue": 0.8,
+          "poster": "media/textile/company"
+        },
+        "product>material": {
+          "base": "media/textile/product-material",
+          "sizes": [
+            "1080",
+            "540"
+          ],
+          "rev": "f6651a03b5",
+          "codecs": [
+            "av1",
+            "h264"
+          ],
+          "frames": 97,
+          "fps": 24,
+          "duration": 4.042,
+          "cue": 0.8,
+          "poster": "media/textile/product"
+        },
+        "material>component": {
+          "base": "media/textile/material-component",
+          "sizes": [
+            "1080",
+            "540"
+          ],
+          "rev": "741f75d9f8",
+          "codecs": [
+            "av1",
+            "h264"
+          ],
+          "frames": 97,
+          "fps": 24,
+          "duration": 4.042,
+          "cue": 0.8,
+          "poster": "media/textile/material"
+        },
+        "component>supplier": {
+          "base": "media/textile/component-supplier",
+          "sizes": [
+            "1080",
+            "540"
+          ],
+          "rev": "50a4630915",
+          "codecs": [
+            "av1",
+            "h264"
+          ],
+          "frames": 97,
+          "fps": 24,
+          "duration": 4.042,
+          "cue": 0.8,
+          "poster": "media/textile/component"
+        },
+        "supplier>logistics": {
+          "base": "media/textile/supplier-logistics",
+          "sizes": [
+            "1080",
+            "540"
+          ],
+          "rev": "b500c28d60",
+          "codecs": [
+            "av1",
+            "h264"
+          ],
+          "frames": 97,
+          "fps": 24,
+          "duration": 4.042,
+          "cue": 0.8,
+          "poster": "media/textile/supplier"
+        },
+        "logistics>factory": {
+          "base": "media/textile/logistics-factory",
+          "sizes": [
+            "1080",
+            "540"
+          ],
+          "rev": "1b9bb0cd2c",
+          "codecs": [
+            "av1",
+            "h264"
+          ],
+          "frames": 97,
+          "fps": 24,
+          "duration": 4.042,
+          "cue": 0.8,
+          "poster": "media/textile/logistics"
+        },
+        "factory>data": {
+          "base": "media/textile/factory-data",
+          "sizes": [
+            "1080",
+            "540"
+          ],
+          "rev": "f81d39af94",
+          "codecs": [
+            "av1",
+            "h264"
+          ],
+          "frames": 97,
+          "fps": 24,
+          "duration": 4.042,
+          "cue": 0.8,
+          "poster": "media/textile/factory"
+        },
+        "data>passport": {
+          "base": "media/textile/data-passport",
+          "sizes": [
+            "1080",
+            "540"
+          ],
+          "rev": "554e6594b2",
+          "codecs": [
+            "av1",
+            "h264"
+          ],
+          "frames": 97,
+          "fps": 24,
+          "duration": 4.042,
+          "cue": 0.8,
+          "poster": "media/textile/data"
+        },
+        "passport>nextLife": {
+          "base": "media/textile/passport-nextLife",
+          "sizes": [
+            "1080",
+            "540"
+          ],
+          "rev": "9fff18ec02",
+          "codecs": [
+            "av1",
+            "h264"
+          ],
+          "frames": 97,
+          "fps": 24,
+          "duration": 4.042,
+          "cue": 0.8,
+          "poster": "media/textile/passport"
+        }
+      }
+    }
+  }
+}

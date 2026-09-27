@@ -1,14 +1,49 @@
 {
   "headers": [
     {
-      "source": "/(.*)",
-      "headers": [{ "key": "Cache-Control", "value": "no-store" }]
+      "source": "/journey/media/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/fonts/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/((?!journey/media/|fonts/).*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store"
+        }
+      ]
     }
   ],
   "rewrites": [
-    { "source": "/pathfinder", "destination": "/pathfinder.html" },
-    { "source": "/pathfinder/", "destination": "/pathfinder.html" },
-    { "source": "/api/submit", "destination": "/api/inbox" },
-    { "source": "/api/submissions", "destination": "/api/inbox" }
+    {
+      "source": "/pathfinder",
+      "destination": "/pathfinder.html"
+    },
+    {
+      "source": "/pathfinder/",
+      "destination": "/pathfinder.html"
+    },
+    {
+      "source": "/api/submit",
+      "destination": "/api/inbox"
+    },
+    {
+      "source": "/api/submissions",
+      "destination": "/api/inbox"
+    }
   ]
 }

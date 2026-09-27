@@ -6,7 +6,7 @@
  */
 
 /** @typedef {"assembled"|"exploded"|"boundary"|"reunited"} ObjectState */
-/** @typedef {"furniture"|"machinery"|"generic"} SectorId */
+/** @typedef {"furniture"|"machinery"|"battery"|"textile"|"generic"} SectorId */
 
 /** Locked object-state grammar (shared across sectors). */
 export const OBJECT_STATES = Object.freeze([
@@ -46,6 +46,30 @@ export const SECTOR_OBJECTS = Object.freeze({
       Object.freeze({ id: "cell", label: "Cell layer" }),
       Object.freeze({ id: "chemistry", label: "Chemistry / material" }),
       Object.freeze({ id: "supplier", label: "Supplier chain" })
+    ]),
+    grammar: OBJECT_STATES
+  }),
+  battery: Object.freeze({
+    id: "battery",
+    metaphor: "battery-layers",
+    layers: Object.freeze([
+      Object.freeze({ id: "casing", label: "Housing / seals" }),
+      Object.freeze({ id: "module", label: "Module / BMS" }),
+      Object.freeze({ id: "cell", label: "Cell layer" }),
+      Object.freeze({ id: "chemistry", label: "Chemistry / raw material" }),
+      Object.freeze({ id: "supplier", label: "Supplier chain" })
+    ]),
+    grammar: OBJECT_STATES
+  }),
+  textile: Object.freeze({
+    id: "textile",
+    metaphor: "garment-layers",
+    layers: Object.freeze([
+      Object.freeze({ id: "shell", label: "Shell / coating" }),
+      Object.freeze({ id: "trims", label: "Zip / seam tape / studs" }),
+      Object.freeze({ id: "lining", label: "Lining" }),
+      Object.freeze({ id: "fibre", label: "Fibre / yarn" }),
+      Object.freeze({ id: "supplier", label: "Mill / spinner" })
     ]),
     grammar: OBJECT_STATES
   }),
@@ -93,7 +117,13 @@ export function resolveSectorId(state) {
  * @returns {SectorId|null}
  */
 function normalizeSectorId(value) {
-  if (value === "furniture" || value === "machinery" || value === "generic") {
+  if (
+    value === "furniture" ||
+    value === "machinery" ||
+    value === "battery" ||
+    value === "textile" ||
+    value === "generic"
+  ) {
     return value;
   }
   return null;

@@ -6,10 +6,9 @@
   <title>Prduct | Furniture DPP readiness assessment</title>
   <link rel="icon" type="image/svg+xml" href="https://prduct.com/wp-content/themes/product-2026/assets/static/favicon.svg" />
   <link rel="stylesheet" href="https://prduct.com/wp-content/themes/product-2026/style.css?v=b31c204c64" />
-  <link rel="preload" href="https://prduct.com/wp-content/themes/product-2026/assets/fonts/montserrat-regular.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="preload" href="https://prduct.com/wp-content/themes/product-2026/assets/fonts/montserrat-600.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="preload" href="https://prduct.com/wp-content/themes/product-2026/assets/fonts/montserrat-700.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="preload" href="fonts/montserrat-latin-var.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="styles.css?v=5" />
+  <link rel="stylesheet" href="journey/journey.css?v=1" />
 </head>
 <body class="wp-theme-product-2026 overflow-x-hidden font-montserrat bg-white text-slate-900">
   <header class="bg-slate-50">
@@ -79,36 +78,68 @@
             <li aria-current="page" class="font-medium text-slate-700">DPP readiness</li>
           </ol>
         </nav>
-        <div class="grid grid-cols-12 gap-7">
-          <div class="col-span-12 lg:col-span-7">
-            <p class="mb-2 text-xs font-bold uppercase tracking-wide text-violet-600 lg:text-sm">Furniture Digital Product Passport</p>
-            <h1 class="mb-3 max-w-[650px] text-xl font-bold text-slate-900 lg:text-2xl xl:text-3xl 2xl:text-4xl">How ready is your furniture business for the DPP?</h1>
-            <p class="font-regular max-w-[750px] text-sm text-slate-900 sm:mt-6 lg:text-base">EU ESPR is expected to require a Digital Product Passport for furniture from 2029 — composition, wood sourcing, hazardous substances, durability, carbon and end-of-life, reachable by QR. This assessment uses the same kind of operational facts as a readiness calculator, mapped to Prduct’s furniture data dimensions. Three minutes. Real answers. A timeline you can act on.</p>
-            <div class="mt-6 flex flex-wrap gap-3">
-              <a class="btn-primary px-6 py-2.5 text-xs lg:text-sm" href="#quiz">Start your readiness assessment</a>
-              <a class="btn-secondary px-6 py-2.5 text-xs lg:text-sm" href="https://prduct.com/digital-product-pass-dpp-directive">What is a DPP?</a>
-            </div>
-          </div>
-          <div class="col-span-12 lg:col-span-5">
-            <div class="rounded-2xl bg-violet-100 p-6 lg:p-8 h-full">
-              <p class="text-xs font-bold uppercase tracking-wide text-violet-700 mb-3">What we score</p>
-              <ul class="space-y-2 text-sm text-slate-900">
-                <li>Data availability — digital vs PDFs vs someone’s head</li>
-                <li>Supply chain reach — how many tiers you can actually name</li>
-                <li>Systems — ERP/PLM vs spreadsheets and email</li>
-                <li>Regulatory awareness — ESPR 2029 and EUDR overlap</li>
-                <li>Ownership — who owns DPP inside the company</li>
-                <li>Commercial intent — compliance cost or a sales advantage</li>
-              </ul>
-            </div>
+        <div>
+          <p class="mb-2 text-xs font-bold uppercase tracking-wide text-violet-600 lg:text-sm">Furniture Digital Product Passport</p>
+          <h1 class="mb-3 max-w-[650px] text-xl font-bold text-slate-900 lg:text-2xl xl:text-3xl 2xl:text-4xl">How ready is your furniture business for the DPP?</h1>
+          <p class="font-regular max-w-[750px] text-sm text-slate-900 sm:mt-6 lg:text-base">EU ESPR is expected to require a Digital Product Passport for furniture from 2029 — composition, wood sourcing, hazardous substances, durability, carbon and end-of-life, reachable by QR. This assessment uses the same kind of operational facts as a readiness calculator, mapped to Prduct’s furniture data dimensions. Three minutes. Real answers. A timeline you can act on.</p>
+          <div class="mt-6 flex flex-wrap gap-3">
+            <a class="btn-primary px-6 py-2.5 text-xs lg:text-sm" href="#quiz">Start your readiness assessment</a>
+            <a class="btn-secondary px-6 py-2.5 text-xs lg:text-sm" href="https://prduct.com/digital-product-pass-dpp-directive">What is a DPP?</a>
           </div>
         </div>
       </div>
     </section>
 
-    <section id="quiz" class="bg-violet-100">
-      <div class="container mx-auto px-4 py-10 md:py-16">
-        <div id="app"></div>
+    <section id="quiz" class="jr" data-mode="select" data-panel="right" aria-label="Product data journey">
+      <div class="jr-stage">
+        <div class="jr-media" aria-hidden="true">
+          <video preload="none" muted playsinline disablepictureinpicture></video>
+          <video preload="none" muted playsinline disablepictureinpicture></video>
+          <img class="jr-still" alt="" decoding="async" />
+          <img class="jr-still" alt="" decoding="async" />
+          <div class="jr-scrim"></div>
+        </div>
+        <div class="jr-select">
+          <header class="jr-select-head">
+            <p class="jr-kicker">Prduct · Product data journey</p>
+            <h2 class="jr-select-title">Choose the product you know best. <span>We’ll travel through it — and map what its data already knows.</span></h2>
+            <button type="button" class="jr-link jr-resume" hidden>Resume where you left off · <span></span></button>
+          </header>
+          <ul class="jr-worlds">
+            <li>
+              <button type="button" class="jr-world" data-branch="furniture" aria-label="Furniture — lounge chair">
+                <picture>
+                  <source type="image/avif" srcset="journey/media/furniture/company-960.avif?v=92952f6c94" />
+                  <img src="journey/media/furniture/company-960.webp?v=92952f6c94" alt="" style="object-position: 34% 58%" decoding="async" />
+                </picture>
+                <span class="jr-world-label"><span class="jr-world-industry">Furniture</span><span class="jr-world-object">Lounge chair</span></span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="jr-world" data-branch="battery" aria-label="Battery and e-mobility — e-bike battery">
+                <picture>
+                  <source type="image/avif" srcset="journey/media/battery/company-960.avif?v=0be6e3dfb6" />
+                  <img src="journey/media/battery/company-960.webp?v=0be6e3dfb6" alt="" style="object-position: 62% 45%" decoding="async" />
+                </picture>
+                <span class="jr-world-label"><span class="jr-world-industry">Battery &amp; e-mobility</span><span class="jr-world-object">E-bike battery</span></span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="jr-world" data-branch="textile" aria-label="Textiles and apparel — rain jacket">
+                <picture>
+                  <source type="image/avif" srcset="journey/media/textile/company-960.avif?v=ea61e90074" />
+                  <img src="journey/media/textile/company-960.webp?v=ea61e90074" alt="" style="object-position: 50% 40%" decoding="async" />
+                </picture>
+                <span class="jr-world-label"><span class="jr-world-industry">Textiles &amp; apparel</span><span class="jr-world-object">Rain jacket</span></span>
+              </button>
+            </li>
+          </ul>
+        </div>
+        <div class="jr-overlay"></div>
+        <div class="jr-panel"></div>
+        <nav class="jr-rail" aria-label="Product lifecycle"></nav>
+        <div class="jr-land" hidden></div>
+        <p class="jr-live jr-sr" aria-live="polite"></p>
       </div>
     </section>
   </main>
@@ -121,10 +152,11 @@
           <a class="hover:text-violet-700" href="https://prduct.com/contact">Contact</a>
           <a class="hover:text-violet-700" href="https://prduct.com/privacy-policy">Privacy</a>
           <a class="hover:text-violet-700" href="/inbox.html">Captured responses</a>
+          <a class="hover:text-violet-700" href="/classic.html">Classic assessment</a>
         </div>
       </div>
     </div>
   </footer>
-  <script src="app.js"></script>
+  <script type="module" src="journey/app.js?v=1"></script>
 </body>
 </html>

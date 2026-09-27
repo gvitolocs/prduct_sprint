@@ -4,6 +4,8 @@
 from __future__ import annotations
 
 import json
+import os
+import re
 from datetime import datetime, timezone
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -15,6 +17,14 @@ PORT = 8787
 
 
 class Handler(SimpleHTTPRequestHandler):
+    extensions_map = {
+        **SimpleHTTPRequestHandler.extensions_map,
+        ".avif": "image/avif",
+        ".webp": "image/webp",
+        ".mp4": "video/mp4",
+        ".js": "text/javascript",
+        ".json": "application/json",
+    }
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=str(ROOT), **kwargs)
 
@@ -22,8 +32,57 @@ class Handler(SimpleHTTPRequestHandler):
         print("[%s] %s" % (self.log_date_time_string(), fmt % args))
 
     def end_headers(self):
-        self.send_header("Cache-Control", "no-store")
+        # Journey media is content-addressed by build: cache hard. Everything else stays live.
+        if urlparse(self.path).path.startswith("/journey/media/"):
+            self.send_header("Cache-Control", "public, max-age=31536000, immutable")
+        else:
+            self.send_header("Cache-Control", "no-store")
+        self.send_header("Accept-Ranges", "bytes")
         super().end_headers()
+
+    def send_head(self):
+        """Serve byte ranges so browsers can stream and seek video (plain http.server cannot)."""
+        rng = self.headers.get("Range")
+        path = self.translate_path(self.path)
+        if not rng or not os.path.isfile(path):
+            return super().send_head()
+        m = re.match(r"bytes=(\d*)-(\d*)$", rng.strip())
+        size = os.path.getsize(path)
+        if not m or (not m.group(1) and not m.group(2)):
+            self.send_error(416)
+            return None
+        if m.group(1):
+            start = int(m.group(1))
+            end = int(m.group(2)) if m.group(2) else size - 1
+        else:
+            start, end = max(0, size - int(m.group(2))), size - 1
+        end = min(end, size - 1)
+        if start > end:
+            self.send_response(416)
+            self.send_header("Content-Range", f"bytes */{size}")
+            self.end_headers()
+            return None
+        f = open(path, "rb")
+        f.seek(start)
+        self.send_response(206)
+        self.send_header("Content-Type", self.guess_type(path))
+        self.send_header("Content-Range", f"bytes {start}-{end}/{size}")
+        self.send_header("Content-Length", str(end - start + 1))
+        self.end_headers()
+        self._range_left = end - start + 1
+        return f
+
+    def copyfile(self, source, outputfile):
+        left = getattr(self, "_range_left", None)
+        if left is None:
+            return super().copyfile(source, outputfile)
+        self._range_left = None
+        while left > 0:
+            chunk = source.read(min(65536, left))
+            if not chunk:
+                break
+            outputfile.write(chunk)
+            left -= len(chunk)
 
     def do_GET(self):
         path = urlparse(self.path).path
@@ -91,7 +150,8 @@ class Handler(SimpleHTTPRequestHandler):
 
 
 if __name__ == "__main__":
-    httpd = ThreadingHTTPServer(("127.0.0.1", PORT), Handler)
-    print(f"Assessment running at http://127.0.0.1:{PORT}/")
-    print(f"Inbox: http://127.0.0.1:{PORT}/inbox.html")
+    port = int(os.environ.get("PORT", PORT))
+    httpd = ThreadingHTTPServer(("127.0.0.1", port), Handler)
+    print(f"Assessment running at http://127.0.0.1:{port}/")
+    print(f"Inbox: http://127.0.0.1:{port}/inbox.html")
     httpd.serve_forever()

@@ -165,7 +165,7 @@ function nextWhy(id, signals) {
   return `Making ${label} reliable next closes the most visible fracture in the landscape.`;
 }
 
-function firstMove(id) {
+export function firstMove(id) {
   const moves = {
     supplierDataQuality:
       "Require one enforceable supplier data field for your top material family.",

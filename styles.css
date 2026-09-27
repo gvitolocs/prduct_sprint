@@ -1,7 +1,49 @@
+/* Montserrat, self-hosted (OFL). prduct.com does not send CORS headers for its
+   theme fonts, so on any other origin they are blocked and the page fell back
+   to a system font. This keeps the PRDUCT typography on every origin. */
+@font-face {
+  font-family: "Prduct Montserrat";
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url(fonts/montserrat-latin-var.woff2) format("woff2");
+}
+/* A distinct family name: a same-named face that fails to load (the theme's) would
+   otherwise send the browser to the fallback font instead of this one. */
+/* prduct.com's theme CSS (kept for the header and hero) declares Montserrat 400-800 from its own
+   origin; those requests are CORS-blocked here. Same descriptors, declared later, win the match,
+   so the browser uses the self-hosted file and never requests the blocked ones. */
+@font-face { font-family: Montserrat; font-style: normal; font-weight: 400; font-display: swap; src: url(fonts/montserrat-latin-var.woff2) format("woff2"); }
+@font-face { font-family: Montserrat; font-style: normal; font-weight: 500; font-display: swap; src: url(fonts/montserrat-latin-var.woff2) format("woff2"); }
+@font-face { font-family: Montserrat; font-style: normal; font-weight: 600; font-display: swap; src: url(fonts/montserrat-latin-var.woff2) format("woff2"); }
+@font-face { font-family: Montserrat; font-style: normal; font-weight: 700; font-display: swap; src: url(fonts/montserrat-latin-var.woff2) format("woff2"); }
+@font-face { font-family: Montserrat; font-style: normal; font-weight: 800; font-display: swap; src: url(fonts/montserrat-latin-var.woff2) format("woff2"); }
+@font-face { font-family: Montserrat; font-style: italic; font-weight: 400; font-display: swap; src: url(fonts/montserrat-latin-var.woff2) format("woff2"); }
+@font-face { font-family: Montserrat; font-style: italic; font-weight: 500; font-display: swap; src: url(fonts/montserrat-latin-var.woff2) format("woff2"); }
+@font-face { font-family: Montserrat; font-style: italic; font-weight: 600; font-display: swap; src: url(fonts/montserrat-latin-var.woff2) format("woff2"); }
+@font-face { font-family: Montserrat; font-style: italic; font-weight: 700; font-display: swap; src: url(fonts/montserrat-latin-var.woff2) format("woff2"); }
+@font-face { font-family: Montserrat; font-style: italic; font-weight: 800; font-display: swap; src: url(fonts/montserrat-latin-var.woff2) format("woff2"); }
+.font-montserrat, body { font-family: "Prduct Montserrat", Montserrat, system-ui, sans-serif; }
+#quiz {
+  scroll-margin-top: 12px;
+  min-height: 100vh;
+  min-height: 100svh;
+}
+.quiz-arrive {
+  animation: quiz-arrive 0.75s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes quiz-arrive {
+  from { opacity: 0; transform: translateY(28px); }
+  to { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .quiz-arrive { animation: none; }
+}
 .progress-track { height: 6px; background: #e2e8f0; border-radius: 999px; overflow: hidden; }
 .progress-track span { display: block; height: 100%; background: #7c3aed; transition: width .25s ease; }
 .choice {
-  width: 100%; text-align: left; cursor: pointer;
+  width: 100%; max-width: 100%; box-sizing: border-box;
+  text-align: left; cursor: pointer;
   border: 1px solid #cbd5e1; background: #fff; color: #0f172a;
   border-radius: 1rem; padding: 1rem 1.1rem; font: inherit;
 }
@@ -9,7 +51,135 @@
 .choice.is-on { border-color: #5b20b6; background: #ede9fe; box-shadow: inset 0 0 0 1px #5b20b6; }
 .choice .k { font-weight: 700; display: block; }
 .choice .s { font-size: .85rem; color: #475569; margin-top: .15rem; display: block; }
-.quiz-card { background: #fff; border-radius: 1rem; padding: 1.5rem; }
+.max-w-3xl {
+  max-width: 48rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+.quiz-card {
+  background: #fff;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  overflow: hidden;
+}
+.paywall {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  max-width: 72rem;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: 1rem;
+  overflow: hidden;
+}
+.paywall-form { padding: 1.5rem 1.75rem 1.75rem; }
+.paywall-peek {
+  position: relative;
+  min-height: 28rem;
+  background: linear-gradient(165deg, #ede9fe 0%, #f0fdfa 48%, #f8fafc 100%);
+  overflow: hidden;
+}
+.paywall-blur {
+  padding: 2rem 1.75rem;
+  filter: blur(11px);
+  transform: scale(1.06);
+  pointer-events: none;
+  user-select: none;
+}
+.paywall-kicker {
+  font-size: .7rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: #6d28d9;
+  margin: 0;
+}
+.paywall-fake-title {
+  margin: .35rem 0 1.1rem;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+.pie-wrap {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  margin: 0 auto 1.1rem;
+}
+.pie {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: conic-gradient(
+    #8b5cf6 0 40%,
+    #2dd4bf 40% 65%,
+    #f59e0b 65% 80%,
+    #3b82f6 80% 95%,
+    #f43f5e 95% 100%
+  );
+}
+.pie-hole {
+  position: absolute;
+  inset: 28%;
+  border-radius: 50%;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #0f172a;
+}
+.pie-hole span { font-size: 1.35rem; font-weight: 800; line-height: 1; }
+.pie-hole small { font-size: .65rem; font-weight: 600; color: #64748b; text-transform: uppercase; }
+.pie-legend {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: .8rem;
+  font-weight: 600;
+  color: #334155;
+  display: grid;
+  gap: .35rem;
+}
+.pie-legend i {
+  display: inline-block;
+  width: .65rem;
+  height: .65rem;
+  border-radius: 999px;
+  margin-right: .45rem;
+  vertical-align: middle;
+}
+.paywall-stat {
+  margin: 1rem 0 0;
+  font-size: .85rem;
+  font-weight: 700;
+  color: #5b20b6;
+}
+.paywall-frost {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(255,255,255,.55) 0%, rgba(255,255,255,.12) 42%, rgba(237,233,254,.35) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.paywall-lock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .45rem;
+  color: #0f172a;
+  background: rgba(255,255,255,.82);
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  padding: .85rem 1.15rem;
+  font-size: .8rem;
+  font-weight: 700;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, .08);
+}
+@media (max-width: 900px) {
+  .paywall { grid-template-columns: 1fr; }
+  .paywall-peek { min-height: 18rem; }
+}
 input.pr-input, select.pr-input {
   width: 100%; border: 1px solid #cbd5e1; border-radius: .75rem;
   padding: .75rem .9rem; font: inherit; color: #0f172a; background: #fff;

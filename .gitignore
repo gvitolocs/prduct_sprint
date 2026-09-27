@@ -4,3 +4,4 @@ submissions.jsonl
 __pycache__
 .DS_Store
 ._*
+.codevira-cache/

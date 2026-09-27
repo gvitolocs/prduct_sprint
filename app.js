@@ -239,7 +239,7 @@ function render() {
   if (state.i < 0) {
     root.innerHTML = "";
     root.appendChild(el(`
-      <div class="quiz-card max-w-3xl">
+      <div class="quiz-card max-w-3xl quiz-arrive">
         <p class="text-xs font-bold uppercase tracking-wide text-violet-600">3-minute assessment · 12 questions</p>
         <h2 class="mt-2 text-xl font-bold text-slate-900 lg:text-2xl">Tell us how the data actually works today</h2>
         <p class="mt-3 text-sm text-slate-700 lg:text-base">Not a personality quiz pretending to be compliance. We ask the same operational facts used to estimate DPP timelines — then we lock the result behind name, email and company, so Prduct gets a real picture of the account.</p>
@@ -265,8 +265,7 @@ function render() {
       </div>
       <div class="progress-track mb-6"><span style="width:${pct}%"></span></div>
       <div class="quiz-card">
-        <h2 class="text-lg font-bold text-slate-900 lg:text-2xl">${q.title}</h2>
-        <p class="mt-2 mb-5 text-sm text-slate-600">${q.hint}</p>
+        <h2 class="mb-5 text-lg font-bold text-slate-900 lg:text-2xl">${q.title}</h2>
         <div class="grid gap-3" id="opts"></div>
         <div class="mt-6 flex items-center justify-between">
           <button class="btn-secondary px-5 py-2 text-xs" type="button" id="back">${state.i === 0 ? "Back" : "Previous"}</button>
@@ -294,31 +293,57 @@ function render() {
 function renderLead(root) {
   root.innerHTML = "";
   root.appendChild(el(`
-    <div class="max-w-xl quiz-card">
-      <p class="text-xs font-bold uppercase tracking-wide text-violet-600">Last step · so we can send your timeline</p>
-      <h2 class="mt-2 text-xl font-bold text-slate-900">See your furniture DPP timeline</h2>
-      <p class="mt-2 mb-5 text-sm text-slate-600">Same gate as a serious readiness tool: we need a real person and company before we show the estimate. No result without this.</p>
-      <form class="grid gap-4" id="lead">
-        <div class="grid gap-4 sm:grid-cols-2">
-          <div><label class="mb-1 block text-xs font-bold uppercase tracking-wide text-slate-500">First name</label><input class="pr-input" name="firstName" required /></div>
-          <div><label class="mb-1 block text-xs font-bold uppercase tracking-wide text-slate-500">Last name</label><input class="pr-input" name="lastName" required /></div>
+    <div class="paywall">
+      <div class="paywall-form">
+        <p class="text-xs font-bold uppercase tracking-wide text-violet-600">Last step · so we can send your timeline</p>
+        <h2 class="mt-2 text-xl font-bold text-slate-900">See your furniture DPP timeline</h2>
+        <p class="mt-2 mb-5 text-sm text-slate-600">Unlock the blurred result — name, email and company. No result without this.</p>
+        <form class="grid gap-4" id="lead">
+          <div class="grid gap-4 sm:grid-cols-2">
+            <div><label class="mb-1 block text-xs font-bold uppercase tracking-wide text-slate-500">First name</label><input class="pr-input" name="firstName" required /></div>
+            <div><label class="mb-1 block text-xs font-bold uppercase tracking-wide text-slate-500">Last name</label><input class="pr-input" name="lastName" required /></div>
+          </div>
+          <div><label class="mb-1 block text-xs font-bold uppercase tracking-wide text-slate-500">Work email</label><input class="pr-input" name="email" type="email" required /></div>
+          <div><label class="mb-1 block text-xs font-bold uppercase tracking-wide text-slate-500">Company</label><input class="pr-input" name="company" required /></div>
+          <div><label class="mb-1 block text-xs font-bold uppercase tracking-wide text-slate-500">Role</label>
+            <select class="pr-input" name="role" required>
+              <option value="">Select</option>
+              <option>Sustainability / ESG</option>
+              <option>Compliance / legal</option>
+              <option>Product / PIM</option>
+              <option>Purchasing</option>
+              <option>IT</option>
+              <option>Leadership</option>
+            </select>
+          </div>
+          <p class="err" id="err"></p>
+          <button class="btn-primary px-6 py-2.5 text-sm" type="submit">Show my results</button>
+        </form>
+      </div>
+      <div class="paywall-peek" aria-hidden="true">
+        <div class="paywall-blur">
+          <p class="paywall-kicker">Your readiness mix</p>
+          <p class="paywall-fake-title">Pilot-ready manufacturer</p>
+          <div class="pie-wrap">
+            <div class="pie"></div>
+            <div class="pie-hole"><span>14</span><small>months</small></div>
+          </div>
+          <ul class="pie-legend">
+            <li><i style="background:#8b5cf6"></i> Implementation · 40%</li>
+            <li><i style="background:#2dd4bf"></i> Pilot · 25%</li>
+            <li><i style="background:#f59e0b"></i> Preparation · 15%</li>
+            <li><i style="background:#3b82f6"></i> Understanding · 15%</li>
+            <li><i style="background:#f43f5e"></i> Exploration · 5%</li>
+          </ul>
+          <p class="paywall-stat">12–18 month timeline · 62 / 100</p>
         </div>
-        <div><label class="mb-1 block text-xs font-bold uppercase tracking-wide text-slate-500">Work email</label><input class="pr-input" name="email" type="email" required /></div>
-        <div><label class="mb-1 block text-xs font-bold uppercase tracking-wide text-slate-500">Company</label><input class="pr-input" name="company" required /></div>
-        <div><label class="mb-1 block text-xs font-bold uppercase tracking-wide text-slate-500">Role</label>
-          <select class="pr-input" name="role" required>
-            <option value="">Select</option>
-            <option>Sustainability / ESG</option>
-            <option>Compliance / legal</option>
-            <option>Product / PIM</option>
-            <option>Purchasing</option>
-            <option>IT</option>
-            <option>Leadership</option>
-          </select>
+        <div class="paywall-frost">
+          <div class="paywall-lock">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M8 11V8a4 4 0 0 1 8 0v3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            <span>Unlock to see your score</span>
+          </div>
         </div>
-        <p class="err" id="err"></p>
-        <button class="btn-primary px-6 py-2.5 text-sm" type="submit">Show my results</button>
-      </form>
+      </div>
     </div>`));
   root.querySelector("#lead").onsubmit = async (e) => {
     e.preventDefault();
@@ -406,4 +431,80 @@ function renderResult(root, scores) {
     </div>`));
 }
 
+function quizScrollTop() {
+  const quiz = document.getElementById("quiz");
+  if (!quiz) return 0;
+  const scroller = document.scrollingElement || document.documentElement;
+  return Math.max(0, Math.round(quiz.getBoundingClientRect().top + scroller.scrollTop - 8));
+}
+
+function prepareQuizFocus() {
+  const quiz = document.getElementById("quiz");
+  if (!quiz) return;
+  const view = window.innerHeight || 800;
+  quiz.style.minHeight = view + "px";
+  const needed = quiz.offsetTop + view + 48;
+  document.documentElement.style.minHeight = needed + "px";
+  document.body.style.minHeight = needed + "px";
+}
+
+function animateScrollTo(target, duration) {
+  const scroller = document.scrollingElement || document.documentElement;
+  const start = scroller.scrollTop;
+  const dist = target - start;
+  if (Math.abs(dist) < 4) return;
+  const t0 = performance.now();
+  const ease = (t) => 1 - Math.pow(1 - t, 3);
+  const prev = document.documentElement.style.scrollBehavior;
+  document.documentElement.style.scrollBehavior = "auto";
+  function frame(now) {
+    const p = Math.min(1, (now - t0) / duration);
+    scroller.scrollTop = start + dist * ease(p);
+    window.scrollTo(0, start + dist * ease(p));
+    if (p < 1) requestAnimationFrame(frame);
+    else document.documentElement.style.scrollBehavior = prev;
+  }
+  requestAnimationFrame(frame);
+}
+
+function whenPageReady(fn) {
+  const run = () => {
+    const kick = () => requestAnimationFrame(() => requestAnimationFrame(fn));
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(kick, kick);
+    else kick();
+  };
+  if (document.readyState === "complete") run();
+  else window.addEventListener("load", run, { once: true });
+}
+
+function focusQuizOnOpen() {
+  const quiz = document.getElementById("quiz");
+  if (!quiz) return;
+
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (location.hash === "#quiz") {
+    history.replaceState(null, "", location.pathname + location.search);
+  }
+
+  whenPageReady(() => {
+    prepareQuizFocus();
+    const scroller = document.scrollingElement || document.documentElement;
+    scroller.scrollTop = 0;
+
+    const move = () => {
+      prepareQuizFocus();
+      const target = quizScrollTop();
+      if (reduce) {
+        scroller.scrollTop = target;
+        return;
+      }
+      const duration = Math.min(1500, Math.max(850, target * 0.9));
+      animateScrollTo(target, duration);
+    };
+
+    window.setTimeout(move, reduce ? 0 : 450);
+  });
+}
+
 render();
+focusQuizOnOpen();
