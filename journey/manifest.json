@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-09-27T23:46:37",
+  "generated": "2026-09-28T06:55:41",
   "stages": [
     "company",
     "product",
@@ -107,7 +107,7 @@
           "panel": "left",
           "alt": "The prduct.com QR code laser-etched into the oak",
           "hotspot": [
-            77.6,
+            79.2,
             50.0
           ],
           "hotspotSide": "right"
@@ -382,14 +382,15 @@
             1920,
             960
           ],
-          "rev": "6a90a8aa6c",
-          "focus": "50% 55%",
+          "rev": "bcfcce35b6",
+          "focus": "60% 50%",
           "panel": "left",
-          "alt": "A scanner reads the etched code on a finished pack at the end-of-line station",
+          "alt": "The prduct.com QR code laser-marked into the battery pack's black casing",
           "hotspot": [
-            51.5,
-            57
-          ]
+            79.2,
+            50.0
+          ],
+          "hotspotSide": "right"
         },
         "passport": {
           "base": "media/battery/passport",
@@ -397,13 +398,13 @@
             1920,
             960
           ],
-          "rev": "3fdf3d705d",
+          "rev": "a21b3d55f4",
           "focus": "50% 50%",
           "panel": "left",
-          "alt": "A mechanic's phone at the code on the bike's battery",
+          "alt": "A mechanic's phone at the QR code marked on the bike's battery",
           "hotspot": [
-            54.7,
-            36
+            54.8,
+            36.6
           ]
         },
         "nextLife": {
@@ -527,7 +528,7 @@
             "1080",
             "540"
           ],
-          "rev": "3326deddda",
+          "rev": "2174c053fd",
           "codecs": [
             "av1",
             "h264"
@@ -544,7 +545,7 @@
             "1080",
             "540"
           ],
-          "rev": "570aca35fe",
+          "rev": "e432c3f9c9",
           "codecs": [
             "av1",
             "h264"
@@ -561,7 +562,7 @@
             "1080",
             "540"
           ],
-          "rev": "d00f27e7d8",
+          "rev": "072e6bbe8e",
           "codecs": [
             "av1",
             "h264"
@@ -661,14 +662,15 @@
             1920,
             960
           ],
-          "rev": "510116b174",
-          "focus": "50% 55%",
+          "rev": "1b8510ba96",
+          "focus": "60% 50%",
           "panel": "left",
-          "alt": "A scanner reads the care label code inside the collar",
+          "alt": "The prduct.com QR code printed on the jacket's woven care label",
           "hotspot": [
-            47.5,
-            58
-          ]
+            79.2,
+            50.0
+          ],
+          "hotspotSide": "right"
         },
         "passport": {
           "base": "media/textile/passport",
@@ -676,13 +678,13 @@
             1920,
             960
           ],
-          "rev": "1b0fd05999",
+          "rev": "a872f54a9d",
           "focus": "50% 45%",
           "panel": "left",
-          "alt": "A customer's phone at the jacket's label in a store",
+          "alt": "A customer's phone at the QR code on the jacket's collar label",
           "hotspot": [
-            51,
-            49
+            50.8,
+            48.9
           ]
         },
         "nextLife": {
@@ -806,7 +808,7 @@
             "1080",
             "540"
           ],
-          "rev": "77a155ca08",
+          "rev": "5489fd747b",
           "codecs": [
             "av1",
             "h264"
@@ -823,7 +825,7 @@
             "1080",
             "540"
           ],
-          "rev": "dc41723b6c",
+          "rev": "80eba612a4",
           "codecs": [
             "av1",
             "h264"
@@ -840,7 +842,7 @@
             "1080",
             "540"
           ],
-          "rev": "701dcf24a5",
+          "rev": "c505116fb0",
           "codecs": [
             "av1",
             "h264"

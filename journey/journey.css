@@ -138,6 +138,13 @@
 }
 .jr-ov.is-left .jr-ov-card { left: auto; right: 42px; }
 .jr-ov.is-left .jr-ov-card::before { left: auto; right: -27px; }
+/* Narrower desktops: a slimmer card sits closer to its hotspot, so it clears the code it describes. */
+@media (max-width: 1280px) {
+  .jr-ov-card { left: 30px; width: 204px; padding: 10px 12px 8px; }
+  .jr-ov-card::before { left: -15px; width: 15px; }
+  .jr-ov.is-left .jr-ov-card { right: 30px; }
+  .jr-ov.is-left .jr-ov-card::before { right: -15px; }
+}
 .jr-ov-kicker { margin: 0 0 6px; font-size: 9.5px; font-weight: 600; letter-spacing: 0.17em; text-transform: uppercase; color: var(--jr-ink-3); }
 .jr-ov-title { margin: -2px 0 8px; font-size: 14px; font-weight: 600; }
 .jr-ov-card ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 5px; }
