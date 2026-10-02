@@ -61,7 +61,7 @@
     // the right password (HttpOnly: this page never holds the password). Every value from the form is escaped.
     const $ = (id) => document.getElementById(id);
     const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
-    const QR = { "demosprint.vercel.app": "inbox-qr-vercel.svg", "nezopt.tail75dcfc.ts.net:8443": "inbox-qr-tailnet.svg" };
+    const QR = { "nezopt.tail75dcfc.ts.net:8443": "inbox-qr-tailnet.svg" };
 
     function rowsHtml(list) {
       return list.slice().reverse().map((s) => {

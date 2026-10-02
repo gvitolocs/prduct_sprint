@@ -8,10 +8,9 @@ This is the code for Friday. It is on `main`. The film at the top of the reposit
 
 | | |
 | --- | --- |
-| Page | https://demosprint.vercel.app |
 | Repository | https://github.com/gvitolocs/prduct_sprint |
 | Branch | `main` |
-| Film | [`docs/github/journey.mp4`](../docs/github/journey.mp4) — also playing on the repository home |
+| Film | [`docs/github/journey.mp4`](../docs/github/journey.mp4) — on the repository home. A pull also brings `journey/media/`, which is what the page plays. |
 
 ## How to run it
 

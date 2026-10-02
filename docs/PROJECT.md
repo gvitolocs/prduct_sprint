@@ -2,8 +2,8 @@
 
 2 Oct 2026. This is the document to load before changing the sprint build.
 The page is a prototype, not a Prduct product. The code is on `main` of
-https://github.com/gvitolocs/prduct_sprint. The live page is
-https://demosprint.vercel.app.
+https://github.com/gvitolocs/prduct_sprint. A pull includes `journey/media/`,
+which is what the page plays, and `docs/github/journey.mp4`, the walkthrough.
 
 Read this first. Then read the file named in the section you are changing.
 Do not invent a second assessment, a visible score, or a furniture due date.
@@ -36,7 +36,7 @@ browser loads ES modules.
 | Result | Assembled from the journey state | `journey/landscape.js`, `journey/dashboard-view.js` |
 | Camera | Stills (AVIF/WebP) and clips (AV1 with H.264 fallback), listed in `journey/manifest.json` | `journey/stage.js`, `journey/media.js`, `journey/media/` |
 | Local server | Python 3, `ThreadingHTTPServer`, HTTP range requests so video can seek | `server.py` |
-| Deployed API | Vercel serverless, same inbox contract | `api/inbox.js`, `api/session.js`, `api/_auth.js` |
+| API | Same inbox contract as the local server | `api/inbox.js`, `api/session.js`, `api/_auth.js` |
 | Tests | `node --test`, no test runner dependency | `pathfinder/tests/*.test.mjs` |
 | Type | Montserrat, a Latin subset shipped in `fonts/`. No fallback font for missing glyphs. | `styles.css` |
 
