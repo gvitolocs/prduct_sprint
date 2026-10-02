@@ -47,7 +47,9 @@ export class Stage {
     cur.style.zIndex = "2";
     next.classList.add("is-on");
     if (fade) await wait(440);
-    cur.classList.remove("is-on");
+    // The old still is fully covered now: hide it at once. Fading it out after the z-index reset (equal
+    // z-index, DOM order) put it back on top of the new one on every other back step.
+    cur.classList.remove("is-fading", "is-on");
     next.style.zIndex = "";
     cur.style.zIndex = "";
     this.front = 1 - this.front;

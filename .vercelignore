@@ -1,0 +1,11 @@
+# Internal files that must not be published with the site (vercel deploy uploads the working tree).
+/docs
+/_handoff
+/tools
+/server.py
+/README.md
+/submissions.jsonl
+/.codevira-cache
+/pathfinder/tests
+/inbox-qr-tailnet.svg
+/.playwright-cli

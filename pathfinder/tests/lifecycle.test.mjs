@@ -107,6 +107,7 @@ describe("lifecycle journey", () => {
   it("made-to-order is a furniture-only answer that flags the identity caveat", () => {
     let f = createJourney({ branch: "furniture" });
     f = answerJourney(f, "leadership");
+    f = answerJourney(f, "contract"); // sales.channel: the furniture core asks who buys the chair first
     assert.ok(getJourneySituation(f).options.some((o) => o.id === "made-to-order"));
     f = answerJourney(f, "made-to-order");
     assert.ok(f.flags.includes("made-to-order"));

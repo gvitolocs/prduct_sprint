@@ -1,4 +1,5 @@
 import { readFileSync, writeFileSync } from "node:fs";
+import { authorized } from "./_auth.js";
 
 const FILE = "/tmp/prduct-submissions.json";
 
@@ -21,6 +22,8 @@ function persist(list) {
     /* ignore ephemeral fs errors */
   }
 }
+
+// Reading the list needs the inbox session (or the password): see _auth.js. Posting a lead stays open.
 
 function json(res, status, body) {
   res.statusCode = status;
@@ -48,6 +51,7 @@ function readBody(req) {
 export default async function handler(req, res) {
   const list = store();
   if (req.method === "GET") {
+    if (!authorized(req)) return json(res, 401, { ok: false, error: "password required" });
     return json(res, 200, { ok: true, count: list.length, submissions: list });
   }
   if (req.method !== "POST") {

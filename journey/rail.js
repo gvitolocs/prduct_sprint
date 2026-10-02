@@ -17,8 +17,8 @@ export class Rail {
         .map(
           (id, i) => `<li class="jr-stop" style="--i:${i}" data-stage="${id}" data-state="future">
             <button type="button" class="jr-stop-btn" tabindex="-1" aria-disabled="true">
-              <span class="jr-stop-name">${labels[id]}</span>
               <span class="jr-stop-mark" aria-hidden="true"></span>
+              <span class="jr-stop-name">${labels[id]}</span>
             </button>
           </li>`
         )

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated": "2026-09-28T06:55:41",
+  "generated": "2026-09-30T09:37:46",
   "stages": [
     "company",
     "product",
@@ -58,10 +58,10 @@
             1920,
             960
           ],
-          "rev": "cd5050ef08",
-          "focus": "35% 55%",
+          "rev": "22c663d90b",
+          "focus": "30% 55%",
           "panel": "right",
-          "alt": "The chair taken apart: its oak leg frames, rails, bolts and cushions float apart"
+          "alt": "The lounge chair opened up: cushions off, black webbing and foam showing, a tray of bolts and nuts on the rug"
         },
         "supplier": {
           "base": "media/furniture/supplier",
@@ -69,10 +69,10 @@
             1920,
             960
           ],
-          "rev": "6876c728d1",
-          "focus": "30% 55%",
+          "rev": "6a5e7392d1",
+          "focus": "35% 60%",
           "panel": "right",
-          "alt": "One oak leg frame from the chair, on its own: legs, back stile, armrest and side rail"
+          "alt": "Felled oak logs piled beside a misty forest road, small tags on their cut ends"
         },
         "logistics": {
           "base": "media/furniture/logistics",
@@ -80,10 +80,10 @@
             1920,
             960
           ],
-          "rev": "3f694d02c0",
-          "focus": "35% 55%",
+          "rev": "6f88f83264",
+          "focus": "40% 60%",
           "panel": "right",
-          "alt": "The leg frame arrives in the factory that makes it"
+          "alt": "Strapped bundles of oak boards on pallets in the factory's loading bay, a truck and a forklift behind"
         },
         "factory": {
           "base": "media/furniture/factory",
@@ -91,10 +91,10 @@
             1920,
             960
           ],
-          "rev": "0f2d7d5a1c",
-          "focus": "60% 55%",
+          "rev": "a3d3026e22",
+          "focus": "62% 55%",
           "panel": "left",
-          "alt": "The leg frame on the table of a laser marking station"
+          "alt": "A flatbed laser engraver in the chair factory, oak rails on its bed under the laser head"
         },
         "data": {
           "base": "media/furniture/data",
@@ -180,7 +180,7 @@
             "1080",
             "540"
           ],
-          "rev": "9125c9489c",
+          "rev": "258b63bd60",
           "codecs": [
             "av1",
             "h264"
@@ -197,14 +197,14 @@
             "1080",
             "540"
           ],
-          "rev": "21f1158f88",
+          "rev": "796ff5ebe8",
           "codecs": [
             "av1",
             "h264"
           ],
-          "frames": 97,
+          "frames": 49,
           "fps": 24,
-          "duration": 4.042,
+          "duration": 2.042,
           "cue": 0.8,
           "poster": "media/furniture/component"
         },
@@ -214,7 +214,7 @@
             "1080",
             "540"
           ],
-          "rev": "b393bc6d50",
+          "rev": "5d3bdd02f0",
           "codecs": [
             "av1",
             "h264"
@@ -231,14 +231,14 @@
             "1080",
             "540"
           ],
-          "rev": "97d7d28f25",
+          "rev": "359e5ed652",
           "codecs": [
             "av1",
             "h264"
           ],
-          "frames": 97,
+          "frames": 49,
           "fps": 24,
-          "duration": 4.042,
+          "duration": 2.042,
           "cue": 0.8,
           "poster": "media/furniture/logistics"
         },
@@ -248,7 +248,7 @@
             "1080",
             "540"
           ],
-          "rev": "5c887e7442",
+          "rev": "e239557914",
           "codecs": [
             "av1",
             "h264"

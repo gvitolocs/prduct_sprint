@@ -5,20 +5,50 @@
  * coordinates) through the same object-fit: cover mapping the viewport uses.
  */
 
-import { buildDppPlate } from "../pathfinder/calculator-bridge.js";
+import { PLATE_LABELS } from "../pathfinder/dashboard.js";
 import { esc } from "./panel.js";
 
-const PLATE_LABELS = {
-  furniture: { composition: "Material composition", origin: "Wood origin & legality", hazards: "Substances in finishes & foam", durability: "Durability & spare parts", carbon: "Carbon footprint", endOfLife: "Disassembly & end of life" },
-  battery: { composition: "Chemistry & raw materials", origin: "Supply-chain due diligence", hazards: "Hazardous substances", durability: "State of health", carbon: "Carbon footprint", endOfLife: "Recycled content & end of life" },
-  textile: { composition: "Fibre composition", origin: "Where each step was made", hazards: "Substances of concern", durability: "Durability & repair", carbon: "Environmental footprint", endOfLife: "Recyclability & take-back" }
-};
-const STATUS = { verified: "verified", hairline: "claimed", absent: "missing" };
+/**
+ * The passport card at the passport stop: what a passport can carry and at which level — no status per field.
+ * Furniture rows from the Commission's draft data-needs table (22 September 2026, not yet requirements).
+ */
+export const PASSPORT_CARD = Object.freeze({
+  furniture: {
+    kicker: "Furniture passport · draft fields",
+    rows: [
+      ["Materials per component", "model"],
+      ["Substances of concern", "component / batch"],
+      ["Care, repair & spare parts", "model"],
+      ["Disassembly & end of life", "model"],
+      ["Wood species, country, DDS reference", "batch"]
+    ],
+    foot: "Commission draft, 22 Sept 2026 — not yet requirements"
+  },
+  battery: {
+    kicker: "Battery passport · from 18 Feb 2027",
+    rows: Object.values(PLATE_LABELS.battery).map((l) => [l, "per battery"]),
+    foot: "EU Battery Regulation, Annex XIII"
+  },
+  textile: {
+    kicker: "Textile passport · fields to be set",
+    rows: Object.values(PLATE_LABELS.textile).map((l) => [l, "act decides"]),
+    foot: "ESPR textile rules planned for 2027 — not yet law"
+  }
+});
+
+/** "This code connects to" rows on the data stop: each row reads the first answered scenario of `from`. */
+export const DATA_ROWS = Object.freeze([
+  { label: "Batch", from: ["logistics.handoff"] },
+  { label: "Work order", from: ["factory.evidence"] },
+  { label: "Source evidence", from: ["supplier.proof", "supplier.depth"] },
+  { label: "Bill of materials", from: ["component.bom"] }
+]);
 
 function answer(state, id) {
   return state.history.find((h) => h.scenarioId === id) || null;
 }
-const level = (h) => (!h ? "unknown" : h.strength >= 3 ? "linked" : h.strength === 2 ? "partial" : "missing");
+const level = (h) =>
+  !h ? "unknown" : h.flags?.includes("not-applicable") ? "open" : h.strength >= 3 ? "linked" : h.strength === 2 ? "partial" : "missing";
 
 /** Map an image-space hotspot (0-100 %) to viewport pixels for object-fit: cover. */
 function place(el, hotspot, focus) {
@@ -59,12 +89,7 @@ export class Overlays {
     const [x, y, W] = place(this.root, anchor.hotspot, focus);
     let html = "";
     if (stage === "data") {
-      const rows = [
-        ["Batch", level(answer(state, "logistics.handoff"))],
-        ["Work order", level(answer(state, "factory.evidence"))],
-        ["Source evidence", level(answer(state, "supplier.proof") || answer(state, "supplier.depth"))],
-        ["Bill of materials", level(answer(state, "component.bom"))]
-      ];
+      const rows = DATA_ROWS.map((r) => [r.label, level(r.from.map((id) => answer(state, id)).find(Boolean))]);
       const right = anchor.hotspotSide ? anchor.hotspotSide === "right" : x < W * 0.62;
       html = `<div class="jr-ov jr-ov-trace${right ? "" : " is-left"}" style="left:${x}px;top:${y}px" aria-hidden="true">
         <span class="jr-ov-reticle"></span>
@@ -76,17 +101,15 @@ export class Overlays {
         </div>
       </div>`;
     } else if (stage === "passport") {
-      const plate = buildDppPlate(state);
-      const labels = PLATE_LABELS[branch] || PLATE_LABELS.furniture;
+      const card = PASSPORT_CARD[branch] || PASSPORT_CARD.furniture;
       const right = anchor.hotspotSide ? anchor.hotspotSide === "right" : x < W * 0.55;
       html = `<div class="jr-ov jr-ov-passport${right ? "" : " is-left"}" style="left:${x}px;top:${y}px" aria-hidden="true">
         <span class="jr-ov-reticle"></span>
         <div class="jr-ov-card">
-          <p class="jr-ov-kicker">Prduct passport · today</p>
+          <p class="jr-ov-kicker">${esc(card.kicker)}</p>
           <p class="jr-ov-title">${esc(state.branch === "furniture" ? "Lounge chair" : state.branch === "battery" ? "E-bike battery" : "Rain jacket")}</p>
-          <ul>${plate.rows
-            .map((r) => `<li data-v="${r.status}"><span>${esc(labels[r.id] || r.label)}</span><em>${STATUS[r.status]}</em></li>`)
-            .join("")}</ul>
+          <ul>${card.rows.map(([k, v]) => `<li data-v="level"><span>${esc(k)}</span><em>${esc(v)}</em></li>`).join("")}</ul>
+          <p class="jr-ov-foot">${esc(card.foot)}</p>
         </div>
       </div>`;
     }

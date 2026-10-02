@@ -1,5 +1,8 @@
 {
   "name": "demosprint",
   "private": true,
-  "type": "module"
+  "type": "module",
+  "scripts": {
+    "test": "node --test pathfinder/tests/*.test.mjs"
+  }
 }

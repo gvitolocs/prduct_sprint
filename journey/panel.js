@@ -20,6 +20,8 @@ export class Panel {
   async show(sit, { remembered = null, canBack = true, kicker = "" } = {}) {
     const id = `jr-q-${sit.id.replace(/\W/g, "-")}`;
     const grid = sit.interaction === "select-persona";
+    // Long questions (the sales module quotes a whole dealer email) get a compact layout so they fit a laptop screen.
+    const long = sit.prompt.length > 100 || sit.options.reduce((a, o) => a + o.label.length, 0) > 300;
     const hard = sit.options.filter((o) => !o.soft);
     const soft = sit.options.filter((o) => o.soft);
     const opt = (o) => `
@@ -29,7 +31,7 @@ export class Panel {
         ${o.sub ? `<span class="jr-opt-sub">${esc(o.sub)}</span>` : ""}
       </button>`;
     const html = `
-      <section class="jr-q" aria-labelledby="${id}">
+      <section class="jr-q${long ? " is-long" : ""}" aria-labelledby="${id}">
         <p class="jr-kicker jr-q-kicker">${esc(kicker)}</p>
         ${sit.why ? `<p class="jr-q-why">${esc(sit.why)}</p>` : ""}
         <h3 class="jr-q-prompt" id="${id}" tabindex="-1">${esc(sit.prompt)}</h3>

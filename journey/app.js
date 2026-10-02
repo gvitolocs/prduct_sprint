@@ -21,13 +21,15 @@ import {
   isJourneyComplete,
   finalizeJourney,
   currentStage,
-  toJourneyPayload
+  toSubmissionPayload,
+  CONTEXT_SCENARIO_IDS
 } from "../pathfinder/lifecycle.js";
 import { loadManifest, anchorUrl, transitionUrl, warmImage } from "./media.js";
 import { Stage } from "./stage.js";
 import { Rail } from "./rail.js";
 import { Panel } from "./panel.js";
 import { renderLandscape } from "./landscape.js";
+import { renderDashboardView } from "./dashboard-view.js";
 import { Overlays } from "./overlays.js";
 
 const STORE = "prduct.journey.v1";
@@ -48,6 +50,7 @@ let reached = 0;
 
 // ------------------------------------------------------------------ helpers
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+const frames = (n) => new Promise((r) => { const step = (k) => (k ? requestAnimationFrame(() => step(k - 1)) : r()); step(n); });
 const branchMeta = () => manifest.branches[journey.branch];
 const stageId = (i) => LIFECYCLE_STAGES[i];
 
@@ -88,7 +91,7 @@ function loadSaved() {
 function evidence() {
   const out = {};
   for (const h of journey?.history || []) {
-    if (h.scenarioId === "product.perspective" || h.scenarioId === "nextLife.unlock") continue;
+    if (CONTEXT_SCENARIO_IDS.includes(h.scenarioId) || h.flags?.includes("not-applicable")) continue;
     const cur = out[h.stage];
     if (cur === undefined || h.strength < cur) out[h.stage] = h.strength;
   }
@@ -212,6 +215,8 @@ async function onAnswer(optionId) {
   busy = true;
   try {
     const sit = getJourneySituation(journey);
+    // A click from a panel that has already left (or a stale queued answer) belongs to another question.
+    if (!sit.options.some((o) => o.id === optionId)) return;
     journey = answerJourney(journey, optionId);
     memory[sit.id] = optionId;
     save();
@@ -302,20 +307,28 @@ async function growIntoViewport(card, stillUrl, focus) {
     top: `${r.top - s.top}px`,
     width: `${r.width}px`,
     height: `${r.height}px`,
-    objectPosition: getComputedStyle(img).objectPosition
+    objectPosition: getComputedStyle(img).objectPosition,
+    filter: getComputedStyle(img).filter
   });
   stageEl.appendChild(flyer);
+  // a short fade-in, so the card's label and shade dissolve instead of blinking out under the flyer
+  flyer.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 140, easing: "ease-out" });
   const grow = flyer.animate(
     [
       {},
-      { left: "0px", top: "0px", width: `${s.width}px`, height: `${s.height}px`, borderRadius: "0px", objectPosition: focus || "50% 50%" }
+      { left: "0px", top: "0px", width: `${s.width}px`, height: `${s.height}px`, borderRadius: "0px", objectPosition: focus || "50% 50%", filter: "none" }
     ],
     { duration: 900, easing: "cubic-bezier(0.65, 0, 0.35, 1)", fill: "forwards" }
   );
   await Promise.race([grow.finished.catch(() => {}), wait(1000)]);
+  // Hand over while the flyer still covers the screen: selector out and stage in at once (no fades), so
+  // removing the flyer reveals the identical frame. With the 0.3 s fades the chosen card flashed back
+  // over a half-faded stage.
+  root.classList.add("is-handover");
   root.dataset.mode = "travel";
-  await wait(60);
+  await frames(2);
   flyer.remove();
+  root.classList.remove("is-handover");
 }
 
 async function selectBranch(branch, card) {
@@ -368,7 +381,10 @@ async function revealLandscape() {
   save();
   const land = root.querySelector(".jr-land");
   const b = branchMeta();
-  renderLandscape(land, journey.result, { industry: b.industry, short: BRANCHES[journey.branch].short }, {
+  // The demo ends on the answers-on-the-lifecycle view; the scored dashboard waits for a defensible
+  // weighting and is only an internal preview (?view=dashboard).
+  const render = new URLSearchParams(location.search).get("view") === "dashboard" ? renderDashboardView : renderLandscape;
+  render(land, journey, { industry: b.industry, short: BRANCHES[journey.branch].short, object: BRANCHES[journey.branch].object }, {
     onRestart: () => toSelector(),
     onRevisit: async () => {
       land.classList.remove("is-on");
@@ -388,7 +404,7 @@ async function revealLandscape() {
   const from = railEl.getBoundingClientRect();
   land.hidden = false;
   land.scrollTop = 0;
-  const line = land.querySelector(".jr-map-links")?.getBoundingClientRect();
+  const line = land.querySelector(".jr-life-links, .jr-dash-grid")?.getBoundingClientRect();
   root.dataset.mode = "landscape";
   if (!reducedMotion && line && !compact()) {
     railEl.getAnimations().forEach((a) => a.cancel());
@@ -408,25 +424,7 @@ async function revealLandscape() {
 }
 
 async function sendLandscape(lead) {
-  const payload = {
-    lead,
-    answers: toJourneyPayload(journey).answers,
-    scores: {
-      branch: journey.branch,
-      persona: journey.persona,
-      capabilities: toJourneyPayload(journey).capabilities,
-      timeline: journey.result.internal.timeline,
-      landscape: {
-        foundation: journey.result.foundation,
-        fragmentation: journey.result.fragmentation,
-        nextCapability: journey.result.nextCapability,
-        opportunities: journey.result.opportunities,
-        dppPlate: journey.result.dppPlate,
-        links: journey.result.journey.links
-      }
-    },
-    personality: { name: journey.result.personaInterpretation?.headline || "" }
-  };
+  const payload = toSubmissionPayload(journey, lead);
   try {
     const list = JSON.parse(localStorage.getItem("prduct-dpp-submissions") || "[]");
     list.push({ id: new Date().toISOString(), receivedAt: new Date().toISOString(), ...payload });

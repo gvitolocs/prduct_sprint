@@ -3,17 +3,53 @@
 
 from __future__ import annotations
 
+import base64
+import hashlib
+import hmac
 import json
 import os
 import re
+import time
 from datetime import datetime, timezone
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from urllib.parse import urlparse
+from urllib.parse import parse_qs, urlparse
 
 ROOT = Path(__file__).resolve().parent
 DATA = ROOT / "submissions.jsonl"
+# Same lock as api/inbox.js: reading the inbox needs this password (env INBOX_PASSWORD, else this file).
+PASSWORD_FILE = Path.home() / ".config" / "prduct-site" / "inbox-password"
 PORT = 8787
+
+
+COOKIE = "prduct_inbox"
+SESSION_SECONDS = 12 * 3600
+
+
+def inbox_password() -> str:
+    pw = os.environ.get("INBOX_PASSWORD", "")
+    if not pw and PASSWORD_FILE.exists():
+        pw = PASSWORD_FILE.read_text(encoding="utf-8").strip()
+    return pw
+
+
+def _sign(exp: int, pw: str) -> str:
+    key = hashlib.sha256(f"prduct-inbox-session:{pw}".encode("utf-8")).digest()
+    mac = hmac.new(key, str(exp).encode("utf-8"), hashlib.sha256).digest()
+    return base64.urlsafe_b64encode(mac).rstrip(b"=").decode("ascii")
+
+
+def new_session(pw: str) -> str:
+    exp = int(time.time()) + SESSION_SECONDS
+    return f"{exp}.{_sign(exp, pw)}"
+
+
+def session_ok(token: str, pw: str) -> bool:
+    """Same stateless session as api/_auth.js: an expiry signed with a key derived from the password."""
+    exp, _, mac = (token or "").partition(".")
+    if not pw or not exp.isdigit() or not mac or int(exp) < time.time():
+        return False
+    return hmac.compare_digest(mac.encode("ascii", "replace"), _sign(int(exp), pw).encode("ascii"))
 
 
 class Handler(SimpleHTTPRequestHandler):
@@ -87,6 +123,8 @@ class Handler(SimpleHTTPRequestHandler):
     def do_GET(self):
         path = urlparse(self.path).path
         if path == "/api/submissions":
+            if not self._authorized():
+                return self._json({"ok": False, "error": "password required"}, 401)
             rows = []
             if DATA.exists():
                 for line in DATA.read_text(encoding="utf-8").splitlines():
@@ -97,8 +135,47 @@ class Handler(SimpleHTTPRequestHandler):
             return self._json({"ok": True})
         return super().do_GET()
 
+    def _cookie(self, name: str) -> str:
+        for part in (self.headers.get("Cookie") or "").split(";"):
+            key, _, value = part.strip().partition("=")
+            if key == name:
+                return value
+        return ""
+
+    def _authorized(self) -> bool:
+        secret = inbox_password()
+        given = re.sub(r"^Bearer\s+", "", self.headers.get("Authorization") or "", flags=re.I)
+        bearer_ok = bool(secret) and given != "" and hmac.compare_digest(given.encode("utf-8"), secret.encode("utf-8"))
+        return bearer_ok or session_ok(self._cookie(COOKIE), secret)
+
+    def _session(self):
+        """Inbox login / logout for the inbox page's plain form (see api/session.js)."""
+        length = int(self.headers.get("Content-Length") or 0)
+        raw = self.rfile.read(min(length, 4096)).decode("utf-8", "replace")
+        form = {k: v[0] for k, v in parse_qs(raw).items()}
+        secure = "; Secure" if self.headers.get("X-Forwarded-Proto") == "https" else ""
+        cookie = None
+        target = "/inbox.html"
+        if form.get("action") == "logout":
+            cookie = f"{COOKIE}=; Path=/api; HttpOnly; SameSite=Strict; Max-Age=0{secure}"
+        else:
+            secret = inbox_password()
+            given = form.get("password", "")
+            if secret and hmac.compare_digest(given.encode("utf-8"), secret.encode("utf-8")):
+                cookie = f"{COOKIE}={new_session(secret)}; Path=/api; HttpOnly; SameSite=Strict; Max-Age={SESSION_SECONDS}{secure}"
+            else:
+                target = "/inbox.html?error=1"
+        self.send_response(303)
+        if cookie:
+            self.send_header("Set-Cookie", cookie)
+        self.send_header("Location", target)
+        self.send_header("Content-Length", "0")
+        self.end_headers()
+
     def do_POST(self):
         path = urlparse(self.path).path
+        if path == "/api/session":
+            return self._session()
         if path != "/api/submit":
             self.send_error(404)
             return
@@ -151,6 +228,10 @@ class Handler(SimpleHTTPRequestHandler):
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", PORT))
+    # The journey page opens many parallel requests (modules, fonts, stills, videos); socketserver's default
+    # listen backlog of 5 drops the overflow as empty responses, and a dropped module stops the app booting.
+    ThreadingHTTPServer.request_queue_size = 128
+    ThreadingHTTPServer.daemon_threads = True
     httpd = ThreadingHTTPServer(("127.0.0.1", port), Handler)
     print(f"Assessment running at http://127.0.0.1:{port}/")
     print(f"Inbox: http://127.0.0.1:{port}/inbox.html")

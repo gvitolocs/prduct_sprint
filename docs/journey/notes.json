@@ -1,0 +1,79 @@
+{
+  "_about": "Refinement notes keyed by catalogue ID (FUR-S04, BAT-M07, Q:data.location, D:links …). status: ok | check | refine | next. Regenerate the catalogue after editing: node tools/catalogue.mjs",
+  "FUR-S04": {
+    "status": "ok",
+    "note": "v5 (2026-09-30): the real chair from stop 2 opened up (Qwen edit, two passes): cushions off, back and seat webbing, foam in the unzipped cushion, a tray of fittings. The stop-3 oak macro pulls straight back onto the same side rail (FUR-M03)."
+  },
+  "FUR-S09": {
+    "status": "refine",
+    "note": "On 16:10 screens the scanning hand sits partly behind the question panel (fully visible on 16:9)."
+  },
+  "FUR-S10": {
+    "status": "check",
+    "note": "The chair lands slightly small on the workbench; the craftsperson is generated."
+  },
+  "BAT-S04": {
+    "status": "refine",
+    "note": "The opened pack holds small silver-topped cylindrical cells, while the factory (BAT-S07) shows large black cells. Pick one cell format."
+  },
+  "BAT-S06": {
+    "status": "check",
+    "note": "Pallet hazard diamonds are blank (generated images avoid text; a real class-9 lithium label carries a symbol)."
+  },
+  "BAT-S07": {
+    "status": "refine",
+    "note": "Large black cylindrical cells under the laser head do not match the pack's cells in BAT-S04."
+  },
+  "BAT-S08": {
+    "status": "ok",
+    "note": "Remade 2026-09-28: macro of the pack's own black casing with the laser-marked prduct.com QR (light on dark; decodes)."
+  },
+  "BAT-S09": {
+    "status": "ok",
+    "note": "Remade 2026-09-28: paper label and red scanner beam removed; the same code is laser-marked on the pack."
+  },
+  "BAT-M07": {
+    "status": "check",
+    "note": "The laser raster reads mostly as a focus pull onto the code."
+  },
+  "TEX-S04": {
+    "status": "refine",
+    "note": "This jacket (zip, black lining, lying on a table) is not the long press-stud coat of TEX-S01, S02 and S09."
+  },
+  "TEX-S07": {
+    "status": "refine",
+    "note": "The factory jacket (short, flap pockets, zips) differs from the product coat."
+  },
+  "TEX-S08": {
+    "status": "ok",
+    "note": "Remade 2026-09-28: macro of the woven care label with the printed prduct.com QR, sewn in the collar."
+  },
+  "TEX-S09": {
+    "status": "ok",
+    "note": "Remade 2026-09-28: the collar label is the off-white weave of the data macro."
+  },
+  "TEX-S10": {
+    "status": "refine",
+    "note": "The collar label is still the old tan label with its own code; data and passport now use the off-white woven label."
+  },
+  "TEX-M09": {
+    "status": "refine",
+    "note": "Ends on TEX-S10's old tan label — fix together with TEX-S10."
+  },
+  "D:passport": {
+    "status": "ok",
+    "note": "Only verified fields count as ready; claimed fields show as the lighter bar segment."
+  },
+  "FUR-S05": {
+    "status": "ok",
+    "note": "v5: felled oak logs beside a misty forest road (Z-Image-Turbo), tags on the cut ends. Reached by a whip pan from the lounge (FUR-M04)."
+  },
+  "FUR-S06": {
+    "status": "check",
+    "note": "v5: bundles of oak boards in the loading bay (Z-Image-Turbo). The bundle ends are a slightly busy mosaic; the truck stands inside the hall."
+  },
+  "FUR-S07": {
+    "status": "ok",
+    "note": "v5: a flatbed laser engraver with oak rails on its bed (Z-Image-Turbo); the push into the rail burns the real QR in (FUR-M07)."
+  }
+}
