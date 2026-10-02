@@ -36,7 +36,7 @@ Choices to confirm with Stefan:
 
 Since then (1 October):
 - **Pilot label** on the logo, a "Sprint prototype" bar at the top, the app login switched off.
-- **`/inbox.html` is password-locked** (form login, session cookie, Keychain-friendly, a QR to open it on the phone).
+- **`/inbox.html` is not public.** The list of responses is closed. A QR opens it on the phone.
 - **The adaptive path** (the brief of 1 Oct): one flow, each stop asks the respondent's desk version of its question. Sales 13 questions instead of ~23, purchasing 12–17 instead of ~24. See `docs/journey/ADAPTIVE-ASSESSMENT.md`.
 
 Not done / open:

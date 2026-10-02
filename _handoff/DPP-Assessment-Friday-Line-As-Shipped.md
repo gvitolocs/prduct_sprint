@@ -37,7 +37,7 @@ The score is off the result screen. The diagram and the echoed facts are what a 
 
 The page carries a bar: **Sprint prototype.** A test version for review, not the live Prduct website. A "Pilot" mark sits on the logo. The login control does not open the app.
 
-The inbox is behind a password. The capture question is answered in the code handoff: one test, ours, not a respondent.
+The response list is not public.
 
 ## One correction we owe you
 

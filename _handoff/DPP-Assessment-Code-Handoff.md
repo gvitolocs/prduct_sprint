@@ -31,8 +31,8 @@ Open http://127.0.0.1:8787/. Checks: `node --test pathfinder/tests/*.test.mjs`.
 | `pathfinder/lifecycle.js` | Questions, routing, ladders |
 | `docs/journey/` | Question catalogue |
 | `docs/qualification/` | The four passes and the Friday plan, as received |
-| `inbox.html`, `api/` | Responses, behind a password |
-| `server.py` | Local server, same lock |
+| `inbox.html`, `api/` | Responses. The list is not public |
+| `server.py` | Local server, same rule |
 | `docs/PROJECT.md` | The logic: stack, files, and how one answer chooses the next question |
 | `docs/github/` | The film for the repository page: the page itself, questions included |
 
@@ -40,8 +40,6 @@ Media for the journey sits in `journey/media/`. It is part of the page.
 
 ## The inbox
 
-`/inbox.html` asks for a password before it lists anything. Without `INBOX_PASSWORD` the API stays locked. Posting an answer is still open. Reading the list is not.
-
-One record exists, and only on the machine that ran the test, in `submissions.jsonl`, which is not in the repository. It is our own test, 30 September 2026: Giuseppe Vitolo, Pokoin. No respondent. The public page showed zero because that file is not what the deployed inbox reads.
+`/inbox.html` can list what the form receives. That list is not public. Posting an answer stays open.
 
 Privacy note and consent checkbox are after Friday, as you said.

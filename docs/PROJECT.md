@@ -266,7 +266,7 @@ from it. It is not rendered as a score.
 | A new product world | `BRANCHES`, stills and clips, `journey/manifest.json` | do not do this for Friday |
 | The result sentence or table | `journey/landscape.js` | do not put the month band back |
 | The camera | `journey/stage.js`, `journey/media.js` | not the router |
-| Who may read responses | `api/_auth.js` | reading stays behind `INBOX_PASSWORD` |
+| Who may read responses | `api/_auth.js` | the list is not public |
 
 A new desk version of an existing stop means: write the scenario with
 `kind: "desk"`, `desks: ["sell"]` (or whichever), `covers` set to the topic
@@ -308,16 +308,9 @@ on the page forces stills and no video, for the case where a clip fails.
 
 ## Inbox
 
-`/inbox.html` asks for a password before it lists anything. The password is
-`INBOX_PASSWORD`. Without it, the API stays locked. Posting an answer is
-open. Reading the list is not. Sessions are an expiry time signed with a
-key derived from the password (`api/_auth.js`). The same rules are in
-`server.py`.
-
-One test record exists on the machine that ran it, in `submissions.jsonl`,
-which is gitignored: Giuseppe Vitolo, Pokoin, 30 September 2026. Not a
-respondent. Not in this repository. The deployed inbox stores nothing
-durable; its file is `/tmp` on the function.
+`/inbox.html` can list what the form receives. That list is not public.
+Posting an answer stays open. The same rule is in `server.py` and `api/_auth.js`.
+The deployed list is not durable.
 
 A privacy note and a consent checkbox are deliberately not in the form yet.
 They were deferred until after Friday. Do not collect a real respondent

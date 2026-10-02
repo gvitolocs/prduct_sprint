@@ -36,6 +36,6 @@ Open http://127.0.0.1:8787/. Checks: `node --test pathfinder/tests/*.test.mjs`.
 | --- | --- |
 | `index.html`, `journey/` | The page and the camera |
 | `pathfinder/lifecycle.js` | Questions, routing, ladders |
-| `inbox.html`, `api/` | Responses, behind a password |
+| `inbox.html`, `api/` | Responses. The list is not public |
 | `docs/qualification/` | The Friday plan, as received |
 | `docs/github/journey.mp4` | The film on this page |
