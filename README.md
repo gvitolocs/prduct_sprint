@@ -2,9 +2,9 @@
 
 Sprint prototype for Friday. Not the live Prduct product.
 
-[![The chair, from the room to the next life](docs/github/journey.gif)](docs/github/journey.mp4)
+[![A sales desk answering the chair, question by question](docs/github/journey.gif)](docs/github/journey.mp4)
 
-The camera follows one lounge chair through the assessment: company, product, material, component, supplier, logistics, factory, data, passport, next life. [Play the film](docs/github/journey.mp4) · [Open the page](https://demosprint.vercel.app)
+The film is a full walkthrough: the seat question, then the sales desk's questions, then the result. The picture above is the opening question. [Play the whole demo](docs/github/journey.mp4) · [Open the page](https://demosprint.vercel.app)
 
 ## What this is
 
@@ -18,6 +18,7 @@ Sales and purchasing each get the version of the path that matches the desk. The
 | --- | --- |
 | Page | https://demosprint.vercel.app |
 | Code | `main` on [gvitolocs/prduct_sprint](https://github.com/gvitolocs/prduct_sprint) |
+| For an agent | [`docs/PROJECT.md`](docs/PROJECT.md) — stack, files, and the exclusive route: the first answer picks the next question |
 | Handoff | [`_handoff/DPP-Assessment-Code-Handoff.md`](_handoff/DPP-Assessment-Code-Handoff.md) |
 | Against the list | [`_handoff/DPP-Assessment-Friday-Line-As-Shipped.md`](_handoff/DPP-Assessment-Friday-Line-As-Shipped.md) |
 

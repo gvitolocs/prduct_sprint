@@ -33,7 +33,8 @@ Open http://127.0.0.1:8787/. Checks: `node --test pathfinder/tests/*.test.mjs`.
 | `docs/qualification/` | The four passes and the Friday plan, as received |
 | `inbox.html`, `api/` | Responses, behind a password |
 | `server.py` | Local server, same lock |
-| `docs/github/` | The film for the repository page |
+| `docs/PROJECT.md` | The logic: stack, files, and how one answer chooses the next question |
+| `docs/github/` | The film for the repository page: the page itself, questions included |
 
 Media for the journey sits in `journey/media/`. It is part of the page.
 
