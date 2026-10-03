@@ -12,15 +12,6 @@ A Prduct-styled Digital Product Passport assessment. The header stays. Under it,
 
 Sales and purchasing each get the version of the path that matches the desk. The result shows the diagram and the echoed facts. No score, no month band.
 
-## For Friday
-
-| | |
-| --- | --- |
-| Code | `main` on [gvitolocs/prduct_sprint](https://github.com/gvitolocs/prduct_sprint) |
-| For an agent | [`docs/PROJECT.md`](docs/PROJECT.md) — stack, files, and the exclusive route: the first answer picks the next question |
-| Handoff | [`_handoff/DPP-Assessment-Code-Handoff.md`](_handoff/DPP-Assessment-Code-Handoff.md) |
-| Against the list | [`_handoff/DPP-Assessment-Friday-Line-As-Shipped.md`](_handoff/DPP-Assessment-Friday-Line-As-Shipped.md) |
-
 ## Run it
 
 ```bash
